@@ -1,12 +1,12 @@
 {
-  "name": "@athenna/template",
+  "name": "@athenna/http",
   "version": "1.0.0",
-  "description": "",
+  "description": "The Athenna Http server. Built on top of fastify",
   "license": "MIT",
   "author": "João Lenon <lenon@athenna.io>",
-  "repository": "https://github.com/AthennaIO/Template.git",
-  "bugs": "https://github.com/AthennaIO/Template/issues",
-  "homepage": "https://github.com/AthennaIO/Template#readme",
+  "repository": "https://github.com/AthennaIO/Http.git",
+  "bugs": "https://github.com/AthennaIO/Http/issues",
+  "homepage": "https://github.com/AthennaIO/Http#readme",
   "scripts": {
     "build": "tsc --project tsconfig.json && tscpaths -p tsconfig.json -s . -o .",
     "test": "npm run lint:fix && cross-env NODE_TS=true cross-env NODE_ENV=testing jest --verbose",
@@ -15,6 +15,10 @@
   },
   "keywords": [
     "nodejs",
+    "fastify",
+    "router",
+    "middlewares",
+    "http-server",
     "athenna",
     "typescript"
   ],
@@ -39,6 +43,7 @@
     "jest": "27.1.0",
     "lint-staged": "9.4.3",
     "prettier": "2.0.5",
+    "supertest": "^6.2.2",
     "ts-jest": "27.0.5",
     "ts-loader": "9.2.3",
     "ts-node": "10.0.0",
@@ -152,6 +157,10 @@
     }
   },
   "dependencies": {
+    "@athenna/config": "1.0.1",
+    "@athenna/ioc": "1.0.3",
+    "@secjs/utils": "1.8.0",
+    "fastify": "3.27.4",
     "reflect-metadata": "0.1.13",
     "tscpaths": "0.0.9"
   }
