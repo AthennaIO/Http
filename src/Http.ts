@@ -70,8 +70,12 @@ export class Http {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-empty-function
-  close(cb = () => {}): void {
-    return this.server.close(cb)
+  async close(cb?: any): Promise<void> {
+    if (cb) {
+      return this.server.close(cb)
+    }
+
+    return this.server.close()
   }
 
   route(
