@@ -66,7 +66,7 @@ export class Http {
   }
 
   async listen(port?: string | number, host?: string): Promise<string> {
-    return this.server.listen(port || 1335, host || '127.0.0.1')
+    return this.server.listen(port || 1335, host || 'localhost')
   }
 
   // eslint-disable-next-line @typescript-eslint/no-empty-function
