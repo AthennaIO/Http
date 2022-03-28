@@ -10,6 +10,9 @@
 export * from './src/Http'
 export * from './src/Router/Router'
 
+export * from './src/Providers/HttpRouteProvider'
+export * from './src/Providers/HttpServerProvider'
+
 export * from './src/Contracts/MiddlewareContract'
 
 export * from './src/Contracts/Context/ContextContract'

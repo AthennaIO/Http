@@ -34,7 +34,7 @@ describe('\n HttpTest', () => {
     new HttpServerProvider().register()
     new HttpRouteProvider().boot()
 
-    http = ioc.use('Core/Http/Server')
+    http = ioc.use('Athenna/Core/HttpServer')
 
     http.get('/test', handler)
 

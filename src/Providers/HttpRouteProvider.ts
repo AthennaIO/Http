@@ -12,9 +12,9 @@ import { ServiceProvider } from '@athenna/ioc'
 
 export class HttpRouteProvider extends ServiceProvider {
   boot() {
-    const http = this.container.safeUse('Core/Http/Server')
+    const http = this.container.safeUse('Athenna/Core/HttpServer')
 
-    this.container.bind('Core/Http/Route', new Router(http))
+    this.container.bind('Athenna/Core/HttpRoute', new Router(http))
   }
 
   register() {}
