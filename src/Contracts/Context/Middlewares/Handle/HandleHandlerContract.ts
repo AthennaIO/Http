@@ -10,5 +10,5 @@
 import { HandleContextContract } from './HandleContextContract'
 
 export interface HandleHandlerContract {
-  (ctx?: HandleContextContract): Promise<any> | any
+  (ctx: HandleContextContract): Promise<any> | any
 }

@@ -10,5 +10,5 @@
 import { TerminateContextContract } from './TerminateContextContract'
 
 export interface TerminateHandlerContract {
-  (ctx?: TerminateContextContract): Promise<any> | any
+  (ctx: TerminateContextContract): Promise<any> | any
 }

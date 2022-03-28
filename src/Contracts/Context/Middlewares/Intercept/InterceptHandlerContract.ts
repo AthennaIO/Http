@@ -10,5 +10,5 @@
 import { InterceptContextContract } from './InterceptContextContract'
 
 export interface InterceptHandlerContract {
-  (ctx?: InterceptContextContract): Promise<any> | any
+  (ctx: InterceptContextContract): Promise<any> | any
 }
