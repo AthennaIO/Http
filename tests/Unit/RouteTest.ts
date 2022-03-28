@@ -20,6 +20,8 @@ import { TestMiddleware } from '../Stubs/TestMiddleware'
 import { HandleMiddleware } from '../Stubs/HandleMiddleware'
 import { InterceptMiddleware } from '../Stubs/InterceptMiddleware'
 import { TerminateMiddleware } from '../Stubs/TerminateMiddleware'
+import { HttpRouteProvider } from '../../src/Providers/HttpRouteProvider'
+import { HttpServerProvider } from '../../src/Providers/HttpServerProvider'
 import { BadRequestException } from '../../src/Exceptions/BadRequestException'
 
 describe('\n RouteTest', () => {
@@ -40,15 +42,17 @@ describe('\n RouteTest', () => {
   beforeEach(async () => {
     new Ioc()
       .reconstruct()
-      .singleton('App/HttpServer', Http)
       .singleton('App/Controllers/TestController', TestController)
       .singleton('App/Middlewares/TestMiddleware', TestMiddleware)
       .singleton('App/Middlewares/HandleMiddleware', HandleMiddleware)
       .singleton('App/Middlewares/TerminateMiddleware', TerminateMiddleware)
       .singleton('App/Middlewares/InterceptMiddleware', InterceptMiddleware)
 
-    http = ioc.use('App/HttpServer')
-    router = new Router()
+    new HttpServerProvider().register()
+    new HttpRouteProvider().boot()
+
+    http = ioc.use('Core/Http/Server')
+    router = ioc.use('Core/Http/Route')
   })
 
   it('should be able to register a new route', async () => {

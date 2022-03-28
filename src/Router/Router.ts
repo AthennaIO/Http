@@ -7,10 +7,11 @@
  * file that was distributed with this source code.
  */
 
+import '@athenna/ioc'
+
 import { Http } from '../Http'
 import { Route } from './Route'
 import { Is } from '@secjs/utils'
-import { Ioc } from '@athenna/ioc'
 import { RouteGroup } from './RouteGroup'
 import { RouteResource } from './RouteResource'
 import { HttpMethodTypes } from '../Contracts/HttpMethodTypes'
@@ -27,8 +28,8 @@ export class Router {
   private readonly http: Http
   private controllerInstance: any
 
-  constructor() {
-    this.http = new Ioc().use('App/HttpServer') || new Http()
+  constructor(http: Http) {
+    this.http = http
     this.routes = []
     this.openedGroups = []
   }

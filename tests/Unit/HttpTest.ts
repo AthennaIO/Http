@@ -9,9 +9,12 @@
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
+import '@athenna/ioc'
 import supertest from 'supertest'
 
 import { Http } from '../../src/Http'
+import { HttpRouteProvider } from '../../src/Providers/HttpRouteProvider'
+import { HttpServerProvider } from '../../src/Providers/HttpServerProvider'
 import { BadRequestException } from '../../src/Exceptions/BadRequestException'
 
 describe('\n HttpTest', () => {
@@ -28,7 +31,10 @@ describe('\n HttpTest', () => {
   }
 
   beforeEach(async () => {
-    http = new Http()
+    new HttpServerProvider().register()
+    new HttpRouteProvider().boot()
+
+    http = ioc.use('Core/Http/Server')
 
     http.get('/test', handler)
 
