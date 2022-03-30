@@ -8,7 +8,8 @@
  */
 
 import { String } from '@secjs/utils'
-import { ErrorContextContract } from '../Contracts/Context/Error/ErrorContextContract'
+import { Logger } from '@athenna/logger'
+import { ErrorContextContract } from 'src/Contracts/Context/Error/ErrorContextContract'
 
 export function defaultErrorHandler({
   error,
@@ -30,6 +31,12 @@ export function defaultErrorHandler({
       stack: error.stack,
     },
   }
+
+  new Logger()
+    .channel('application')
+    .error(`Error: ${JSON.stringify(body.error, null, 2)}`, {
+      context: 'AthennaErrorHandler',
+    })
 
   response.status(statusCode).send(body)
 }

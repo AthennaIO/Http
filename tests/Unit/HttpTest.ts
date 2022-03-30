@@ -13,6 +13,7 @@ import '@athenna/ioc'
 import supertest from 'supertest'
 
 import { Http } from '../../src/Http'
+import { Folder, Path } from '@secjs/utils'
 import { HttpRouteProvider } from '../../src/Providers/HttpRouteProvider'
 import { HttpServerProvider } from '../../src/Providers/HttpServerProvider'
 import { BadRequestException } from '../../src/Exceptions/BadRequestException'
@@ -31,6 +32,8 @@ describe('\n HttpTest', () => {
   }
 
   beforeEach(async () => {
+    new Folder(Path.tests('Stubs/config')).loadSync().copySync(Path.pwd('config'))
+
     new HttpServerProvider().register()
     new HttpRouteProvider().boot()
 
