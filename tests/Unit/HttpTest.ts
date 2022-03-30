@@ -13,6 +13,7 @@ import '@athenna/ioc'
 import supertest from 'supertest'
 
 import { Http } from '../../src/Http'
+import { Folder, Path } from '@secjs/utils'
 import { HttpRouteProvider } from '../../src/Providers/HttpRouteProvider'
 import { HttpServerProvider } from '../../src/Providers/HttpServerProvider'
 import { BadRequestException } from '../../src/Exceptions/BadRequestException'
@@ -31,6 +32,8 @@ describe('\n HttpTest', () => {
   }
 
   beforeEach(async () => {
+    new Folder(Path.tests('Stubs/config')).loadSync().copySync(Path.pwd('config'))
+
     new HttpServerProvider().register()
     new HttpRouteProvider().boot()
 
@@ -90,13 +93,9 @@ describe('\n HttpTest', () => {
     await errorHttp.close()
 
     expect(response.status).toBe(400)
-    expect(response.body.code).toStrictEqual('BAD_REQUEST_ERROR')
-    expect(response.body.path).toStrictEqual('/test')
-    expect(response.body.method).toStrictEqual('GET')
-    expect(response.body.status).toStrictEqual('ERROR')
     expect(response.body.statusCode).toStrictEqual(400)
-    expect(response.body.error.name).toStrictEqual('BadRequestException')
-    expect(response.body.error.message).toStrictEqual('Testing')
+    expect(response.body.code).toStrictEqual('BAD_REQUEST_ERROR')
+    expect(response.body.message).toStrictEqual('Testing')
   })
 
   it('should be able to register a new route with a intercept middleware', async () => {

@@ -11,7 +11,6 @@ import fastify, { FastifyInstance, PrintRoutesOptions } from 'fastify'
 
 import { FastifyHandler } from './Utils/FastifyHandler'
 import { HttpMethodTypes } from './Contracts/HttpMethodTypes'
-import { defaultErrorHandler } from './Utils/defaultErrorHandler'
 import { HandlerContract } from './Contracts/Context/HandlerContract'
 import { MiddlewareTypesContract } from './Contracts/MiddlewareTypesContract'
 import { ErrorHandlerContract } from './Contracts/Context/Error/ErrorHandlerContract'
@@ -24,7 +23,6 @@ export class Http {
 
   constructor() {
     this.server = fastify()
-    this.setErrorHandler(defaultErrorHandler)
   }
 
   setErrorHandler(handler: ErrorHandlerContract) {
