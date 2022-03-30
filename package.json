@@ -160,7 +160,6 @@
   "dependencies": {
     "@athenna/config": "1.0.5",
     "@athenna/ioc": "1.0.6",
-    "@athenna/logger": "1.0.4",
     "@secjs/utils": "1.8.0",
     "fastify": "3.27.4",
     "reflect-metadata": "0.1.13",

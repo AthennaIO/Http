@@ -93,13 +93,9 @@ describe('\n HttpTest', () => {
     await errorHttp.close()
 
     expect(response.status).toBe(400)
-    expect(response.body.code).toStrictEqual('BAD_REQUEST_ERROR')
-    expect(response.body.path).toStrictEqual('/test')
-    expect(response.body.method).toStrictEqual('GET')
-    expect(response.body.status).toStrictEqual('ERROR')
     expect(response.body.statusCode).toStrictEqual(400)
-    expect(response.body.error.name).toStrictEqual('BadRequestException')
-    expect(response.body.error.message).toStrictEqual('Testing')
+    expect(response.body.code).toStrictEqual('BAD_REQUEST_ERROR')
+    expect(response.body.message).toStrictEqual('Testing')
   })
 
   it('should be able to register a new route with a intercept middleware', async () => {

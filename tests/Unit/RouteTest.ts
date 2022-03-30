@@ -192,14 +192,10 @@ describe('\n RouteTest', () => {
       const response = await supertest('http://localhost:3044').get('/v1/test')
 
       expect(response.status).toBe(400)
-      expect(response.body.midHandler).toBeFalsy()
-      expect(response.body.code).toStrictEqual('BAD_REQUEST_ERROR')
-      expect(response.body.path).toStrictEqual('/v1/test')
-      expect(response.body.method).toStrictEqual('GET')
-      expect(response.body.status).toStrictEqual('ERROR')
       expect(response.body.statusCode).toStrictEqual(400)
-      expect(response.body.error.name).toStrictEqual('BadRequestException')
-      expect(response.body.error.message).toStrictEqual('Testing')
+      expect(response.body.code).toStrictEqual('BAD_REQUEST_ERROR')
+      expect(response.body.error).toStrictEqual('Bad Request')
+      expect(response.body.message).toStrictEqual('Testing')
     }
     {
       const response = await supertest('http://localhost:3044').patch('/v1/test')
