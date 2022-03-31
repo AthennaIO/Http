@@ -21,7 +21,7 @@ export class TestController {
     if (ctx.request.queries.test) data.test = ctx.request.query('test')
     if (ctx.request.queries.throwError) throw new BadRequestException('Testing')
 
-    ctx.response.status(200).send(data)
+    return ctx.response.status(200).send(data)
   }
 
   async show(ctx: ContextContract) {
@@ -34,7 +34,7 @@ export class TestController {
     if (ctx.request.queries.test) data.test = ctx.request.query('test')
     if (ctx.request.queries.throwError) throw new BadRequestException('Testing')
 
-    ctx.response.status(200).send(data)
+    return ctx.response.status(200).send(data)
   }
 
   async store(ctx: ContextContract) {
@@ -47,6 +47,6 @@ export class TestController {
     if (ctx.request.queries.test) data.test = ctx.request.query('test')
     if (ctx.request.queries.throwError) throw new BadRequestException('Testing')
 
-    ctx.response.status(200).send(data)
+    return ctx.response.status(200).send(data)
   }
 }

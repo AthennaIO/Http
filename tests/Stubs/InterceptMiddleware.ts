@@ -16,6 +16,6 @@ export class InterceptMiddleware implements MiddlewareContract {
 
     ctx.body.middlewares.push('intercept')
 
-    ctx.next(ctx.body)
+    return ctx.body
   }
 }

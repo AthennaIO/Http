@@ -13,6 +13,6 @@ import { TerminateContextContract } from './Context/Middlewares/Terminate/Termin
 
 export interface MiddlewareContract {
   handle?: (ctx: HandleContextContract) => void | Promise<void>
-  intercept?: (ctx: InterceptContextContract) => void | Promise<void>
+  intercept?: (ctx: InterceptContextContract) => any | Promise<any>
   terminate?: (ctx: TerminateContextContract) => void | Promise<void>
 }

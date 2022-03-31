@@ -101,7 +101,7 @@ describe('\n HttpTest', () => {
     await middlewareHttp.use(ctx => {
       ctx.body.hello = ctx.body.hello.replace('world', 'world-intercepted')
 
-      ctx.next(ctx.body)
+      return ctx.body
     }, 'intercept')
 
     middlewareHttp.get('/test', handler)

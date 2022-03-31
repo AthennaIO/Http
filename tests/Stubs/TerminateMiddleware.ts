@@ -14,6 +14,6 @@ export class TerminateMiddleware implements MiddlewareContract {
   async terminate(ctx: TerminateContextContract) {
     console.log('Request terminated!')
 
-    ctx.next()
+    return ctx.next()
   }
 }

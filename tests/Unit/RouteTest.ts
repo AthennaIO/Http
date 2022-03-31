@@ -217,13 +217,12 @@ describe('\n RouteTest', () => {
   })
 
   it('should be able to register a new route with intercept middleware', async () => {
-    router.get('test', 'TestController.index').middleware('HandleMiddleware').middleware('InterceptMiddleware')
-
+    router.get('testing', 'TestController.index').middleware('HandleMiddleware').middleware('InterceptMiddleware')
     router.register()
 
     await http.listen(3045)
 
-    const response = await http.request().get('/test')
+    const response = await http.request().get('/testing')
 
     expect(response.statusCode).toBe(200)
     expect(response.json()).toStrictEqual({
@@ -235,14 +234,11 @@ describe('\n RouteTest', () => {
   it('should be able to register a new route with terminate middleware', async () => {
     let terminated = false
 
-    router
-      .get('test', 'TestController.index')
-      .middleware('HandleMiddleware')
-      .middleware(ctx => {
-        terminated = true
+    router.get('test', 'TestController.index').middleware(ctx => {
+      terminated = true
 
-        ctx.next()
-      }, 'terminate')
+      ctx.next()
+    }, 'terminate')
 
     router.register()
 
@@ -254,7 +250,6 @@ describe('\n RouteTest', () => {
     expect(terminated).toBe(true)
     expect(response.json()).toStrictEqual({
       hello: 'world',
-      middlewares: ['handle'],
     })
   })
 

@@ -20,11 +20,6 @@ import { HandlerContract } from '../Contracts/Context/HandlerContract'
 export class Router {
   routes: (Route | RouteResource | RouteGroup)[]
   private readonly openedGroups: RouteGroup[]
-
-  private getRecentGroup() {
-    return this.openedGroups[this.openedGroups.length - 1]
-  }
-
   private readonly http: Http
   private controllerInstance: any
 
@@ -167,5 +162,9 @@ export class Router {
 
       return list
     }, [])
+  }
+
+  private getRecentGroup() {
+    return this.openedGroups[this.openedGroups.length - 1]
   }
 }

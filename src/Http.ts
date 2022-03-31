@@ -114,7 +114,7 @@ export class Http {
       method: methods,
       handler: FastifyHandler.createRequestHandler(handler),
       preHandler: handlers.map(m => FastifyHandler.createDoneHandler(m)),
-      onResponse: terminators.map(m => FastifyHandler.createDoneHandler(m)),
+      onResponse: terminators.map(m => FastifyHandler.createResponseHandler(m)),
       onSend: interceptors.map(m => FastifyHandler.createOnSendHandler(m)),
     })
   }
