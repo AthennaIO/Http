@@ -26,9 +26,8 @@ declare module 'fastify' {
 
 export class FastifyHandler {
   static createOnSendHandler(handler: InterceptHandlerContract) {
-    return (req, res, payload, done) => {
+    return (req, _res, payload, done) => {
       const request = new Request(req)
-      const response = new Response(res)
 
       if (!req.data) req.data = {}
       if (!req.query) req.query = {}
@@ -42,8 +41,8 @@ export class FastifyHandler {
 
       return handler({
         request,
-        response,
         body,
+        status: _res.statusCode,
         params: req.params as Record<string, string>,
         queries: req.query as Record<string, string>,
         data: req.data,

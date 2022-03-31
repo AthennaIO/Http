@@ -8,15 +8,14 @@
  */
 
 import { RequestContract } from '../../RequestContract'
-import { ResponseContract } from '../../ResponseContract'
 import { NextInterceptContract } from './NextInterceptContract'
 
 export interface InterceptContextContract {
   request: RequestContract
-  response: ResponseContract
   params: Record<string, string>
   queries: Record<string, string>
   body: Record<string, any>
+  status: number
   data: Record<string, any>
   next: NextInterceptContract
 }

@@ -120,4 +120,8 @@ describe('\n HttpTest', () => {
       hello: 'world-intercepted',
     })
   })
+
+  afterEach(() => {
+    Folder.safeRemove(Path.pwd('config'))
+  })
 })
