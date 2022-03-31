@@ -17,12 +17,10 @@ import { TerminateHandlerContract } from '../Contracts/Context/Middlewares/Termi
 import { MiddlewareContract } from '../Contracts/MiddlewareContract'
 
 export class RouteResource {
+  routes: Route[]
   private resource: string
   private readonly controller: any
-
   private resourceName: string
-
-  routes: Route[]
 
   constructor(resource: string, controller: any) {
     this.routes = []
@@ -36,50 +34,6 @@ export class RouteResource {
       .join('.')
 
     this.buildRoutes()
-  }
-
-  private makeRoute(url: string, methods: HttpMethodTypes[], action: string) {
-    let handler = ''
-
-    if (Is.String(this.controller)) {
-      handler = `${this.controller}.${action}`
-    } else {
-      handler = this.controller[action]
-    }
-
-    const route = new Route(url, methods, handler)
-
-    route.as(`${this.resourceName}.${action}`)
-    this.routes.push(route)
-  }
-
-  private buildRoutes() {
-    this.resource = this.resource.replace(/^\//, '').replace(/\/$/, '')
-
-    const resourceTokens = this.resource.split('.')
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    const mainResource = resourceTokens.pop()!
-
-    const fullUrl = `${resourceTokens
-      .map(
-        string =>
-          `${string}/:${String.toSnakeCase(String.singularize(string))}_id`,
-      )
-      .join('/')}/${mainResource}`
-
-    this.makeRoute(fullUrl, ['HEAD', 'GET'], 'index')
-    this.makeRoute(fullUrl, ['POST'], 'store')
-    this.makeRoute(`${fullUrl}/:id`, ['HEAD', 'GET'], 'show')
-    this.makeRoute(`${fullUrl}/:id`, ['PUT', 'PATCH'], 'update')
-    this.makeRoute(`${fullUrl}/:id`, ['DELETE'], 'delete')
-  }
-
-  private filter(names: string[], inverse: boolean) {
-    return this.routes.filter(route => {
-      const match = names.find(name => route.name.endsWith(name))
-
-      return inverse ? !match : match
-    })
   }
 
   middleware(
@@ -126,5 +80,49 @@ export class RouteResource {
     this.resourceName = name
 
     return this
+  }
+
+  private makeRoute(url: string, methods: HttpMethodTypes[], action: string) {
+    let handler = ''
+
+    if (Is.String(this.controller)) {
+      handler = `${this.controller}.${action}`
+    } else {
+      handler = this.controller[action]
+    }
+
+    const route = new Route(url, methods, handler)
+
+    route.as(`${this.resourceName}.${action}`)
+    this.routes.push(route)
+  }
+
+  private buildRoutes() {
+    this.resource = this.resource.replace(/^\//, '').replace(/\/$/, '')
+
+    const resourceTokens = this.resource.split('.')
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const mainResource = resourceTokens.pop()!
+
+    const fullUrl = `${resourceTokens
+      .map(
+        string =>
+          `${string}/:${String.toSnakeCase(String.singularize(string))}_id`,
+      )
+      .join('/')}/${mainResource}`
+
+    this.makeRoute(fullUrl, ['HEAD', 'GET'], 'index')
+    this.makeRoute(fullUrl, ['POST'], 'store')
+    this.makeRoute(`${fullUrl}/:id`, ['HEAD', 'GET'], 'show')
+    this.makeRoute(`${fullUrl}/:id`, ['PUT', 'PATCH'], 'update')
+    this.makeRoute(`${fullUrl}/:id`, ['DELETE'], 'delete')
+  }
+
+  private filter(names: string[], inverse: boolean) {
+    return this.routes.filter(route => {
+      const match = names.find(name => route.name.endsWith(name))
+
+      return inverse ? !match : match
+    })
   }
 }

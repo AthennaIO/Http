@@ -19,15 +19,14 @@ import { MiddlewareTypesContract } from '../Contracts/MiddlewareTypesContract'
 import { MiddlewareNotFoundException } from 'src/Exceptions/MiddlewareNotFoundException'
 import { InterceptHandlerContract } from '../Contracts/Context/Middlewares/Intercept/InterceptHandlerContract'
 import { TerminateHandlerContract } from '../Contracts/Context/Middlewares/Terminate/TerminateHandlerContract'
+import { UndefinedControllerMethodException } from 'src/Exceptions/UndefinedControllerMethodException'
 
 export class Route {
-  private readonly url: string
-  private readonly handler: HandlerContract
-  private readonly methods: HttpMethodTypes[]
-
   name: string
   deleted: boolean
-
+  private readonly url: string
+  private readonly handler: string | HandlerContract
+  private readonly methods: HttpMethodTypes[]
   private routeMiddlewares: MiddlewareTypesContract
   private routeNamespace: string
 
@@ -44,28 +43,7 @@ export class Route {
     this.prefixes = []
     this.deleted = false
     this.routeMiddlewares = { handlers: [], terminators: [], interceptors: [] }
-
-    if (Is.String(handler)) {
-      const [controller, method] = handler.split('.')
-
-      handler = ioc.use(`App/Controllers/${controller}`)[
-        method
-      ] as HandlerContract
-    }
-
     this.handler = handler
-  }
-
-  private getUrl(): string {
-    const url = removeSlash(this.url) as string
-
-    const prefix = this.prefixes
-      .slice()
-      .reverse()
-      .map(p => removeSlash(p))
-      .join('')
-
-    return prefix ? `${prefix}${url === '/' ? '' : url}` : url
   }
 
   prefix(prefix): this {
@@ -113,22 +91,43 @@ export class Route {
         throw new MiddlewareNotFoundException(middleware)
       }
 
-      if (mid.handle) this.routeMiddlewares.handlers[insertionType](mid.handle)
-      if (mid.intercept)
-        this.routeMiddlewares.interceptors[insertionType](mid.intercept)
-      if (mid.terminate)
-        this.routeMiddlewares.terminators[insertionType](mid.terminate)
+      if (mid.handle) {
+        this.routeMiddlewares.handlers[insertionType](mid.handle.bind(mid))
+      }
+
+      if (mid.intercept) {
+        this.routeMiddlewares.interceptors[insertionType](
+          mid.intercept.bind(mid),
+        )
+      }
+
+      if (mid.terminate) {
+        this.routeMiddlewares.terminators[insertionType](
+          mid.terminate.bind(mid),
+        )
+      }
 
       return this
     }
 
     if (isMiddlewareContract(middleware)) {
-      if (middleware.handle)
-        this.routeMiddlewares.handlers[insertionType](middleware.handle)
-      if (middleware.intercept)
-        this.routeMiddlewares.interceptors[insertionType](middleware.intercept)
-      if (middleware.terminate)
-        this.routeMiddlewares.terminators[insertionType](middleware.terminate)
+      if (middleware.handle) {
+        this.routeMiddlewares.handlers[insertionType](
+          middleware.handle.bind(middleware),
+        )
+      }
+
+      if (middleware.intercept) {
+        this.routeMiddlewares.interceptors[insertionType](
+          middleware.intercept.bind(middleware),
+        )
+      }
+
+      if (middleware.terminate) {
+        this.routeMiddlewares.terminators[insertionType](
+          middleware.terminate.bind(middleware),
+        )
+      }
 
       return this
     }
@@ -139,15 +138,42 @@ export class Route {
   }
 
   toJSON() {
-    return {
+    const json: any = {
       name: this.name,
       url: this.getUrl(),
-      handler: this.handler,
       methods: this.methods,
       middlewares: this.routeMiddlewares,
       meta: {
         namespace: this.routeNamespace,
       },
     }
+
+    if (Is.String(this.handler)) {
+      const [controller, method] = this.handler.split('.')
+
+      const dependency = ioc.use(`App/Controllers/${controller}`)
+
+      if (!dependency[method]) {
+        throw new UndefinedControllerMethodException(method, controller)
+      }
+
+      json.handler = dependency[method].bind(dependency) as HandlerContract
+    } else {
+      json.handler = this.handler
+    }
+
+    return json
+  }
+
+  private getUrl(): string {
+    const url = removeSlash(this.url) as string
+
+    const prefix = this.prefixes
+      .slice()
+      .reverse()
+      .map(p => removeSlash(p))
+      .join('')
+
+    return prefix ? `${prefix}${url === '/' ? '' : url}` : url
   }
 }
