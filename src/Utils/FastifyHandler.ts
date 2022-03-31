@@ -17,6 +17,7 @@ import { HandlerContract } from '../Contracts/Context/HandlerContract'
 import { ErrorHandlerContract } from '../Contracts/Context/Error/ErrorHandlerContract'
 import { HandleHandlerContract } from '../Contracts/Context/Middlewares/Handle/HandleHandlerContract'
 import { InterceptHandlerContract } from '../Contracts/Context/Middlewares/Intercept/InterceptHandlerContract'
+import { TerminateHandlerContract } from '../Contracts/Context/Middlewares/Terminate/TerminateHandlerContract'
 
 declare module 'fastify' {
   interface FastifyRequest {
@@ -26,7 +27,7 @@ declare module 'fastify' {
 
 export class FastifyHandler {
   static createOnSendHandler(handler: InterceptHandlerContract) {
-    return (req, _res, payload, done) => {
+    return async (req, _res, payload) => {
       const request = new Request(req)
 
       if (!req.data) req.data = {}
@@ -39,26 +40,42 @@ export class FastifyHandler {
         body = JSON.parse(body)
       }
 
-      return handler({
+      body = await handler({
         request,
         body,
         status: _res.statusCode,
         params: req.params as Record<string, string>,
         queries: req.query as Record<string, string>,
         data: req.data,
-        next: (
-          body: string | Buffer | Record<string, any> | null,
-          error = null,
-        ) => {
-          if (Is.Object(body)) body = JSON.stringify(body)
-
-          done(error, body)
-        },
       })
+
+      if (Is.Object(body)) body = JSON.stringify(body)
+
+      return body
     }
   }
 
   static createDoneHandler(handler: HandleHandlerContract) {
+    return (req, res, done) => {
+      const request = new Request(req)
+      const response = new Response(res)
+
+      if (!req.data) req.data = {}
+      if (!req.query) req.query = {}
+      if (!req.params) req.params = {}
+
+      return handler({
+        request,
+        response,
+        params: req.params as Record<string, string>,
+        queries: req.query as Record<string, string>,
+        data: req.data,
+        next: done,
+      })
+    }
+  }
+
+  static createResponseHandler(handler: TerminateHandlerContract) {
     return (req, res, done) => {
       const request = new Request(req)
       const response = new Response(res)

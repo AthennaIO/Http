@@ -17,19 +17,19 @@ export class TestMiddleware implements MiddlewareContract {
     ctx.data.param = 'param'
     ctx.request.queries.test = 'middleware'
 
-    ctx.next()
+    return ctx.next()
   }
 
   async intercept(ctx: InterceptContextContract) {
     ctx.data.param = 'param'
     ctx.request.queries.test = 'middleware'
 
-    ctx.next(ctx.body)
+    return ctx.body
   }
 
   async terminate(ctx: TerminateContextContract) {
     console.log('Terminate middleware executed!')
 
-    ctx.next()
+    return ctx.next()
   }
 }

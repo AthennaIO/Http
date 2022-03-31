@@ -16,6 +16,6 @@ export class HandleMiddleware implements MiddlewareContract {
 
     ctx.data.middlewares.push('handle')
 
-    ctx.next()
+    return ctx.next()
   }
 }

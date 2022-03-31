@@ -1,6 +1,6 @@
 {
   "name": "@athenna/http",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "description": "The Athenna Http server. Built on top of fastify",
   "license": "MIT",
   "author": "João Lenon <lenon@athenna.io>",
@@ -9,8 +9,8 @@
   "homepage": "https://github.com/AthennaIO/Http#readme",
   "scripts": {
     "build": "tsc --project tsconfig.json && tscpaths -p tsconfig.json -s . -o .",
-    "test": "npm run lint:fix && cross-env NODE_TS=true cross-env NODE_ENV=testing jest --verbose",
-    "test:debug": "npm run lint:fix && cross-env NODE_TS=true cross-env NODE_ENV=testing cross-env DEBUG=api:* jest --verbose",
+    "test": "npm run lint:fix && cross-env NODE_TS=true cross-env NODE_ENV=testing jest --verbose --runInBand",
+    "test:debug": "cross-env DEBUG=api:* && npm run test",
     "lint:fix": "eslint \"{src,tests}/**/*.ts\" --fix"
   },
   "keywords": [

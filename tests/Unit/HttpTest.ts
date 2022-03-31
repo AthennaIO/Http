@@ -7,10 +7,7 @@
  * file that was distributed with this source code.
  */
 
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
 import '@athenna/ioc'
-import supertest from 'supertest'
 
 import { Http } from '../../src/Http'
 import { Folder, Path } from '@secjs/utils'
@@ -49,10 +46,10 @@ describe('\n HttpTest', () => {
   })
 
   it('should be able to execute a request in test route', async () => {
-    const response = await supertest('http://localhost:1335').get('/test')
+    const response = await http.request().get('/test')
 
-    expect(response.status).toBe(200)
-    expect(response.body).toStrictEqual({ hello: 'world' })
+    expect(response.statusCode).toBe(200)
+    expect(response.json()).toStrictEqual({ hello: 'world' })
   })
 
   it('should be able to register a new route with a middleware', async () => {
@@ -69,12 +66,12 @@ describe('\n HttpTest', () => {
 
     await middlewareHttp.listen(3030)
 
-    const response = await supertest('http://localhost:3030').get('/test')
+    const response = await middlewareHttp.request().get('/test')
 
     await middlewareHttp.close()
 
-    expect(response.status).toBe(200)
-    expect(response.body).toStrictEqual({
+    expect(response.statusCode).toBe(200)
+    expect(response.json()).toStrictEqual({
       hello: 'world',
       param: 'param',
       test: 'middleware',
@@ -88,14 +85,14 @@ describe('\n HttpTest', () => {
 
     await errorHttp.listen(3030)
 
-    const response = await supertest('http://localhost:3030').get('/test').query({ throwError: 'true' })
+    const response = await http.request().get('/test').query({ throwError: 'true' })
 
     await errorHttp.close()
 
-    expect(response.status).toBe(400)
-    expect(response.body.statusCode).toStrictEqual(400)
-    expect(response.body.code).toStrictEqual('BAD_REQUEST_ERROR')
-    expect(response.body.message).toStrictEqual('Testing')
+    expect(response.statusCode).toBe(400)
+    expect(response.json().statusCode).toStrictEqual(400)
+    expect(response.json().code).toStrictEqual('BAD_REQUEST_ERROR')
+    expect(response.json().message).toStrictEqual('Testing')
   })
 
   it('should be able to register a new route with a intercept middleware', async () => {
@@ -104,19 +101,19 @@ describe('\n HttpTest', () => {
     await middlewareHttp.use(ctx => {
       ctx.body.hello = ctx.body.hello.replace('world', 'world-intercepted')
 
-      ctx.next(ctx.body)
+      return ctx.body
     }, 'intercept')
 
     middlewareHttp.get('/test', handler)
 
     await middlewareHttp.listen(3030)
 
-    const response = await supertest('http://localhost:3030').get('/test')
+    const response = await middlewareHttp.request().get('/test')
 
     await middlewareHttp.close()
 
-    expect(response.status).toBe(200)
-    expect(response.body).toStrictEqual({
+    expect(response.statusCode).toBe(200)
+    expect(response.json()).toStrictEqual({
       hello: 'world-intercepted',
     })
   })
