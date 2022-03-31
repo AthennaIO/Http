@@ -17,6 +17,7 @@ import { HandlerContract } from '../Contracts/Context/HandlerContract'
 import { ErrorHandlerContract } from '../Contracts/Context/Error/ErrorHandlerContract'
 import { HandleHandlerContract } from '../Contracts/Context/Middlewares/Handle/HandleHandlerContract'
 import { InterceptHandlerContract } from '../Contracts/Context/Middlewares/Intercept/InterceptHandlerContract'
+import { TerminateHandlerContract } from 'src/Contracts/Context/Middlewares/Terminate/TerminateHandlerContract'
 
 declare module 'fastify' {
   interface FastifyRequest {
@@ -75,6 +76,30 @@ export class FastifyHandler {
         data: req.data,
         next: done,
       })
+    }
+  }
+
+  static createResponseHandler(handler: TerminateHandlerContract) {
+    return (req, res, done) => {
+      try {
+        const request = new Request(req)
+        const response = new Response(res)
+
+        if (!req.data) req.data = {}
+        if (!req.query) req.query = {}
+        if (!req.params) req.params = {}
+
+        return handler({
+          request,
+          response,
+          params: req.params as Record<string, string>,
+          queries: req.query as Record<string, string>,
+          data: req.data,
+          next: done,
+        })
+      } catch (error) {
+        console.log(error)
+      }
     }
   }
 

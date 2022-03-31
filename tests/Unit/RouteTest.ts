@@ -8,11 +8,6 @@
  */
 
 import { Ioc } from '@athenna/ioc'
-
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
-import supertest from 'supertest'
-
 import { Http } from '../../src/Http'
 import { Router } from '../../src/Router/Router'
 import { TestController } from '../Stubs/TestController'
@@ -61,10 +56,10 @@ describe('\n RouteTest', () => {
 
     await http.listen(3040)
 
-    const response = await supertest('http://localhost:3040').get('/test')
+    const response = await http.request().get('/test')
 
-    expect(response.status).toBe(200)
-    expect(response.body).toStrictEqual({ hello: 'world' })
+    expect(response.statusCode).toBe(200)
+    expect(response.json()).toStrictEqual({ hello: 'world' })
   })
 
   it('should be able to register a new route group', async () => {
@@ -80,16 +75,16 @@ describe('\n RouteTest', () => {
     await http.listen(3041)
 
     {
-      const response = await supertest('http://localhost:3041').get('/v1/test')
+      const response = await http.request().get('/v1/test')
 
-      expect(response.status).toBe(200)
-      expect(response.body).toStrictEqual({ hello: 'world' })
+      expect(response.statusCode).toBe(200)
+      expect(response.json()).toStrictEqual({ hello: 'world' })
     }
     {
-      const response = await supertest('http://localhost:3041').post('/v1/test')
+      const response = await http.request().post('/v1/test')
 
-      expect(response.status).toBe(200)
-      expect(response.body).toStrictEqual({ hello: 'world' })
+      expect(response.statusCode).toBe(200)
+      expect(response.json()).toStrictEqual({ hello: 'world' })
     }
   })
 
@@ -102,28 +97,28 @@ describe('\n RouteTest', () => {
     await http.listen(3042)
 
     {
-      const response = await supertest('http://localhost:3042').post('/test')
+      const response = await http.request().post('/test')
 
-      expect(response.status).toBe(200)
-      expect(response.body).toStrictEqual({ hello: 'world' })
+      expect(response.statusCode).toBe(200)
+      expect(response.json()).toStrictEqual({ hello: 'world' })
     }
     {
-      const response = await supertest('http://localhost:3042').get('/tests')
+      const response = await http.request().get('/tests')
 
-      expect(response.status).toBe(200)
-      expect(response.body).toStrictEqual({ hello: 'world' })
+      expect(response.statusCode).toBe(200)
+      expect(response.json()).toStrictEqual({ hello: 'world' })
     }
     {
-      const response = await supertest('http://localhost:3042').post('/tests')
+      const response = await http.request().post('/tests')
 
-      expect(response.status).toBe(200)
-      expect(response.body).toStrictEqual({ hello: 'world' })
+      expect(response.statusCode).toBe(200)
+      expect(response.json()).toStrictEqual({ hello: 'world' })
     }
     {
-      const response = await supertest('http://localhost:3042').get('/tests/1')
+      const response = await http.request().get('/tests/1')
 
-      expect(response.status).toBe(200)
-      expect(response.body).toStrictEqual({ hello: 'world' })
+      expect(response.statusCode).toBe(200)
+      expect(response.json()).toStrictEqual({ hello: 'world' })
     }
   })
 
@@ -141,10 +136,10 @@ describe('\n RouteTest', () => {
 
     await http.listen(3043)
 
-    const response = await supertest('http://localhost:3043').get('/test')
+    const response = await http.request().get('/test')
 
-    expect(response.status).toBe(200)
-    expect(response.body).toStrictEqual({
+    expect(response.statusCode).toBe(200)
+    expect(response.json()).toStrictEqual({
       hello: 'world',
       midHandler: true,
       middlewares: ['handle'],
@@ -189,19 +184,19 @@ describe('\n RouteTest', () => {
     await http.listen(3044)
 
     {
-      const response = await supertest('http://localhost:3044').get('/v1/test')
+      const response = await http.request().get('/v1/test')
 
-      expect(response.status).toBe(400)
-      expect(response.body.statusCode).toStrictEqual(400)
-      expect(response.body.code).toStrictEqual('BAD_REQUEST_ERROR')
-      expect(response.body.error).toStrictEqual('Bad Request')
-      expect(response.body.message).toStrictEqual('Testing')
+      expect(response.statusCode).toBe(400)
+      expect(response.json().statusCode).toStrictEqual(400)
+      expect(response.json().code).toStrictEqual('BAD_REQUEST_ERROR')
+      expect(response.json().error).toStrictEqual('Bad Request')
+      expect(response.json().message).toStrictEqual('Testing')
     }
     {
-      const response = await supertest('http://localhost:3044').patch('/v1/test')
+      const response = await http.request().patch('/v1/test')
 
-      expect(response.status).toBe(200)
-      expect(response.body).toStrictEqual({
+      expect(response.statusCode).toBe(200)
+      expect(response.json()).toStrictEqual({
         hello: 'world',
         midHandler: true,
         patchHandler: true,
@@ -209,10 +204,10 @@ describe('\n RouteTest', () => {
       })
     }
     {
-      const response = await supertest('http://localhost:3044').post('/v1/tests')
+      const response = await http.request().post('/v1/tests')
 
-      expect(response.status).toBe(200)
-      expect(response.body).toStrictEqual({
+      expect(response.statusCode).toBe(200)
+      expect(response.json()).toStrictEqual({
         hello: 'world',
         midHandler: true,
         rscHandler: true,
@@ -228,10 +223,10 @@ describe('\n RouteTest', () => {
 
     await http.listen(3045)
 
-    const response = await supertest('http://localhost:3045').get('/test')
+    const response = await http.request().get('/test')
 
-    expect(response.status).toBe(200)
-    expect(response.body).toStrictEqual({
+    expect(response.statusCode).toBe(200)
+    expect(response.json()).toStrictEqual({
       hello: 'world',
       middlewares: ['handle', 'intercept'],
     })
@@ -253,11 +248,11 @@ describe('\n RouteTest', () => {
 
     await http.listen(3046)
 
-    const response = await supertest('http://localhost:3046').get('/test')
+    const response = await http.request().get('/test')
 
-    expect(response.status).toBe(200)
+    expect(response.statusCode).toBe(200)
     expect(terminated).toBe(true)
-    expect(response.body).toStrictEqual({
+    expect(response.json()).toStrictEqual({
       hello: 'world',
       middlewares: ['handle'],
     })
@@ -280,11 +275,11 @@ describe('\n RouteTest', () => {
 
     await http.listen(3047)
 
-    const response = await supertest('http://localhost:3047').get('/test')
+    const response = await http.request().get('/test')
 
-    expect(response.status).toBe(200)
+    expect(response.statusCode).toBe(200)
     expect(terminated).toBe(true)
-    expect(response.body).toStrictEqual({
+    expect(response.json()).toStrictEqual({
       hello: 'world',
       middlewares: ['handle'],
     })
@@ -310,11 +305,11 @@ describe('\n RouteTest', () => {
 
     await http.listen(3048)
 
-    const response = await supertest('http://localhost:3048').get('/api/v1/test')
+    const response = await http.request().get('/api/v1/test')
 
-    expect(response.status).toBe(200)
+    expect(response.statusCode).toBe(200)
     expect(terminated).toBe(true)
-    expect(response.body).toStrictEqual({
+    expect(response.json()).toStrictEqual({
       hello: 'world',
       middlewares: ['handle'],
     })

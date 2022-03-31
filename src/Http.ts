@@ -7,7 +7,13 @@
  * file that was distributed with this source code.
  */
 
-import fastify, { FastifyInstance, PrintRoutesOptions } from 'fastify'
+import LightMyRequest from 'light-my-request'
+
+import fastify, {
+  FastifyInstance,
+  InjectOptions,
+  PrintRoutesOptions,
+} from 'fastify'
 
 import { FastifyHandler } from './Utils/FastifyHandler'
 import { HttpMethodTypes } from './Contracts/HttpMethodTypes'
@@ -56,11 +62,26 @@ export class Http {
         break
       case 'terminate':
         hookName = 'onResponse'
-        handlerType = 'createDoneHandler'
+        handlerType = 'createResponseHandler'
         break
     }
 
     this.server.addHook(hookName, FastifyHandler[handlerType](handler))
+  }
+
+  request(): LightMyRequest.Chain
+  request(options: InjectOptions | string): Promise<LightMyRequest.Response>
+
+  request(
+    options?: InjectOptions | string,
+  ): LightMyRequest.Chain | Promise<LightMyRequest.Response> {
+    const server = this.getServer()
+
+    if (!options) {
+      return server.inject()
+    }
+
+    return server.inject(options)
   }
 
   async listen(port?: string | number, host?: string): Promise<string> {
