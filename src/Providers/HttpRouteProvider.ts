@@ -14,7 +14,7 @@ export class HttpRouteProvider extends ServiceProvider {
   boot() {
     const http = this.container.safeUse('Athenna/Core/HttpServer')
 
-    this.container.bind('Athenna/Core/HttpRoute', new Router(http))
+    this.container.instance('Athenna/Core/HttpRoute', new Router(http))
   }
 
   register() {}
