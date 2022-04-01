@@ -11,9 +11,12 @@ import { Http } from 'src/Http'
 import { ServiceProvider } from '@athenna/ioc'
 
 export class HttpServerProvider extends ServiceProvider {
-  boot() {}
-
-  register() {
+  /**
+   * Register any application services.
+   *
+   * @return void
+   */
+  public register() {
     this.container.instance('Athenna/Core/HttpServer', new Http())
   }
 }
