@@ -46,8 +46,8 @@ describe('\n RouteTest', () => {
     new HttpServerProvider().register()
     new HttpRouteProvider().boot()
 
-    http = ioc.use('Athenna/Core/HttpServer')
-    router = ioc.use('Athenna/Core/HttpRoute')
+    http = ioc.safeUse('Athenna/Core/HttpServer')
+    router = ioc.safeUse('Athenna/Core/HttpRoute')
   })
 
   it('should be able to register a new route', async () => {

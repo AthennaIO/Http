@@ -14,6 +14,6 @@ export class HttpServerProvider extends ServiceProvider {
   boot() {}
 
   register() {
-    this.container.singleton('Athenna/Core/HttpServer', new Http())
+    this.container.instance('Athenna/Core/HttpServer', new Http())
   }
 }
