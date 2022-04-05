@@ -9,6 +9,7 @@
 
 export * from './src/Http'
 export * from './src/Router/Router'
+export * from './src/Kernels/HttpKernel'
 
 export * from './src/Providers/HttpRouteProvider'
 export * from './src/Providers/HttpServerProvider'
