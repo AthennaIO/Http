@@ -85,7 +85,9 @@ export class Route {
     const insertionType = prepend ? 'unshift' : 'push'
 
     if (Is.String(middleware)) {
-      const mid = ioc.safeUse(`App/Middlewares/${middleware}`)
+      const mid =
+        ioc.use(`App/Middlewares/Names/${middleware}`) ||
+        ioc.safeUse(`App/Middlewares/${middleware}`)
 
       if (!mid) {
         throw new MiddlewareNotFoundException(middleware)
