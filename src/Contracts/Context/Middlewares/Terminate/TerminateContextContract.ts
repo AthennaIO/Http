@@ -17,5 +17,9 @@ export interface TerminateContextContract {
   data?: any
   params: any
   queries: any
+  body: any
+  headers: any
+  status: number
+  responseTime: number
   next: NextContract
 }

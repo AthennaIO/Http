@@ -44,10 +44,10 @@ export abstract class HttpKernel {
 
     if (Config.get<boolean>('http.log')) {
       httpServer.use(async (ctx: InterceptContextContract) => {
-        await new Logger().channel('requests').log(ctx)
+        await new Logger().channel('request').log(ctx)
 
         return ctx.body
-      }, 'intercept')
+      }, 'terminate')
     }
   }
 
