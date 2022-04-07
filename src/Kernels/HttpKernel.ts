@@ -46,7 +46,7 @@ export abstract class HttpKernel {
       httpServer.use(async (ctx: TerminateContextContract) => {
         await new Logger().channel('request').log(ctx)
 
-        return ctx.body
+        return ctx.next()
       }, 'terminate')
     }
   }
