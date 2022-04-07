@@ -7,18 +7,26 @@
  * file that was distributed with this source code.
  */
 
+import { FastifyRequest } from 'fastify'
+
 export interface RequestContract {
   ip: string
   method: string
   hostUrl: string
   baseUrl: string
   originalUrl: string
-  body: Record<string, any>
-  params: Record<string, string>
-  queries: Record<string, string>
-  headers: Record<string, string>
+  body: any
+  params: any
+  queries: any
+  headers: any
+
   param(param: string, defaultValue?: string): string | undefined
+
   query(query: string, defaultValue?: string): string | undefined
+
   header(header: string, defaultValue?: string): string | string[] | undefined
+
   payload(payload: string, defaultValue?: string): any | undefined
+
+  getFastifyRequest(): FastifyRequest
 }

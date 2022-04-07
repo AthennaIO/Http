@@ -11,8 +11,8 @@ import { RequestContract } from '../../RequestContract'
 
 export interface InterceptContextContract {
   request: RequestContract
-  params: Record<string, string>
-  queries: Record<string, string>
+  params: any
+  queries: any
   body: any
   status: number
   data: Record<string, any>

@@ -67,8 +67,8 @@ export class FastifyHandler {
       return handler({
         request,
         response,
-        params: req.params as Record<string, string>,
-        queries: req.query as Record<string, string>,
+        params: req.params,
+        queries: req.query,
         data: req.data,
         next: done,
       })
@@ -76,7 +76,7 @@ export class FastifyHandler {
   }
 
   static createResponseHandler(handler: TerminateHandlerContract) {
-    return (req, res, done) => {
+    return (req, res: FastifyReply, done) => {
       const request = new Request(req)
       const response = new Response(res)
 
@@ -87,8 +87,8 @@ export class FastifyHandler {
       return handler({
         request,
         response,
-        params: req.params as Record<string, string>,
-        queries: req.query as Record<string, string>,
+        params: req.params,
+        queries: req.query,
         data: req.data,
         next: done,
       })
