@@ -18,7 +18,7 @@ export class Response implements ResponseContract {
    *
    * @return Response
    */
-  constructor(response: FastifyReply) {
+  public constructor(response: FastifyReply) {
     this.response = response
   }
 
