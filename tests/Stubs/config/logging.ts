@@ -34,6 +34,13 @@ export default {
       formatter: 'context',
       streamType: 'stdout',
     },
+    requests: {
+      driver: 'console',
+      level: 'INFO',
+      context: 'LogMiddleware',
+      formatter: 'json',
+      streamType: 'stdout',
+    },
     debug: {
       driver: 'debug',
       level: 'DEBUG',

@@ -1,3 +1,5 @@
+import { FastifyReply } from 'fastify'
+
 /**
  * @athenna/http
  *
@@ -8,12 +10,21 @@
  */
 
 export interface ResponseContract {
-  send(data?: Record<string, any>): Promise<void> | void
-  json(data?: Record<string, any>): Promise<void> | void
+  send(data?: any): Promise<void> | void
+
+  json(data?: any): Promise<void> | void
+
   status(code: number): this
+
   removeHeader(header: string): this
+
   header(header: string, value: any): this
+
   safeHeader(header: string, value: any): this
-  redirectTo(url: string): this
-  redirectTo(url: string, statusCode: number): this
+
+  redirectTo(url: string): Promise<void> | void
+
+  redirectTo(url: string, statusCode: number): Promise<void> | void
+
+  getFastifyResponse(): FastifyReply
 }
