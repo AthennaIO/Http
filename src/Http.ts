@@ -15,7 +15,7 @@ import fastify, {
   PrintRoutesOptions,
 } from 'fastify'
 
-import { FastifyHandler } from './Utils/FastifyHandler'
+import { FastifyHandler } from './Handlers/FastifyHandler'
 import { HttpMethodTypes } from './Contracts/HttpMethodTypes'
 import { HandlerContract } from './Contracts/Context/HandlerContract'
 import { MiddlewareTypesContract } from './Contracts/MiddlewareTypesContract'

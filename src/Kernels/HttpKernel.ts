@@ -1,10 +1,10 @@
 import { Http } from 'src/Http'
 import { Config } from '@athenna/config'
 import { Logger } from '@athenna/logger'
+import { resolveModule } from '@secjs/utils'
 import { HttpErrorHandler } from 'src/Handlers/HttpErrorHandler'
 import { MiddlewareContract } from '../Contracts/MiddlewareContract'
-import { InterceptContextContract } from 'src/Contracts/Context/Middlewares/Intercept/InterceptContextContract'
-import { resolveModule } from '@secjs/utils'
+import { TerminateContextContract } from 'src/Contracts/Context/Middlewares/Terminate/TerminateContextContract'
 
 export type MiddlewareContractClass = {
   new (container?: any): MiddlewareContract
@@ -43,11 +43,11 @@ export abstract class HttpKernel {
     httpServer.setErrorHandler(HttpErrorHandler.handler)
 
     if (Config.get<boolean>('http.log')) {
-      httpServer.use(async (ctx: InterceptContextContract) => {
-        await new Logger().channel('requests').log(ctx)
+      httpServer.use(async (ctx: TerminateContextContract) => {
+        await new Logger().channel('request').log(ctx)
 
         return ctx.body
-      }, 'intercept')
+      }, 'terminate')
     }
   }
 

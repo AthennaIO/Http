@@ -27,7 +27,7 @@ declare module 'fastify' {
 
 export class FastifyHandler {
   static createOnSendHandler(handler: InterceptHandlerContract) {
-    return async (req, _res, payload) => {
+    return async (req: FastifyRequest, _res, payload) => {
       const request = new Request(req)
 
       if (!req.data) req.data = {}
@@ -56,7 +56,7 @@ export class FastifyHandler {
   }
 
   static createDoneHandler(handler: HandleHandlerContract) {
-    return (req, res, done) => {
+    return (req: FastifyRequest, res: FastifyReply, done: any) => {
       const request = new Request(req)
       const response = new Response(res)
 
@@ -76,7 +76,7 @@ export class FastifyHandler {
   }
 
   static createResponseHandler(handler: TerminateHandlerContract) {
-    return (req, res: FastifyReply, done) => {
+    return (req: FastifyRequest, res: FastifyReply, done) => {
       const request = new Request(req)
       const response = new Response(res)
 
@@ -90,6 +90,10 @@ export class FastifyHandler {
         params: req.params,
         queries: req.query,
         data: req.data,
+        body: req.body,
+        headers: res.getHeaders(),
+        status: res.statusCode,
+        responseTime: res.getResponseTime(),
         next: done,
       })
     }
