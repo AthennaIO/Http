@@ -21,7 +21,7 @@ export class Request implements RequestContract {
    *
    * @return Request
    */
-  constructor(request: FastifyRequest) {
+  public constructor(request: FastifyRequest) {
     this.request = request
   }
 

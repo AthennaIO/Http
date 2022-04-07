@@ -1,6 +1,6 @@
 {
   "name": "@athenna/http",
-  "version": "1.1.8",
+  "version": "1.1.9",
   "description": "The Athenna Http server. Built on top of fastify",
   "license": "MIT",
   "author": "João Lenon <lenon@athenna.io>",
@@ -158,7 +158,7 @@
     }
   },
   "dependencies": {
-    "@athenna/config": "1.0.7",
+    "@athenna/config": "1.0.8",
     "@athenna/ioc": "1.1.2",
     "@athenna/logger": "1.1.4",
     "@secjs/utils": "1.8.3",

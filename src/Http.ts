@@ -37,7 +37,7 @@ export class Http {
    *
    * @return Http
    */
-  constructor() {
+  public constructor() {
     this.server = fastify()
   }
 
