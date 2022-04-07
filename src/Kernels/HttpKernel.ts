@@ -4,6 +4,7 @@ import { Logger } from '@athenna/logger'
 import { HttpErrorHandler } from 'src/Handlers/HttpErrorHandler'
 import { MiddlewareContract } from '../Contracts/MiddlewareContract'
 import { InterceptContextContract } from 'src/Contracts/Context/Middlewares/Intercept/InterceptContextContract'
+import { resolveModule } from '@secjs/utils'
 
 export type MiddlewareContractClass = {
   new (container?: any): MiddlewareContract
@@ -26,7 +27,7 @@ export abstract class HttpKernel {
    */
   protected abstract namedMiddlewares: Record<
     string,
-    Promise<any>[] | MiddlewareContractClass
+    Promise<any> | MiddlewareContractClass
   >
 
   /**
@@ -34,9 +35,9 @@ export abstract class HttpKernel {
    * Also configure the error handler, detect environment and
    * configure log intercept middleware for requests.
    *
-   * @protected
+   * @return HttpKernel
    */
-  protected constructor() {
+  constructor() {
     const httpServer = ioc.safeUse<Http>('Athenna/Core/HttpServer')
 
     httpServer.setErrorHandler(HttpErrorHandler.handler)
@@ -47,6 +48,58 @@ export abstract class HttpKernel {
 
         return ctx.body
       }, 'intercept')
+    }
+  }
+
+  /**
+   * Register all global and named middlewares to the server.
+   *
+   * @return void
+   */
+  async registerMiddlewares() {
+    const httpServer = ioc.safeUse<Http>('Athenna/Core/HttpServer')
+
+    /**
+     * Binding the named middlewares inside the container and
+     * creating a simple alias to use it inside Route.
+     */
+    for (const key of Object.keys(this.namedMiddlewares)) {
+      const Middleware = resolveModule(await this.namedMiddlewares[key])
+
+      if (!ioc.hasDependency(`App/Middlewares/${Middleware.name}`)) {
+        ioc.bind(`App/Middlewares/${Middleware.name}`, Middleware)
+      }
+
+      ioc.alias(
+        `App/Middlewares/Names/${key}`,
+        `App/Middlewares/${Middleware.name}`,
+      )
+    }
+
+    /**
+     * Binding the global middlewares inside the container and
+     * resolving it inside the Http server using "use" method.
+     */
+    for (const module of this.globalMiddlewares) {
+      let Middleware = resolveModule(await module)
+
+      if (!ioc.hasDependency(`App/Middlewares/${Middleware.name}`)) {
+        ioc.bind(`App/Middlewares/${Middleware.name}`, Middleware)
+      }
+
+      Middleware = ioc.safeUse(`App/Middlewares/${Middleware.name}`)
+
+      if (Middleware.handle) {
+        httpServer.use(Middleware.handle, 'handle')
+      }
+
+      if (Middleware.intercept) {
+        httpServer.use(Middleware.intercept, 'intercept')
+      }
+
+      if (Middleware.terminate) {
+        httpServer.use(Middleware.terminate, 'terminate')
+      }
     }
   }
 }
