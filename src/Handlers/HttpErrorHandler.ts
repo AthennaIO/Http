@@ -13,37 +13,41 @@ import { Config } from '@athenna/config'
 import { ErrorContextContract } from '../Contracts/Context/Error/ErrorContextContract'
 
 export class HttpErrorHandler {
-  static handler({ error, request, response }: ErrorContextContract) {
+  static handler({ error, response }: ErrorContextContract) {
     const code = error.code || error.name
     const statusCode = error.statusCode || error.status || 500
 
-    const body = {
-      code: String.toSnakeCase(code).toUpperCase(),
-      path: request.baseUrl,
-      method: request.method,
-      status: statusCode <= 399 ? 'SUCCESS' : 'ERROR',
-      statusCode: statusCode,
+    const body: any = {
       error: {
+        statusCode,
+        code: String.toSnakeCase(code).toUpperCase(),
         name: error.name,
         message: error.message,
         stack: error.stack,
       },
     }
 
-    const isInternalServerError = statusCode === 500
-    const isNotDebugMode = !Config.get<boolean>('app.debug')
+    if (error.help) {
+      body.error.help = error.help
+    }
 
-    if (isInternalServerError && isNotDebugMode) {
+    const isInternalServerError = statusCode === 500
+    const isDebugMode = !Config.get<boolean>('app.debug')
+
+    if (isInternalServerError && !isDebugMode) {
       body.error.name = 'Internal server error'
-      body.error.message =
-        'An internal server exception has occurred. Please contact administration of this service.'
+      body.error.message = 'An internal server exception has occurred.'
 
       delete body.error.stack
     }
 
-    new Logger().error(`Error: ${JSON.stringify(body.error, null, 2)}`, {
-      context: HttpErrorHandler.name,
-    })
+    if (!isDebugMode) {
+      new Logger().error(`Error: ${JSON.stringify(body.error, null, 2)}`, {
+        formatterConfig: {
+          context: HttpErrorHandler.name,
+        },
+      })
+    }
 
     return response.status(statusCode).send(body)
   }
