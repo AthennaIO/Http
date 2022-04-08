@@ -32,7 +32,7 @@ export class HttpErrorHandler {
     }
 
     const isInternalServerError = statusCode === 500
-    const isDebugMode = !Config.get<boolean>('app.debug')
+    const isDebugMode = Config.get<boolean>('app.debug')
 
     if (isInternalServerError && !isDebugMode) {
       body.error.name = 'Internal server error'
@@ -41,7 +41,7 @@ export class HttpErrorHandler {
       delete body.error.stack
     }
 
-    if (!isDebugMode) {
+    if (isDebugMode) {
       new Logger().error(`Error: ${JSON.stringify(body.error, null, 2)}`, {
         formatterConfig: {
           context: HttpErrorHandler.name,
