@@ -18,31 +18,29 @@ export class HttpErrorHandler {
     const statusCode = error.statusCode || error.status || 500
 
     const body: any = {
-      error: {
-        statusCode,
-        code: String.toSnakeCase(code).toUpperCase(),
-        name: error.name,
-        message: error.message,
-        stack: error.stack,
-      },
+      statusCode,
+      code: String.toSnakeCase(`${code}`).toUpperCase(),
+      name: error.name,
+      message: error.message,
+      stack: error.stack,
     }
 
     if (error.help) {
-      body.error.help = error.help
+      body.help = error.help
     }
 
     const isInternalServerError = statusCode === 500
     const isDebugMode = Config.get<boolean>('app.debug')
 
     if (isInternalServerError && !isDebugMode) {
-      body.error.name = 'Internal server error'
-      body.error.message = 'An internal server exception has occurred.'
+      body.name = 'Internal server error'
+      body.message = 'An internal server exception has occurred.'
 
-      delete body.error.stack
+      delete body.stack
     }
 
     if (isDebugMode) {
-      new Logger().error(`Error: ${JSON.stringify(body.error, null, 2)}`, {
+      new Logger().error(`Error: ${JSON.stringify(body, null, 2)}`, {
         formatterConfig: {
           context: HttpErrorHandler.name,
         },
