@@ -7,6 +7,9 @@
  * file that was distributed with this source code.
  */
 
+export * from './src/Facades/Route'
+export * from './src/Facades/Server'
+
 export * from './src/Http'
 export * from './src/Router/Router'
 export * from './src/Kernels/HttpKernel'
