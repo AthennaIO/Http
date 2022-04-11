@@ -164,6 +164,7 @@
     "@secjs/utils": "1.8.3",
     "fastify": "3.27.4",
     "fastify-cors": "6.0.3",
+    "fastify-rate-limit": "5.8.0",
     "reflect-metadata": "0.1.13",
     "tscpaths": "0.0.9"
   }
