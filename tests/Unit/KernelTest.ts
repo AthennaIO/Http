@@ -8,18 +8,15 @@
  */
 
 import { Ioc } from '@athenna/ioc'
-import { Http } from '../../src/Http'
 import { Kernel } from '../Stubs/Kernel'
-import { Router } from '../../src/Router/Router'
+import { Route } from '../../src/Facades/Route'
+import { Server } from '../../src/Facades/Server'
 import { TestController } from '../Stubs/TestController'
 import { HttpRouteProvider } from '../../src/Providers/HttpRouteProvider'
 import { HttpServerProvider } from '../../src/Providers/HttpServerProvider'
 import { BadRequestException } from '../../src/Exceptions/BadRequestException'
 
 describe('\n KernelTest', () => {
-  let http: Http
-  let router: Router
-
   const handler = async ctx => {
     const data: any = { hello: 'world' }
 
@@ -36,20 +33,17 @@ describe('\n KernelTest', () => {
 
     new HttpServerProvider().register()
     new HttpRouteProvider().boot()
-
-    http = ioc.safeUse('Athenna/Core/HttpServer')
-    router = ioc.safeUse('Athenna/Core/HttpRoute')
   })
 
   it('should be instantiate a new http kernel and register middlewares', async () => {
     await new Kernel().registerMiddlewares()
 
-    router.get('test', handler).middleware('intercept')
-    router.register()
+    Route.get('test', handler).middleware('intercept')
+    Route.register()
 
-    await http.listen(3040)
+    await Server.listen(3040)
 
-    const response = await http.request().get('/test')
+    const response = await Server.request().get('/test')
 
     expect(response.statusCode).toBe(200)
     expect(response.json()).toStrictEqual({
@@ -61,6 +55,6 @@ describe('\n KernelTest', () => {
   })
 
   afterEach(async () => {
-    await http.close()
+    await Server.close()
   })
 })

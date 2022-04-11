@@ -1,6 +1,6 @@
 import { Http } from 'src/Http'
+import { Log } from '@athenna/logger'
 import { Config } from '@athenna/config'
-import { Logger } from '@athenna/logger'
 import { resolveModule } from '@secjs/utils'
 import { HttpErrorHandler } from 'src/Handlers/HttpErrorHandler'
 import { MiddlewareContract } from '../Contracts/MiddlewareContract'
@@ -44,7 +44,7 @@ export abstract class HttpKernel {
 
     if (Config.get<boolean>('http.log')) {
       httpServer.use(async (ctx: TerminateContextContract) => {
-        await new Logger().channel('request').log(ctx)
+        await Log.channel('request').log(ctx)
 
         return ctx.next()
       }, 'terminate')
