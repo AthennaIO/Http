@@ -96,6 +96,12 @@ export class Router {
     return resourceInstance
   }
 
+  redirect(url: string, redirectTo: string, status = 302): Route {
+    return this.any(url, ({ response }) =>
+      response.redirectTo(redirectTo, status),
+    )
+  }
+
   get(url: string, handler: HandlerContract | string): Route {
     return this.route(url, ['GET', 'HEAD'], handler)
   }

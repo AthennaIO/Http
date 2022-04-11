@@ -56,6 +56,21 @@ describe('\n RouteTest', () => {
     expect(response.json()).toStrictEqual({ hello: 'world' })
   })
 
+  it('should be able to redirect a route', async () => {
+    Route.get('hello', ({ response }) => {
+      return response.send({ hello: 'world' })
+    })
+    Route.redirect('test', 'hello')
+    Route.register()
+
+    await Server.listen(3040)
+
+    const { headers, statusCode } = await Server.request().get('/test')
+
+    expect(statusCode).toBe(302)
+    expect(headers.location).toBe('hello')
+  })
+
   it('should be able to register a new route group', async () => {
     Route.group(() => {
       Route.get('test', handler)
