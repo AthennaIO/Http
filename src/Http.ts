@@ -9,12 +9,17 @@
 
 import LightMyRequest from 'light-my-request'
 
+import fastifyCors, { FastifyCorsOptions } from 'fastify-cors'
+import fastifyRateLimit, { RateLimitPluginOptions } from 'fastify-rate-limit'
+
 import fastify, {
   FastifyInstance,
+  FastifyPluginCallback,
+  FastifyPluginOptions,
+  FastifyRegisterOptions,
   InjectOptions,
   PrintRoutesOptions,
 } from 'fastify'
-
 import { FastifyHandler } from './Handlers/FastifyHandler'
 import { HttpMethodTypes } from './Contracts/HttpMethodTypes'
 import { HandlerContract } from './Contracts/Context/HandlerContract'
@@ -50,6 +55,32 @@ export class Http {
     const fastifyErrorHandler = FastifyHandler.createErrorHandler(handler)
 
     this.server.setErrorHandler(fastifyErrorHandler)
+  }
+
+  /**
+   * Register a new fastify plugin.
+   *
+   * @return FastifyInstance
+   */
+  register(
+    plugin: FastifyPluginCallback<FastifyPluginOptions>,
+    opts?: FastifyRegisterOptions<FastifyPluginOptions>,
+  ) {
+    this.server.register(plugin, opts)
+  }
+
+  /**
+   * Register the cors plugin to fastify server.
+   */
+  registerCors(opts?: FastifyCorsOptions): void {
+    this.register(fastifyCors, opts)
+  }
+
+  /**
+   * Register the rateLimit plugin to fastify server.
+   */
+  registerRateLimit(opts?: RateLimitPluginOptions): void {
+    this.register(fastifyRateLimit, opts)
   }
 
   /**
