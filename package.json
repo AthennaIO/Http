@@ -163,6 +163,7 @@
     "@athenna/logger": "1.1.7",
     "@secjs/utils": "1.8.3",
     "fastify": "3.27.4",
+    "fastify-cors": "6.0.3",
     "reflect-metadata": "0.1.13",
     "tscpaths": "0.0.9"
   }
