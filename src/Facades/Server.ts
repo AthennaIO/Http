@@ -8,9 +8,6 @@
  */
 
 import { Http } from 'src/Http'
-import { Handler } from 'src/Utils/Handler'
+import { Facade } from '@athenna/ioc'
 
-export const Server: Http = new Proxy(
-  {},
-  new Handler('Athenna/Core/HttpServer'),
-)
+export const Server = Facade.createFor<Http>('Athenna/Core/HttpServer')

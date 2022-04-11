@@ -11,13 +11,12 @@ import '@athenna/ioc'
 
 import { Http } from '../../src/Http'
 import { Folder, Path } from '@secjs/utils'
+import { Server } from '../../src/Facades/Server'
 import { HttpRouteProvider } from '../../src/Providers/HttpRouteProvider'
 import { HttpServerProvider } from '../../src/Providers/HttpServerProvider'
 import { BadRequestException } from '../../src/Exceptions/BadRequestException'
 
 describe('\n HttpTest', () => {
-  let http: Http
-
   const handler = async ctx => {
     const data: any = { hello: 'world' }
 
@@ -34,19 +33,17 @@ describe('\n HttpTest', () => {
     new HttpServerProvider().register()
     new HttpRouteProvider().boot()
 
-    http = ioc.safeUse('Athenna/Core/HttpServer')
+    Server.get('/test', handler)
 
-    http.get('/test', handler)
-
-    await http.listen()
+    await Server.listen()
   })
 
   afterEach(async () => {
-    await http.close()
+    await Server.close()
   })
 
   it('should be able to execute a request in test route', async () => {
-    const response = await http.request().get('/test')
+    const response = await Server.request().get('/test')
 
     expect(response.statusCode).toBe(200)
     expect(response.json()).toStrictEqual({ hello: 'world' })
@@ -85,7 +82,7 @@ describe('\n HttpTest', () => {
 
     await errorHttp.listen(3030)
 
-    const response = await http.request().get('/test').query({ throwError: 'true' })
+    const response = await Server.request().get('/test').query({ throwError: 'true' })
 
     await errorHttp.close()
 

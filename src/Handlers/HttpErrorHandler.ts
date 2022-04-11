@@ -8,7 +8,7 @@
  */
 
 import { String } from '@secjs/utils'
-import { Logger } from '@athenna/logger'
+import { Log } from '@athenna/logger'
 import { Config } from '@athenna/config'
 import { ErrorContextContract } from '../Contracts/Context/Error/ErrorContextContract'
 
@@ -40,7 +40,7 @@ export class HttpErrorHandler {
     }
 
     if (isDebugMode) {
-      new Logger().error(`Error: ${JSON.stringify(body, null, 2)}`, {
+      Log.error(`Error: ${JSON.stringify(body, null, 2)}`, {
         formatterConfig: {
           context: HttpErrorHandler.name,
         },
