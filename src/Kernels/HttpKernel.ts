@@ -1,10 +1,10 @@
-import { Http } from 'src/Http'
 import { Log } from '@athenna/logger'
 import { Config } from '@athenna/config'
 import { resolveModule } from '@secjs/utils'
 import { HttpErrorHandler } from 'src/Handlers/HttpErrorHandler'
 import { MiddlewareContract } from '../Contracts/MiddlewareContract'
 import { TerminateContextContract } from 'src/Contracts/Context/Middlewares/Terminate/TerminateContextContract'
+import { Server } from 'src/Facades/Server'
 
 export type MiddlewareContractClass = {
   new (container?: any): MiddlewareContract
@@ -31,34 +31,11 @@ export abstract class HttpKernel {
   >
 
   /**
-   * Returns an instance of any class that extends HttpKernel.
-   * Also configure the error handler, detect environment and
-   * configure log intercept middleware for requests.
-   *
-   * @return HttpKernel
-   */
-  constructor() {
-    const httpServer = ioc.safeUse<Http>('Athenna/Core/HttpServer')
-
-    httpServer.setErrorHandler(HttpErrorHandler.handler)
-
-    if (Config.get<boolean>('http.log')) {
-      httpServer.use(async (ctx: TerminateContextContract) => {
-        await Log.channel('request').log(ctx)
-
-        return ctx.next()
-      }, 'terminate')
-    }
-  }
-
-  /**
    * Register all global and named middlewares to the server.
    *
    * @return void
    */
   async registerMiddlewares() {
-    const httpServer = ioc.safeUse<Http>('Athenna/Core/HttpServer')
-
     /**
      * Binding the named middlewares inside the container and
      * creating a simple alias to use it inside Route.
@@ -90,16 +67,72 @@ export abstract class HttpKernel {
       Middleware = ioc.safeUse(`App/Middlewares/${Middleware.name}`)
 
       if (Middleware.handle) {
-        httpServer.use(Middleware.handle, 'handle')
+        Server.use(Middleware.handle, 'handle')
       }
 
       if (Middleware.intercept) {
-        httpServer.use(Middleware.intercept, 'intercept')
+        Server.use(Middleware.intercept, 'intercept')
       }
 
       if (Middleware.terminate) {
-        httpServer.use(Middleware.terminate, 'terminate')
+        Server.use(Middleware.terminate, 'terminate')
       }
     }
+  }
+
+  /**
+   * Register cors plugin
+   *
+   * @return void
+   */
+  async registerCors() {
+    if (Config.get<boolean>('http.noCors')) {
+      return
+    }
+
+    Server.registerCors(Config.get('http.cors'))
+  }
+
+  /**
+   * Register rate limit plugin
+   *
+   * @return void
+   */
+  async registerRateLimit(): Promise<void> {
+    if (Config.get<boolean>('http.noRateLimit')) {
+      return
+    }
+
+    Server.registerRateLimit(Config.get('http.rateLimit'))
+  }
+
+  /**
+   * Register the default error handler
+   *
+   * @return void
+   */
+  async registerErrorHandler(): Promise<void> {
+    if (Config.get<boolean>('http.noErrorHandler')) {
+      return
+    }
+
+    Server.setErrorHandler(HttpErrorHandler.handler)
+  }
+
+  /**
+   * Register log terminate middleware
+   *
+   * @return void
+   */
+  async registerLogMiddleware(): Promise<void> {
+    if (!Config.get<boolean>('http.logRequests')) {
+      return
+    }
+
+    Server.use(async (ctx: TerminateContextContract) => {
+      await Log.channel('request').log(ctx)
+
+      return ctx.next()
+    }, 'terminate')
   }
 }
