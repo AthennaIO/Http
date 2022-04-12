@@ -36,6 +36,10 @@ describe('\n KernelTest', () => {
   })
 
   it('should be instantiate a new http kernel and register middlewares', async () => {
+    await new Kernel().registerCors()
+    await new Kernel().registerRateLimit()
+    await new Kernel().registerErrorHandler()
+    await new Kernel().registerLogMiddleware()
     await new Kernel().registerMiddlewares()
 
     Route.get('test', handler).middleware('intercept')
