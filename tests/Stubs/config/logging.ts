@@ -1,4 +1,4 @@
-import { Path } from '@secjs/utils'
+import { Color } from '@athenna/logger'
 
 export default {
   /*
@@ -21,39 +21,33 @@ export default {
   |
   | Here you may configure the log channels for your application.
   |
-  | Available Drivers: "console", "debug", "file".
-  | Available Formatters: "context", "debug", "json", "log".
+  | Available Drivers:
+  |   "console", "debug", "discord", "file", "null", "pino", "slack", "telegram".
+  | Available Formatters:
+  |   "cli", "simple", "nest", "json", "request", "message", "pino-pretty(only for pino driver)".
   |
   */
 
   channels: {
     application: {
       driver: 'console',
-      level: 'INFO',
-      context: 'Logger',
-      formatter: 'context',
+      formatter: 'nest',
+      formatterConfig: {
+        level: 'INFO',
+        chalk: Color.cyan,
+        context: 'Logger',
+      },
+
       streamType: 'stdout',
     },
-    requests: {
+    request: {
       driver: 'console',
-      level: 'INFO',
-      context: 'LogMiddleware',
-      formatter: 'json',
+      formatter: 'request',
+      formatterConfig: {
+        asJson: false,
+      },
+
       streamType: 'stdout',
-    },
-    debug: {
-      driver: 'debug',
-      level: 'DEBUG',
-      context: 'Debugger',
-      formatter: 'context',
-      namespace: 'api:main',
-    },
-    file: {
-      driver: 'file',
-      level: 'INFO',
-      context: 'Logger',
-      formatter: 'log',
-      filePath: Path.noBuild().logs('athenna.log'),
     },
   },
 }
