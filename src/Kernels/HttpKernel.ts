@@ -1,10 +1,10 @@
 import { Log } from '@athenna/logger'
 import { Config } from '@athenna/config'
+import { Server } from 'src/Facades/Server'
 import { resolveModule } from '@secjs/utils'
 import { HttpErrorHandler } from 'src/Handlers/HttpErrorHandler'
 import { MiddlewareContract } from '../Contracts/MiddlewareContract'
 import { TerminateContextContract } from 'src/Contracts/Context/Middlewares/Terminate/TerminateContextContract'
-import { Server } from 'src/Facades/Server'
 
 export type MiddlewareContractClass = {
   new (container?: any): MiddlewareContract
