@@ -13,8 +13,8 @@ import { ResponseContract } from '../ResponseContract'
 export interface ErrorContextContract {
   request: RequestContract
   response: ResponseContract
-  params: Record<string, string>
-  queries: Record<string, string>
-  data?: Record<string, any>
+  params: any
+  queries: any
+  data: any
   error: any
 }

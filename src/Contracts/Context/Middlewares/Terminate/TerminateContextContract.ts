@@ -14,7 +14,7 @@ import { ResponseContract } from '../../ResponseContract'
 export interface TerminateContextContract {
   request: RequestContract
   response: ResponseContract
-  data?: any
+  data: any
   params: any
   queries: any
   body: any

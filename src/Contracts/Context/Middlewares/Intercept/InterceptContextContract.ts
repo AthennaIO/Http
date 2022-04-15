@@ -8,12 +8,14 @@
  */
 
 import { RequestContract } from '../../RequestContract'
+import { ResponseContract } from '../../ResponseContract'
 
 export interface InterceptContextContract {
   request: RequestContract
+  response: ResponseContract
   params: any
   queries: any
   body: any
   status: number
-  data: Record<string, any>
+  data: any
 }

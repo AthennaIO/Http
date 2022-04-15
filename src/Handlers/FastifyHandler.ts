@@ -21,14 +21,15 @@ import { TerminateHandlerContract } from '../Contracts/Context/Middlewares/Termi
 
 declare module 'fastify' {
   interface FastifyRequest {
-    data: Record<string, any>
+    data: any
   }
 }
 
 export class FastifyHandler {
   static createOnSendHandler(handler: InterceptHandlerContract) {
-    return async (req: FastifyRequest, _res, payload) => {
+    return async (req: FastifyRequest, res: FastifyReply, payload) => {
       const request = new Request(req)
+      const response = new Response(res)
 
       if (!req.data) req.data = {}
       if (!req.query) req.query = {}
@@ -42,8 +43,9 @@ export class FastifyHandler {
 
       body = await handler({
         request,
+        response,
         body,
-        status: _res.statusCode,
+        status: res.statusCode,
         params: req.params as Record<string, string>,
         queries: req.query as Record<string, string>,
         data: req.data,
