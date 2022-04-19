@@ -10,25 +10,26 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 
 import { Is } from '@secjs/utils'
-import { Request } from '../Context/Request'
-import { Response } from '../Context/Response'
+import { Request } from 'src/Context/Request'
+import { Response } from 'src/Context/Response'
 import { FastifyReply, FastifyRequest } from 'fastify'
-import { HandlerContract } from '../Contracts/Context/HandlerContract'
-import { ErrorHandlerContract } from '../Contracts/Context/Error/ErrorHandlerContract'
-import { HandleHandlerContract } from '../Contracts/Context/Middlewares/Handle/HandleHandlerContract'
-import { InterceptHandlerContract } from '../Contracts/Context/Middlewares/Intercept/InterceptHandlerContract'
-import { TerminateHandlerContract } from '../Contracts/Context/Middlewares/Terminate/TerminateHandlerContract'
+import { HandlerContract } from 'src/Contracts/Context/HandlerContract'
+import { ErrorHandlerContract } from 'src/Contracts/Context/Error/ErrorHandlerContract'
+import { HandleHandlerContract } from 'src/Contracts/Context/Middlewares/Handle/HandleHandlerContract'
+import { InterceptHandlerContract } from 'src/Contracts/Context/Middlewares/Intercept/InterceptHandlerContract'
+import { TerminateHandlerContract } from 'src/Contracts/Context/Middlewares/Terminate/TerminateHandlerContract'
 
 declare module 'fastify' {
   interface FastifyRequest {
-    data: Record<string, any>
+    data: any
   }
 }
 
 export class FastifyHandler {
   static createOnSendHandler(handler: InterceptHandlerContract) {
-    return async (req: FastifyRequest, _res, payload) => {
+    return async (req: FastifyRequest, res: FastifyReply, payload) => {
       const request = new Request(req)
+      const response = new Response(res)
 
       if (!req.data) req.data = {}
       if (!req.query) req.query = {}
@@ -42,8 +43,9 @@ export class FastifyHandler {
 
       body = await handler({
         request,
+        response,
         body,
-        status: _res.statusCode,
+        status: res.statusCode,
         params: req.params as Record<string, string>,
         queries: req.query as Record<string, string>,
         data: req.data,

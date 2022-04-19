@@ -10,8 +10,8 @@
 import { Is } from '@secjs/utils'
 import { Config } from '@athenna/config'
 import { FastifyRequest } from 'fastify'
-import { removeSlash } from '../Utils/removeSlash'
-import { RequestContract } from '../Contracts/Context/RequestContract'
+import { removeSlash } from 'src/Utils/removeSlash'
+import { RequestContract } from 'src/Contracts/Context/RequestContract'
 
 export class Request implements RequestContract {
   private readonly request: FastifyRequest
@@ -84,7 +84,7 @@ export class Request implements RequestContract {
    * @return any
    */
   get body(): any {
-    return this.request.body as Record<string, any>
+    return this.request.body
   }
 
   /**
@@ -93,7 +93,7 @@ export class Request implements RequestContract {
    * @return any
    */
   get params(): any {
-    return this.request.params as any
+    return this.request.params
   }
 
   /**
@@ -102,7 +102,7 @@ export class Request implements RequestContract {
    * @return any
    */
   get queries(): any {
-    return this.request.query as any
+    return this.request.query
   }
 
   /**
@@ -111,7 +111,7 @@ export class Request implements RequestContract {
    * @return any
    */
   get headers(): any {
-    return this.request.headers as any
+    return this.request.headers
   }
 
   /**

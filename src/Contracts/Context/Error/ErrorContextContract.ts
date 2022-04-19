@@ -7,14 +7,14 @@
  * file that was distributed with this source code.
  */
 
-import { RequestContract } from '../RequestContract'
-import { ResponseContract } from '../ResponseContract'
+import { RequestContract } from 'src/Contracts/Context/RequestContract'
+import { ResponseContract } from 'src/Contracts/Context/ResponseContract'
 
 export interface ErrorContextContract {
   request: RequestContract
   response: ResponseContract
-  params: Record<string, string>
-  queries: Record<string, string>
-  data?: Record<string, any>
+  params: any
+  queries: any
+  data: any
   error: any
 }

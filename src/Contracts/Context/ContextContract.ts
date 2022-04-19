@@ -7,8 +7,8 @@
  * file that was distributed with this source code.
  */
 
-import { RequestContract } from './RequestContract'
-import { ResponseContract } from './ResponseContract'
+import { RequestContract } from 'src/Contracts/Context/RequestContract'
+import { ResponseContract } from 'src/Contracts/Context/ResponseContract'
 
 export interface ContextContract {
   request: RequestContract

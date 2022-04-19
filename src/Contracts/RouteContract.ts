@@ -7,8 +7,8 @@
  * file that was distributed with this source code.
  */
 
-import { HttpMethodTypes } from './HttpMethodTypes'
-import { FastifyHandlerContract } from './FastifyHandlerContract'
+import { HttpMethodTypes } from 'src/Contracts/HttpMethodTypes'
+import { FastifyHandlerContract } from 'src/Contracts/FastifyHandlerContract'
 
 export interface RouteContract {
   method: HttpMethodTypes

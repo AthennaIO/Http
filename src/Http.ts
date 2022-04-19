@@ -20,14 +20,14 @@ import fastify, {
   InjectOptions,
   PrintRoutesOptions,
 } from 'fastify'
-import { FastifyHandler } from './Handlers/FastifyHandler'
-import { HttpMethodTypes } from './Contracts/HttpMethodTypes'
-import { HandlerContract } from './Contracts/Context/HandlerContract'
-import { MiddlewareTypesContract } from './Contracts/MiddlewareTypesContract'
-import { ErrorHandlerContract } from './Contracts/Context/Error/ErrorHandlerContract'
-import { HandleHandlerContract } from './Contracts/Context/Middlewares/Handle/HandleHandlerContract'
-import { InterceptHandlerContract } from './Contracts/Context/Middlewares/Intercept/InterceptHandlerContract'
-import { TerminateHandlerContract } from './Contracts/Context/Middlewares/Terminate/TerminateHandlerContract'
+import { FastifyHandler } from 'src/Handlers/FastifyHandler'
+import { HttpMethodTypes } from 'src/Contracts/HttpMethodTypes'
+import { HandlerContract } from 'src/Contracts/Context/HandlerContract'
+import { MiddlewareTypesContract } from 'src/Contracts/MiddlewareTypesContract'
+import { ErrorHandlerContract } from 'src/Contracts/Context/Error/ErrorHandlerContract'
+import { HandleHandlerContract } from 'src/Contracts/Context/Middlewares/Handle/HandleHandlerContract'
+import { InterceptHandlerContract } from 'src/Contracts/Context/Middlewares/Intercept/InterceptHandlerContract'
+import { TerminateHandlerContract } from 'src/Contracts/Context/Middlewares/Terminate/TerminateHandlerContract'
 
 export class Http {
   /**

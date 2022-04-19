@@ -7,8 +7,8 @@
  * file that was distributed with this source code.
  */
 
-import { BadRequestException } from '../../src/Exceptions/BadRequestException'
-import { ContextContract } from '../../src/Contracts/Context/ContextContract'
+import { BadRequestException } from 'src/Exceptions/BadRequestException'
+import { ContextContract } from 'src/Contracts/Context/ContextContract'
 
 export class TestController {
   async index(ctx: ContextContract) {

@@ -7,7 +7,7 @@
  * file that was distributed with this source code.
  */
 
-import { MiddlewareContract } from '../Contracts/MiddlewareContract'
+import { MiddlewareContract } from 'src/Contracts/MiddlewareContract'
 
 export function isMiddlewareContract(
   object: any,

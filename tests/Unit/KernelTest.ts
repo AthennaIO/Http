@@ -7,14 +7,12 @@
  * file that was distributed with this source code.
  */
 
-import { Ioc } from '@athenna/ioc'
-import { Kernel } from '../Stubs/Kernel'
-import { Route } from '../../src/Facades/Route'
-import { Server } from '../../src/Facades/Server'
-import { TestController } from '../Stubs/TestController'
-import { HttpRouteProvider } from '../../src/Providers/HttpRouteProvider'
-import { HttpServerProvider } from '../../src/Providers/HttpServerProvider'
-import { BadRequestException } from '../../src/Exceptions/BadRequestException'
+import { Route } from 'src/Facades/Route'
+import { Server } from 'src/Facades/Server'
+import { Kernel } from 'tests/Stubs/app/Http/Kernel'
+import { HttpRouteProvider } from 'src/Providers/HttpRouteProvider'
+import { HttpServerProvider } from 'src/Providers/HttpServerProvider'
+import { BadRequestException } from 'src/Exceptions/BadRequestException'
 
 describe('\n KernelTest', () => {
   const handler = async ctx => {
@@ -29,13 +27,11 @@ describe('\n KernelTest', () => {
   }
 
   beforeEach(async () => {
-    new Ioc().reconstruct().singleton('App/Controllers/TestController', TestController)
-
     new HttpServerProvider().register()
     new HttpRouteProvider().boot()
   })
 
-  it('should be instantiate a new http kernel and register middlewares', async () => {
+  it('should be able to instantiate a new http kernel and register middlewares', async () => {
     await new Kernel().registerCors()
     await new Kernel().registerRateLimit()
     await new Kernel().registerErrorHandler()

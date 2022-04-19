@@ -7,8 +7,8 @@
  * file that was distributed with this source code.
  */
 
-import { MiddlewareContract } from '../../src/Contracts/MiddlewareContract'
-import { InterceptContextContract } from '../../src/Contracts/Context/Middlewares/Intercept/InterceptContextContract'
+import { MiddlewareContract } from 'src/Contracts/MiddlewareContract'
+import { InterceptContextContract } from 'src/Contracts/Context/Middlewares/Intercept/InterceptContextContract'
 
 export class InterceptMiddleware implements MiddlewareContract {
   async intercept(ctx: InterceptContextContract) {

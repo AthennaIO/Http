@@ -7,13 +7,15 @@
  * file that was distributed with this source code.
  */
 
-import { RequestContract } from '../../RequestContract'
+import { RequestContract } from 'src/Contracts/Context/RequestContract'
+import { ResponseContract } from 'src/Contracts/Context/ResponseContract'
 
 export interface InterceptContextContract {
   request: RequestContract
+  response: ResponseContract
   params: any
   queries: any
   body: any
   status: number
-  data: Record<string, any>
+  data: any
 }

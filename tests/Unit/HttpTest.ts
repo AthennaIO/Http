@@ -9,12 +9,12 @@
 
 import '@athenna/ioc'
 
-import { Http } from '../../src/Http'
+import { Http } from 'src/Http'
 import { Folder, Path } from '@secjs/utils'
-import { Server } from '../../src/Facades/Server'
-import { HttpRouteProvider } from '../../src/Providers/HttpRouteProvider'
-import { HttpServerProvider } from '../../src/Providers/HttpServerProvider'
-import { BadRequestException } from '../../src/Exceptions/BadRequestException'
+import { Server } from 'src/Facades/Server'
+import { HttpRouteProvider } from 'src/Providers/HttpRouteProvider'
+import { HttpServerProvider } from 'src/Providers/HttpServerProvider'
+import { BadRequestException } from 'src/Exceptions/BadRequestException'
 
 describe('\n HttpTest', () => {
   const handler = async ctx => {

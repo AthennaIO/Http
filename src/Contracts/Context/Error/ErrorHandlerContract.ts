@@ -7,7 +7,7 @@
  * file that was distributed with this source code.
  */
 
-import { ErrorContextContract } from './ErrorContextContract'
+import { ErrorContextContract } from 'src/Contracts/Context/Error/ErrorContextContract'
 
 export interface ErrorHandlerContract {
   (ctx?: ErrorContextContract): Promise<any> | any

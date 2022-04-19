@@ -7,9 +7,9 @@
  * file that was distributed with this source code.
  */
 
-import { HandleHandlerContract } from './Context/Middlewares/Handle/HandleHandlerContract'
-import { TerminateHandlerContract } from './Context/Middlewares/Terminate/TerminateHandlerContract'
-import { InterceptHandlerContract } from './Context/Middlewares/Intercept/InterceptHandlerContract'
+import { HandleHandlerContract } from 'src/Contracts/Context/Middlewares/Handle/HandleHandlerContract'
+import { TerminateHandlerContract } from 'src/Contracts/Context/Middlewares/Terminate/TerminateHandlerContract'
+import { InterceptHandlerContract } from 'src/Contracts/Context/Middlewares/Intercept/InterceptHandlerContract'
 
 export interface MiddlewareTypesContract {
   handlers: HandleHandlerContract[]
