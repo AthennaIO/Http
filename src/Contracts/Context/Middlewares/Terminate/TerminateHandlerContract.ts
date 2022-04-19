@@ -7,7 +7,7 @@
  * file that was distributed with this source code.
  */
 
-import { TerminateContextContract } from './TerminateContextContract'
+import { TerminateContextContract } from 'src/Contracts/Context/Middlewares/Terminate/TerminateContextContract'
 
 export interface TerminateHandlerContract {
   (ctx: TerminateContextContract): Promise<any> | any

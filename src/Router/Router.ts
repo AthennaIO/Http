@@ -9,13 +9,13 @@
 
 import '@athenna/ioc'
 
-import { Http } from '../Http'
-import { Route } from './Route'
+import { Http } from 'src/Http'
+import { Route } from 'src/Router/Route'
 import { Is } from '@secjs/utils'
-import { RouteGroup } from './RouteGroup'
-import { RouteResource } from './RouteResource'
-import { HttpMethodTypes } from '../Contracts/HttpMethodTypes'
-import { HandlerContract } from '../Contracts/Context/HandlerContract'
+import { RouteGroup } from 'src/Router/RouteGroup'
+import { RouteResource } from 'src/Router/RouteResource'
+import { HttpMethodTypes } from 'src/Contracts/HttpMethodTypes'
+import { HandlerContract } from 'src/Contracts/Context/HandlerContract'
 
 export class Router {
   routes: (Route | RouteResource | RouteGroup)[]

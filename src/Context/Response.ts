@@ -8,7 +8,7 @@
  */
 
 import { FastifyReply } from 'fastify'
-import { ResponseContract } from '../Contracts/Context/ResponseContract'
+import { ResponseContract } from 'src/Contracts/Context/ResponseContract'
 
 export class Response implements ResponseContract {
   private readonly response: FastifyReply

@@ -7,8 +7,8 @@
  * file that was distributed with this source code.
  */
 
-import { MiddlewareContract } from '../../src/Contracts/MiddlewareContract'
-import { HandleContextContract } from '../../src/Contracts/Context/Middlewares/Handle/HandleContextContract'
+import { MiddlewareContract } from 'src/Contracts/MiddlewareContract'
+import { HandleContextContract } from 'src/Contracts/Context/Middlewares/Handle/HandleContextContract'
 
 export class HandleMiddleware implements MiddlewareContract {
   async handle(ctx: HandleContextContract) {

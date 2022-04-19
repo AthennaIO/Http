@@ -7,7 +7,7 @@
  * file that was distributed with this source code.
  */
 
-import { HttpKernel } from '../../src/Kernels/HttpKernel'
+import { HttpKernel } from 'src/Kernels/HttpKernel'
 
 export class Kernel extends HttpKernel {
   /**
@@ -15,7 +15,7 @@ export class Kernel extends HttpKernel {
    *
    * This middlewares are run during every request to your http server.
    */
-  protected globalMiddlewares = [import('./TestMiddleware')]
+  protected globalMiddlewares = [import('./Controllers/TestMiddleware')]
 
   /**
    * The application's named HTTP middlewares.
@@ -23,6 +23,6 @@ export class Kernel extends HttpKernel {
    * Here you define all your named middlewares to use inside routes/http file.
    */
   protected namedMiddlewares = {
-    intercept: import('./InterceptMiddleware'),
+    intercept: import('./Middlewares/InterceptMiddleware'),
   }
 }

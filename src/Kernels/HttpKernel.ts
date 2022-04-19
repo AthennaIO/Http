@@ -3,7 +3,7 @@ import { Config } from '@athenna/config'
 import { Server } from 'src/Facades/Server'
 import { resolveModule } from '@secjs/utils'
 import { HttpErrorHandler } from 'src/Handlers/HttpErrorHandler'
-import { MiddlewareContract } from '../Contracts/MiddlewareContract'
+import { MiddlewareContract } from 'src/Contracts/MiddlewareContract'
 import { TerminateContextContract } from 'src/Contracts/Context/Middlewares/Terminate/TerminateContextContract'
 
 export type MiddlewareContractClass = {
@@ -43,13 +43,13 @@ export abstract class HttpKernel {
     for (const key of Object.keys(this.namedMiddlewares)) {
       const Middleware = resolveModule(await this.namedMiddlewares[key])
 
-      if (!ioc.hasDependency(`App/Middlewares/${Middleware.name}`)) {
-        ioc.bind(`App/Middlewares/${Middleware.name}`, Middleware)
+      if (!ioc.hasDependency(`App/Http/Middlewares/${Middleware.name}`)) {
+        ioc.bind(`App/Http/Middlewares/${Middleware.name}`, Middleware)
       }
 
       ioc.alias(
-        `App/Middlewares/Names/${key}`,
-        `App/Middlewares/${Middleware.name}`,
+        `App/Http/Middlewares/Names/${key}`,
+        `App/Http/Middlewares/${Middleware.name}`,
       )
     }
 
@@ -60,11 +60,11 @@ export abstract class HttpKernel {
     for (const module of this.globalMiddlewares) {
       let Middleware = resolveModule(await module)
 
-      if (!ioc.hasDependency(`App/Middlewares/${Middleware.name}`)) {
-        ioc.bind(`App/Middlewares/${Middleware.name}`, Middleware)
+      if (!ioc.hasDependency(`App/Http/Middlewares/${Middleware.name}`)) {
+        ioc.bind(`App/Http/Middlewares/${Middleware.name}`, Middleware)
       }
 
-      Middleware = ioc.safeUse(`App/Middlewares/${Middleware.name}`)
+      Middleware = ioc.safeUse(`App/Http/Middlewares/${Middleware.name}`)
 
       if (Middleware.handle) {
         Server.use(Middleware.handle, 'handle')

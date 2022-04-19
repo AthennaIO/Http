@@ -10,8 +10,8 @@
 import { Is } from '@secjs/utils'
 import { Config } from '@athenna/config'
 import { FastifyRequest } from 'fastify'
-import { removeSlash } from '../Utils/removeSlash'
-import { RequestContract } from '../Contracts/Context/RequestContract'
+import { removeSlash } from 'src/Utils/removeSlash'
+import { RequestContract } from 'src/Contracts/Context/RequestContract'
 
 export class Request implements RequestContract {
   private readonly request: FastifyRequest

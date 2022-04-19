@@ -10,14 +10,14 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 
 import { Is } from '@secjs/utils'
-import { Request } from '../Context/Request'
-import { Response } from '../Context/Response'
+import { Request } from 'src/Context/Request'
+import { Response } from 'src/Context/Response'
 import { FastifyReply, FastifyRequest } from 'fastify'
-import { HandlerContract } from '../Contracts/Context/HandlerContract'
-import { ErrorHandlerContract } from '../Contracts/Context/Error/ErrorHandlerContract'
-import { HandleHandlerContract } from '../Contracts/Context/Middlewares/Handle/HandleHandlerContract'
-import { InterceptHandlerContract } from '../Contracts/Context/Middlewares/Intercept/InterceptHandlerContract'
-import { TerminateHandlerContract } from '../Contracts/Context/Middlewares/Terminate/TerminateHandlerContract'
+import { HandlerContract } from 'src/Contracts/Context/HandlerContract'
+import { ErrorHandlerContract } from 'src/Contracts/Context/Error/ErrorHandlerContract'
+import { HandleHandlerContract } from 'src/Contracts/Context/Middlewares/Handle/HandleHandlerContract'
+import { InterceptHandlerContract } from 'src/Contracts/Context/Middlewares/Intercept/InterceptHandlerContract'
+import { TerminateHandlerContract } from 'src/Contracts/Context/Middlewares/Terminate/TerminateHandlerContract'
 
 declare module 'fastify' {
   interface FastifyRequest {

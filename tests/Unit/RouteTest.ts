@@ -7,17 +7,16 @@
  * file that was distributed with this source code.
  */
 
-import { Ioc } from '@athenna/ioc'
-import { Route } from '../../src/Facades/Route'
-import { Server } from '../../src/Facades/Server'
-import { TestController } from '../Stubs/TestController'
-import { TestMiddleware } from '../Stubs/TestMiddleware'
-import { HandleMiddleware } from '../Stubs/HandleMiddleware'
-import { InterceptMiddleware } from '../Stubs/InterceptMiddleware'
-import { TerminateMiddleware } from '../Stubs/TerminateMiddleware'
-import { HttpRouteProvider } from '../../src/Providers/HttpRouteProvider'
-import { HttpServerProvider } from '../../src/Providers/HttpServerProvider'
-import { BadRequestException } from '../../src/Exceptions/BadRequestException'
+import { Route } from 'src/Facades/Route'
+import { Server } from 'src/Facades/Server'
+import { File, Folder, Path } from '@secjs/utils'
+import { HttpRouteProvider } from 'src/Providers/HttpRouteProvider'
+import { ControllerProvider } from 'src/Providers/ControllerProvider'
+import { MiddlewareProvider } from 'src/Providers/MiddlewareProvider'
+import { HttpServerProvider } from 'src/Providers/HttpServerProvider'
+import { BadRequestException } from 'src/Exceptions/BadRequestException'
+import { TestController } from 'tests/Stubs/app/Http/Controllers/TestController'
+import { HandleMiddleware } from 'tests/Stubs/app/Http/Middlewares/HandleMiddleware'
 
 describe('\n RouteTest', () => {
   const handler = async ctx => {
@@ -32,16 +31,14 @@ describe('\n RouteTest', () => {
   }
 
   beforeEach(async () => {
-    new Ioc()
-      .reconstruct()
-      .singleton('App/Controllers/TestController', TestController)
-      .singleton('App/Middlewares/TestMiddleware', TestMiddleware)
-      .singleton('App/Middlewares/HandleMiddleware', HandleMiddleware)
-      .singleton('App/Middlewares/TerminateMiddleware', TerminateMiddleware)
-      .singleton('App/Middlewares/InterceptMiddleware', InterceptMiddleware)
+    await new File(Path.tests('Stubs/app/Http/Kernel.ts')).loadSync().copySync(Path.app('Http/Kernel.ts'))
+    await new Folder(Path.tests('Stubs/app/Http/Controllers')).loadSync().copySync(Path.app('Http/Controllers'))
+    await new Folder(Path.tests('Stubs/app/Http/Middlewares')).loadSync().copySync(Path.app('Http/Middlewares'))
 
     new HttpServerProvider().register()
     new HttpRouteProvider().boot()
+    await new ControllerProvider().boot()
+    await new MiddlewareProvider().boot()
   })
 
   it('should be able to register a new route', async () => {
@@ -314,5 +311,6 @@ describe('\n RouteTest', () => {
 
   afterEach(async () => {
     await Server.close()
+    await Folder.safeRemove(Path.app())
   })
 })

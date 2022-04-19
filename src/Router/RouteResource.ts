@@ -7,14 +7,14 @@
  * file that was distributed with this source code.
  */
 
-import { Route } from './Route'
+import { Route } from 'src/Router/Route'
 import { Is, String } from '@secjs/utils'
-import { MiddlewareTypes } from '../Contracts/MiddlewareTypes'
-import { HttpMethodTypes } from '../Contracts/HttpMethodTypes'
-import { HandlerContract } from '../Contracts/Context/HandlerContract'
-import { InterceptHandlerContract } from '../Contracts/Context/Middlewares/Intercept/InterceptHandlerContract'
-import { TerminateHandlerContract } from '../Contracts/Context/Middlewares/Terminate/TerminateHandlerContract'
-import { MiddlewareContract } from '../Contracts/MiddlewareContract'
+import { MiddlewareTypes } from 'src/Contracts/MiddlewareTypes'
+import { HttpMethodTypes } from 'src/Contracts/HttpMethodTypes'
+import { MiddlewareContract } from 'src/Contracts/MiddlewareContract'
+import { HandlerContract } from 'src/Contracts/Context/HandlerContract'
+import { InterceptHandlerContract } from 'src/Contracts/Context/Middlewares/Intercept/InterceptHandlerContract'
+import { TerminateHandlerContract } from 'src/Contracts/Context/Middlewares/Terminate/TerminateHandlerContract'
 
 export class RouteResource {
   routes: Route[]

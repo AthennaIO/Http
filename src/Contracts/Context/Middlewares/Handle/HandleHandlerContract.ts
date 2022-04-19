@@ -7,7 +7,7 @@
  * file that was distributed with this source code.
  */
 
-import { HandleContextContract } from './HandleContextContract'
+import { HandleContextContract } from 'src/Contracts/Context/Middlewares/Handle/HandleContextContract'
 
 export interface HandleHandlerContract {
   (ctx: HandleContextContract): Promise<any> | any

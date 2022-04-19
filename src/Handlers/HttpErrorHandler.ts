@@ -10,7 +10,7 @@
 import { String } from '@secjs/utils'
 import { Log } from '@athenna/logger'
 import { Config } from '@athenna/config'
-import { ErrorContextContract } from '../Contracts/Context/Error/ErrorContextContract'
+import { ErrorContextContract } from 'src/Contracts/Context/Error/ErrorContextContract'
 
 export class HttpErrorHandler {
   static handler({ error, response }: ErrorContextContract) {

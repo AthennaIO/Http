@@ -7,7 +7,7 @@
  * file that was distributed with this source code.
  */
 
-import { InterceptContextContract } from './InterceptContextContract'
+import { InterceptContextContract } from 'src/Contracts/Context/Middlewares/Intercept/InterceptContextContract'
 
 export interface InterceptHandlerContract {
   (ctx: InterceptContextContract): Promise<any> | any

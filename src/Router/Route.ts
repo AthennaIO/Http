@@ -9,17 +9,17 @@
 
 import '@athenna/ioc'
 import { Is } from '@secjs/utils'
-import { removeSlash } from '../Utils/removeSlash'
-import { MiddlewareTypes } from '../Contracts/MiddlewareTypes'
-import { HttpMethodTypes } from '../Contracts/HttpMethodTypes'
-import { MiddlewareContract } from '../Contracts/MiddlewareContract'
-import { isMiddlewareContract } from '../Utils/isMiddlewareContract'
-import { HandlerContract } from '../Contracts/Context/HandlerContract'
-import { MiddlewareTypesContract } from '../Contracts/MiddlewareTypesContract'
+import { removeSlash } from 'src/Utils/removeSlash'
+import { MiddlewareTypes } from 'src/Contracts/MiddlewareTypes'
+import { HttpMethodTypes } from 'src/Contracts/HttpMethodTypes'
+import { MiddlewareContract } from 'src/Contracts/MiddlewareContract'
+import { isMiddlewareContract } from 'src/Utils/isMiddlewareContract'
+import { HandlerContract } from 'src/Contracts/Context/HandlerContract'
+import { MiddlewareTypesContract } from 'src/Contracts/MiddlewareTypesContract'
 import { MiddlewareNotFoundException } from 'src/Exceptions/MiddlewareNotFoundException'
-import { InterceptHandlerContract } from '../Contracts/Context/Middlewares/Intercept/InterceptHandlerContract'
-import { TerminateHandlerContract } from '../Contracts/Context/Middlewares/Terminate/TerminateHandlerContract'
 import { UndefinedControllerMethodException } from 'src/Exceptions/UndefinedControllerMethodException'
+import { InterceptHandlerContract } from 'src/Contracts/Context/Middlewares/Intercept/InterceptHandlerContract'
+import { TerminateHandlerContract } from 'src/Contracts/Context/Middlewares/Terminate/TerminateHandlerContract'
 
 export class Route {
   name: string
@@ -86,8 +86,8 @@ export class Route {
 
     if (Is.String(middleware)) {
       const mid =
-        ioc.use(`App/Middlewares/Names/${middleware}`) ||
-        ioc.safeUse(`App/Middlewares/${middleware}`)
+        ioc.use(`App/Http/Middlewares/Names/${middleware}`) ||
+        ioc.safeUse(`App/Http/Middlewares/${middleware}`)
 
       if (!mid) {
         throw new MiddlewareNotFoundException(middleware)
@@ -153,7 +153,7 @@ export class Route {
     if (Is.String(this.handler)) {
       const [controller, method] = this.handler.split('.')
 
-      const dependency = ioc.safeUse(`App/Controllers/${controller}`)
+      const dependency = ioc.safeUse(`App/Http/Controllers/${controller}`)
 
       if (!dependency[method]) {
         throw new UndefinedControllerMethodException(method, controller)
