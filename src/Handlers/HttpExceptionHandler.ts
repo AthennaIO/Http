@@ -23,7 +23,7 @@ export class HttpExceptionHandler {
    *
    * @protected
    */
-  protected ignoreStatuses: string[] = []
+  protected ignoreStatuses: number[] = []
 
   /**
    * The global exception handler of all HTTP requests.
@@ -71,11 +71,11 @@ export class HttpExceptionHandler {
 
     if (this.addStack) {
       Log.error(
-        `[${body.statusCode}] ${body.code}::${body.message}\nStack: ${body.stack}`,
+        `(${body.statusCode}) ${body.code}: ${body.message}\nStack: ${body.stack}`,
         logConfig,
       )
     } else {
-      Log.error(`[${body.statusCode}] ${body.code}::${body.message}`, logConfig)
+      Log.error(`(${body.statusCode}) ${body.code}: ${body.message}`, logConfig)
     }
 
     return response.status(statusCode).send(body)
