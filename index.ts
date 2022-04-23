@@ -13,9 +13,12 @@ export * from './src/Facades/Server'
 export * from './src/Http'
 export * from './src/Router/Router'
 export * from './src/Kernels/HttpKernel'
+export * from './src/Exceptions/Exception'
 
 export * from './src/Providers/HttpRouteProvider'
 export * from './src/Providers/HttpServerProvider'
+
+export * from './src/Handlers/HttpExceptionHandler'
 
 export * from './src/Contracts/MiddlewareContract'
 
