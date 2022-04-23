@@ -109,6 +109,10 @@ export class Http {
    * @param type {handle,intercept,terminate}
    * @return void
    */
+  use(handler: HandleHandlerContract)
+  use(handler: HandleHandlerContract, type: 'handle')
+  use(handler: InterceptHandlerContract, type: 'intercept')
+  use(handler: TerminateHandlerContract, type: 'terminate')
   use(
     handler:
       | HandleHandlerContract

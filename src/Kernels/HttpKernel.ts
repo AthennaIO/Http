@@ -1,8 +1,7 @@
 import { Log } from '@athenna/logger'
-import { Config } from '@athenna/config'
+import { Config, Env } from '@athenna/config'
 import { Server } from 'src/Facades/Server'
-import { resolveModule } from '@secjs/utils'
-import { HttpErrorHandler } from 'src/Handlers/HttpErrorHandler'
+import { Path, resolveModule, Token } from '@secjs/utils'
 import { MiddlewareContract } from 'src/Contracts/MiddlewareContract'
 import { TerminateContextContract } from 'src/Contracts/Context/Middlewares/Terminate/TerminateContextContract'
 
@@ -116,7 +115,18 @@ export abstract class HttpKernel {
       return
     }
 
-    Server.setErrorHandler(HttpErrorHandler.handler)
+    let extension = 'js'
+
+    if (Env('NODE_TS') === 'true') {
+      extension = 'ts'
+    }
+
+    const path = Path.app(`Http/Exceptions/Handler.${extension}`)
+
+    const Handler = resolveModule(await import(path))
+    const handler = new Handler()
+
+    Server.setErrorHandler(handler.handle.bind(handler))
   }
 
   /**
@@ -134,5 +144,22 @@ export abstract class HttpKernel {
 
       return ctx.next()
     }, 'terminate')
+  }
+
+  /**
+   * Register the requestId handle middleware.
+   *
+   * @return void
+   */
+  async registerRequestIdMiddleware(): Promise<void> {
+    if (Config.get<boolean>('http.noRequestId')) {
+      return
+    }
+
+    Server.use(async ctx => {
+      ctx.data.requestId = Token.generate('ath')
+
+      return ctx.next()
+    }, 'handle')
   }
 }
