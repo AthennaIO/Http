@@ -8,8 +8,8 @@
  */
 
 import { Is } from '@secjs/utils'
-import { Request } from 'src/Context/Request'
-import { Response } from 'src/Context/Response'
+import { Request } from '#src/Context/Request'
+import { Response } from '#src/Context/Response'
 
 export class FastifyHandler {
   /**

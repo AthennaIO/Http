@@ -156,7 +156,7 @@ export class Http {
   /**
    * Close the http server.
    *
-   * @param {any} cb
+   * @param {any} [cb]
    * @return {Promise<void>}
    */
   async close(cb) {
