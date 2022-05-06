@@ -10,7 +10,7 @@
 import { test } from '@japa/runner'
 import { Exception, Folder, Path } from '@secjs/utils'
 
-import { Server } from '#src/Facades/Server'
+import { Server } from '#src/index'
 import { HttpServerProvider } from '#src/Providers/HttpServerProvider'
 
 test.group('HttpTest', group => {

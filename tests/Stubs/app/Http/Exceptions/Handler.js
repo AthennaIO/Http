@@ -15,7 +15,7 @@ export class Handler extends HttpExceptionHandler {
   /**
    * The global exception handler of all HTTP requests.
    *
-   * @param ctx
+   * @param {import('#src/index').ErrorContextContract} ctx
    */
   async handle(ctx) {
     return super.handle(ctx)

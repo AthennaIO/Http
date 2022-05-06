@@ -14,6 +14,11 @@ import fastifyCors from 'fastify-cors'
 import fastifyRateLimit from 'fastify-rate-limit'
 import { FastifyHandler } from '#src/Handlers/FastifyHandler'
 
+export * from './Facades/Route.js'
+export * from './Facades/Server.js'
+export * from './Kernels/HttpKernel.js'
+export * from './Handlers/HttpExceptionHandler.js'
+
 export class Http {
   /**
    * Holds the fastify server instance.

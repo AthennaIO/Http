@@ -8,6 +8,12 @@
  */
 
 export class TestMiddleware {
+  /**
+   * Handle method.
+   *
+   * @param {import('#src/index').HandleContextContract} ctx
+   * @return {Promise<void>}
+   */
   async handle({ data, next, request }) {
     data.param = 'param'
     request.queries.test = 'middleware'
@@ -15,6 +21,12 @@ export class TestMiddleware {
     return next()
   }
 
+  /**
+   * Intercept method.
+   *
+   * @param {import('#src/index').InterceptContextContract} ctx
+   * @return {Promise<void>}
+   */
   async intercept({ data, body, request }) {
     data.param = 'param'
     request.queries.test = 'middleware'
@@ -22,6 +34,12 @@ export class TestMiddleware {
     return body
   }
 
+  /**
+   * Terminate method.
+   *
+   * @param {import('#src/index').TerminateContextContract} ctx
+   * @return {Promise<void>}
+   */
   async terminate({ next }) {
     console.log('Terminate middleware executed!')
 

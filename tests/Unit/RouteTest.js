@@ -10,15 +10,14 @@
 import { test } from '@japa/runner'
 import { Exception, Folder, Path } from '@secjs/utils'
 
-import { Route } from '#src/Facades/Route'
-import { Server } from '#src/Facades/Server'
+import { Route, Server } from '#src/index'
 import { HttpRouteProvider } from '#src/Providers/HttpRouteProvider'
 import { ControllerProvider } from '#src/Providers/ControllerProvider'
 import { MiddlewareProvider } from '#src/Providers/MiddlewareProvider'
 import { HttpServerProvider } from '#src/Providers/HttpServerProvider'
 import { TestController } from '#tests/Stubs/app/Http/Controllers/TestController'
-import { HandleMiddleware } from '#tests/Stubs/app/Http/Middlewares/HandleMiddleware'
 import { UndefinedMethodException } from '#src/Exceptions/UndefinedMethodException'
+import { HandleMiddleware } from '#tests/Stubs/app/Http/Middlewares/HandleMiddleware'
 import { InterceptMiddleware } from '#tests/Stubs/app/Http/Middlewares/InterceptMiddleware'
 import { TerminateMiddleware } from '#tests/Stubs/app/Http/Middlewares/TerminateMiddleware'
 

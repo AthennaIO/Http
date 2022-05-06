@@ -8,6 +8,12 @@
  */
 
 export class InterceptMiddleware {
+  /**
+   * Intercept method.
+   *
+   * @param {import('#src/index').InterceptContextContract} ctx
+   * @return {Promise<void>}
+   */
   async intercept({ body }) {
     if (!body.middlewares) body.middlewares = []
 

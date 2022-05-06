@@ -18,7 +18,7 @@ export class HttpExceptionHandler {
   /**
    * The global exception handler of all HTTP requests.
    *
-   * @param ctx
+   * @param {import('#src/index').ErrorContextContract} ctx
    */
   async handle({ error, response }) {
     const code = error.code || error.name

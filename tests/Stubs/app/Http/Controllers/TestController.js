@@ -10,6 +10,12 @@
 import { Exception } from '@secjs/utils'
 
 export class TestController {
+  /**
+   * Index method.
+   *
+   * @param {import('#src/index').ContextContract} ctx
+   * @return {Promise<void>}
+   */
   async index({ data, request, response }) {
     const body = { hello: 'world' }
 
@@ -23,6 +29,12 @@ export class TestController {
     return response.status(200).send(body)
   }
 
+  /**
+   * Show method.
+   *
+   * @param {import('#src/index').ContextContract} ctx
+   * @return {Promise<void>}
+   */
   async show({ data, request, response }) {
     const body = { hello: 'world' }
 
@@ -36,6 +48,12 @@ export class TestController {
     return response.status(200).send(body)
   }
 
+  /**
+   * Store method.
+   *
+   * @param {import('#src/index').ContextContract} ctx
+   * @return {Promise<void>}
+   */
   async store({ data, request, response }) {
     const body = { hello: 'world' }
 
