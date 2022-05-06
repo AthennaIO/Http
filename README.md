@@ -1,9 +1,9 @@
-# Http 📶
+# Http 📡
 
-> The Athenna Http server. Built on top of fastify
+> The Athenna Http server. Built on top of fastify.
 
 [![GitHub followers](https://img.shields.io/github/followers/athennaio.svg?style=social&label=Follow&maxAge=2592000)](https://github.com/athennaio?tab=followers)
-[![GitHub stars](https://img.shields.io/github/stars/athennaio/http.svg?style=social&label=Star&maxAge=2592000)](https://github.com/athennaio/http/stargazers/)
+[![GitHub stars](https://img.shields.io/github/stars/AthennaIO/Http.svg?style=social&label=Star&maxAge=2592000)](https://github.com/AthennaIO/Http/stargazers/)
 
 <p>
     <a href="https://www.buymeacoffee.com/athenna" target="_blank"><img src="https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png" alt="Buy Me A Coffee" style="height: 41px !important;width: 174px !important;box-shadow: 0px 3px 2px 0px rgba(190, 190, 190, 0.5) !important;-webkit-box-shadow: 0px 3px 2px 0px rgba(190, 190, 190, 0.5) !important;" ></a>
@@ -23,11 +23,14 @@
 
 ## Links
 
-> For project documentation [click here](https://athenna.io). If something is not clear in the documentation please open an issue in the [documentation repository](https://github.com/athennaio/docs)
+> For project documentation [click here](https://athenna.io). If something is not clear in the documentation please open
+> an issue in the [documentation repository](https://github.com/athennaio/docs)
 
 ## Contributing
 
-> If you want to contribute to this project, first read the [CONTRIBUTING.MD](https://github.com/AthennaIO/Http/blob/develop/CONTRIBUTING.md) file. It will be a pleasure to receive your help.
+> If you want to contribute to this project, first read
+> the [CONTRIBUTING.MD](https://github.com/AthennaIO/Http/blob/develop/CONTRIBUTING.md) file. It will be a pleasure to
+> receive your help.
 
 ---
 
