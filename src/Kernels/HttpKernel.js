@@ -2,6 +2,7 @@ import { Log } from '@athenna/logger'
 import { Config, Exec, Path, Uuid } from '@secjs/utils'
 
 import { Server } from '#src/Facades/Server'
+import { pathToFileURL } from 'url'
 
 export class HttpKernel {
   /**
@@ -110,7 +111,7 @@ export class HttpKernel {
 
     const path = Path.app(`Http/Exceptions/Handler.js`)
 
-    const Handler = await Exec.getModule(import(path))
+    const Handler = await Exec.getModule(import(pathToFileURL(path).href))
     const handler = new Handler()
 
     Server.setErrorHandler(handler.handle.bind(handler))
