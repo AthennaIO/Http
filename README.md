@@ -1,4 +1,4 @@
-# Http 📶
+# Http 📡
 
 > The Athenna Http server. Built on top of fastify.
 
@@ -23,11 +23,14 @@
 
 ## Links
 
-> For project documentation [click here](https://athenna.io). If something is not clear in the documentation please open an issue in the [documentation repository](https://github.com/athennaio/docs)
+> For project documentation [click here](https://athenna.io). If something is not clear in the documentation please open
+> an issue in the [documentation repository](https://github.com/athennaio/docs)
 
 ## Contributing
 
-> If you want to contribute to this project, first read the [CONTRIBUTING.MD](https://github.com/AthennaIO/Http/blob/develop/CONTRIBUTING.md) file. It will be a pleasure to receive your help.
+> If you want to contribute to this project, first read
+> the [CONTRIBUTING.MD](https://github.com/AthennaIO/Http/blob/develop/CONTRIBUTING.md) file. It will be a pleasure to
+> receive your help.
 
 ---
 
