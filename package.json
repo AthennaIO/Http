@@ -10,6 +10,10 @@
   "keywords": [
     "fastify",
     "router",
+    "cors",
+    "ctx",
+    "exception-handling",
+    "rate-limiting",
     "middlewares",
     "http-server",
     "athenna",
@@ -46,7 +50,7 @@
   },
   "dependencies": {
     "@athenna/ioc": "1.1.7",
-    "@athenna/logger": "1.2.1",
+    "@athenna/logger": "1.2.2",
     "@secjs/utils": "1.9.3",
     "fastify": "3.27.4",
     "fastify-cors": "6.0.3",
