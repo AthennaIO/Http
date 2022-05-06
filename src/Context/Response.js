@@ -36,16 +36,6 @@ export class Response {
   }
 
   /**
-   * Terminate the request sending the response body.
-   *
-   * @param {any} data
-   * @return {void}
-   */
-  json(data) {
-    this.#response.send(this.#response.serialize(data))
-  }
-
-  /**
    * Set the response status code.
    *
    * @param {number} code

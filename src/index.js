@@ -156,14 +156,9 @@ export class Http {
   /**
    * Close the http server.
    *
-   * @param {any} [cb]
    * @return {Promise<void>}
    */
-  async close(cb) {
-    if (cb) {
-      return this.#server.close(cb)
-    }
-
+  async close() {
     return this.#server.close()
   }
 

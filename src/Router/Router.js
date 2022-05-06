@@ -10,6 +10,7 @@
 import { Is } from '@secjs/utils'
 
 import { Route } from '#src/Router/Route'
+import { Server } from '#src/Facades/Server'
 import { RouteGroup } from '#src/Router/RouteGroup'
 import { RouteResource } from '#src/Router/RouteResource'
 
@@ -251,7 +252,7 @@ export class Router {
   register() {
     this.toRoutesJSON(this.routes).forEach(route => {
       route.methods.forEach(method => {
-        this.http[method.toLowerCase()](
+        Server[method.toLowerCase()](
           route.url,
           route.handler,
           route.middlewares,

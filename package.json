@@ -30,16 +30,23 @@
   ],
   "type": "module",
   "main": "./src/index.js",
-  "exports": "./src/index.js",
+  "exports": {
+    ".": "./src/index.js",
+    "./facades/Route": "./src/Facades/Route.js",
+    "./facades/Server": "./src/Facades/Server.js",
+    "./providers/ControllerProvider": "./src/Providers/ControllerProvider.js",
+    "./providers/HttpRouteProvider": "./src/Providers/HttpRouteProvider.js",
+    "./providers/HttpServerProvider": "./src/Providers/HttpServerProvider.js",
+    "./providers/MiddlewareProvider": "./src/Providers/MiddlewareProvider.js"
+  },
   "types": "./src/index.d.ts",
   "imports": {
     "#src/*": "./src/*.js",
     "#tests/*": "./tests/*.js"
   },
   "dependencies": {
-    "@athenna/config": "1.1.0",
     "@athenna/ioc": "1.1.7",
-    "@athenna/logger": "1.1.9",
+    "@athenna/logger": "1.2.1",
     "@secjs/utils": "1.9.3",
     "fastify": "3.27.4",
     "fastify-cors": "6.0.3",

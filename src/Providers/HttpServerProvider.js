@@ -14,7 +14,7 @@ export class HttpServerProvider extends ServiceProvider {
   /**
    * Register any application services.
    *
-   * @return void
+   * @return {void}
    */
   register() {
     this.container.instance('Athenna/Core/HttpServer', new Http())

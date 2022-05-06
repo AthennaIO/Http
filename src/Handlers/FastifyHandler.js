@@ -24,8 +24,6 @@ export class FastifyHandler {
       const response = new Response(res)
 
       if (!req.data) req.data = {}
-      if (!req.query) req.query = {}
-      if (!req.params) req.params = {}
 
       let body = payload
 
@@ -61,8 +59,6 @@ export class FastifyHandler {
       const response = new Response(res)
 
       if (!req.data) req.data = {}
-      if (!req.query) req.query = {}
-      if (!req.params) req.params = {}
 
       return handler({
         request,
@@ -87,8 +83,6 @@ export class FastifyHandler {
       const response = new Response(res)
 
       if (!req.data) req.data = {}
-      if (!req.query) req.query = {}
-      if (!req.params) req.params = {}
 
       return handler({
         request,
@@ -117,8 +111,6 @@ export class FastifyHandler {
       const response = new Response(res)
 
       if (!req.data) req.data = {}
-      if (!req.query) req.query = {}
-      if (!req.params) req.params = {}
 
       return handler({
         request,
@@ -143,8 +135,6 @@ export class FastifyHandler {
       const response = new Response(res)
 
       if (!req.data) req.data = {}
-      if (!req.query) req.query = {}
-      if (!req.params) req.params = {}
 
       return handler({
         request,

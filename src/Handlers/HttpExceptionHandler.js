@@ -1,6 +1,4 @@
-import { Log } from '@athenna/logger'
-import { String } from '@secjs/utils'
-import { Config } from '@athenna/config'
+import { Config, Exception, String } from '@secjs/utils'
 
 export class HttpExceptionHandler {
   /**
@@ -55,16 +53,22 @@ export class HttpExceptionHandler {
       return response.status(statusCode).send(body)
     }
 
+    response.status(statusCode).send(body)
+
     if (error.prettify) {
-      process.stderr.write((await error.prettify()).concat('\n'))
-    } else {
-      Log.error(`(${body.statusCode}) ${body.code}: ${body.message}`, {
-        formatterConfig: {
-          context: 'ExceptionHandler',
-        },
-      })
+      const prettyError = await error.prettify()
+
+      process.stderr.write(prettyError.concat('\n'))
+
+      return
     }
 
-    return response.status(statusCode).send(body)
+    const prettyError = await new Exception(
+      body.message,
+      body.statusCode,
+      body.code,
+    ).prettify()
+
+    process.stderr.write(prettyError.concat('\n'))
   }
 }
