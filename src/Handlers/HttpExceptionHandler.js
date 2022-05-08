@@ -1,3 +1,4 @@
+import { Log } from '@athenna/logger'
 import { Config, Exception, String } from '@secjs/utils'
 
 export class HttpExceptionHandler {
@@ -58,7 +59,7 @@ export class HttpExceptionHandler {
     if (error.prettify) {
       const prettyError = await error.prettify()
 
-      process.stderr.write(prettyError.concat('\n'))
+      Log.channel('exception').error(prettyError.concat('\n'))
 
       return
     }
@@ -69,6 +70,6 @@ export class HttpExceptionHandler {
       body.code,
     ).prettify()
 
-    process.stderr.write(prettyError.concat('\n'))
+    Log.channel('exception').error(prettyError.concat('\n'))
   }
 }
