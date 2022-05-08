@@ -93,7 +93,7 @@ export class HttpExceptionHandler {
    *
    * @param ctx
    */
-  handle({ error, response }: { error: any; response: any }): Promise<any>
+  handle(ctx: ErrorContextContract): Promise<any>
 }
 
 export class Http {
@@ -103,7 +103,7 @@ export class Http {
    * @param {any} handler
    * @return {Http}
    */
-  setErrorHandler(handler: any): Http
+  setErrorHandler(handler: ErrorHandlerContract): Http
 
   /**
    * Register a new fastify plugin.
@@ -198,7 +198,7 @@ export class Http {
    * @param {any} [middlewares]
    * @return {void}
    */
-  route(url: string, methods: string[], handler: any, middlewares?: any): void
+  route(url: string, methods: string[], handler: HandlerContract, middlewares?: any): void
 
   /**
    * Add a new GET route to the http server.
@@ -208,7 +208,7 @@ export class Http {
    * @param {any} [middlewares]
    * @return {void}
    */
-  get(url: string, handler: any, middlewares?: any): void
+  get(url: string, handler: HandlerContract, middlewares?: any): void
 
   /**
    * Add a new HEAD route to the http server.
@@ -218,7 +218,7 @@ export class Http {
    * @param {any} [middlewares]
    * @return {void}
    */
-  head(url: string, handler: any, middlewares?: any): void
+  head(url: string, handler: HandlerContract, middlewares?: any): void
 
   /**
    * Add a new POST route to the http server.
@@ -228,7 +228,7 @@ export class Http {
    * @param {any} [middlewares]
    * @return {void}
    */
-  post(url: string, handler: any, middlewares?: any): void
+  post(url: string, handler: HandlerContract, middlewares?: any): void
 
   /**
    * Add a new PUT route to the http server.
@@ -238,7 +238,7 @@ export class Http {
    * @param {any} [middlewares]
    * @return {void}
    */
-  put(url: string, handler: any, middlewares?: any): void
+  put(url: string, handler: HandlerContract, middlewares?: any): void
 
   /**
    * Add a new PATCH route to the http server.
@@ -248,7 +248,7 @@ export class Http {
    * @param {any} [middlewares]
    * @return {void}
    */
-  patch(url: string, handler: any, middlewares?: any): void
+  patch(url: string, handler: HandlerContract, middlewares?: any): void
 
   /**
    * Add a new DELETE route to the http server.
@@ -258,7 +258,7 @@ export class Http {
    * @param {any} [middlewares]
    * @return {void}
    */
-  delete(url: string, handler: any, middlewares?: any): void
+  delete(url: string, handler: HandlerContract, middlewares?: any): void
 
   /**
    * Add a new OPTIONS route to the http server.
@@ -268,7 +268,7 @@ export class Http {
    * @param {any} [middlewares]
    * @return {void}
    */
-  options(url: string, handler: any, middlewares?: any): void
+  options(url: string, handler: HandlerContract, middlewares?: any): void
 }
 
 declare module Router {
@@ -419,7 +419,7 @@ declare module Router {
      * @param {string|any} handler
      * @return {Route}
      */
-    route(url: string, methods: string[], handler: string | any): Route
+    route(url: string, methods: string[], handler: string | HandlerContract): Route
 
     /**
      * Creates a new route group.
@@ -455,7 +455,7 @@ declare module Router {
      * @param {string|any} handler
      * @return {Route}
      */
-    get(url: string, handler: string | any): Route
+    get(url: string, handler: string | HandlerContract): Route
 
     /**
      * Register a new head method route.
@@ -464,7 +464,7 @@ declare module Router {
      * @param {string|any} handler
      * @return {Route}
      */
-    head(url: string, handler: string | any): Route
+    head(url: string, handler: string | HandlerContract): Route
 
     /**
      * Register a new post method route.
@@ -473,7 +473,7 @@ declare module Router {
      * @param {string|any} handler
      * @return {Route}
      */
-    post(url: string, handler: string | any): Route
+    post(url: string, handler: string | HandlerContract): Route
 
     /**
      * Register a new put method route.
@@ -482,7 +482,7 @@ declare module Router {
      * @param {string|any} handler
      * @return {Route}
      */
-    put(url: string, handler: string | any): Route
+    put(url: string, handler: string | HandlerContract): Route
 
     /**
      * Register a new patch method route.
@@ -491,7 +491,7 @@ declare module Router {
      * @param {string|any} handler
      * @return {Route}
      */
-    patch(url: string, handler: string | any): Route
+    patch(url: string, handler: string | HandlerContract): Route
 
     /**
      * Register a new delete method route.
@@ -500,7 +500,7 @@ declare module Router {
      * @param {string|any} handler
      * @return {Route}
      */
-    delete(url: string, handler: string | any): Route
+    delete(url: string, handler: string | HandlerContract): Route
 
     /**
      * Register a new options method route.
@@ -509,7 +509,7 @@ declare module Router {
      * @param {string|any} handler
      * @return {Route}
      */
-    options(url: string, handler: string | any): Route
+    options(url: string, handler: string | HandlerContract): Route
 
     /**
      * Register a new route with all methods.
@@ -518,7 +518,7 @@ declare module Router {
      * @param {string|any} handler
      * @return {Route}
      */
-    any(url: string, handler: string | any): Route
+    any(url: string, handler: string | HandlerContract): Route
 
     /**
      * Register all the routes inside the Server.
