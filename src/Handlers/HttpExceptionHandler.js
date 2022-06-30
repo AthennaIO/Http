@@ -64,11 +64,11 @@ export class HttpExceptionHandler {
       return
     }
 
-    const prettyError = await new Exception(
-      body.message,
-      body.statusCode,
-      body.code,
-    ).prettify()
+    const exception = new Exception(body.message, body.statusCode, body.code)
+
+    exception.stack = body.stack
+
+    const prettyError = await exception.prettify()
 
     Log.channel('exception').error(prettyError.concat('\n'))
   }
