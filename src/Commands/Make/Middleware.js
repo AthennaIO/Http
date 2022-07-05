@@ -7,9 +7,13 @@
  * file that was distributed with this source code.
  */
 
-import { join } from 'node:path'
+import { fileURLToPath } from 'node:url'
+import { join, dirname } from 'node:path'
 import { Folder, Path, String } from '@secjs/utils'
 import { Artisan, Command, TemplateHelper } from '@athenna/artisan'
+
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = dirname(__filename)
 
 export class MakeMiddleware extends Command {
   /**
