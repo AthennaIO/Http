@@ -578,6 +578,15 @@ export interface ResponseContract {
   getFastifyResponse(): FastifyReply
 }
 
+export class HttpCommandsLoader {
+  /**
+   * Return all commands from http package.
+   *
+   * @return {any[]}
+   */
+  static loadCommands(): any[]
+}
+
 export interface NextContract {
   (...params: any[]): void
 }

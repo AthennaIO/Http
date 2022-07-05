@@ -1,6 +1,6 @@
 {
   "name": "@athenna/http",
-  "version": "1.4.1",
+  "version": "1.4.2",
   "description": "The Athenna Http server. Built on top of fastify.",
   "license": "MIT",
   "author": "João Lenon <lenon@athenna.io>",
@@ -41,7 +41,10 @@
     "./providers/ControllerProvider": "./src/Providers/ControllerProvider.js",
     "./providers/HttpRouteProvider": "./src/Providers/HttpRouteProvider.js",
     "./providers/HttpServerProvider": "./src/Providers/HttpServerProvider.js",
-    "./providers/MiddlewareProvider": "./src/Providers/MiddlewareProvider.js"
+    "./providers/MiddlewareProvider": "./src/Providers/MiddlewareProvider.js",
+    "./commands/Route/List": "./src/Commands/Route/List.js",
+    "./commands/Make/Controller": "./src/Commands/Make/Controller.js",
+    "./commands/Make/Middleware": "./src/Commands/Make/Middleware.js"
   },
   "types": "./src/index.d.ts",
   "imports": {

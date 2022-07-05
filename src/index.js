@@ -22,6 +22,7 @@ export * from './Handlers/HttpExceptionHandler.js'
 export * from './Commands/Route/List.js'
 export * from './Commands/Make/Controller.js'
 export * from './Commands/Make/Middleware.js'
+export * from './Helpers/HttpCommandsLoader.js'
 
 export class Http {
   /**
