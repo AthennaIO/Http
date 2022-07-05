@@ -1,0 +1,40 @@
+export class <%= namePascal %>Middleware {
+    /**
+    * Resolve any dependency of the service container
+    * inside the constructor.
+    */
+    constructor() {}
+
+    /**
+    * Handle method is executed before the request gets
+    * in your controller.
+    *
+    * @param {import('@athenna/http').HandleContextContract} ctx
+    */
+    async handle({ next }) {
+      next()
+    }
+
+    /**
+    * Intercept method is executed before the response
+    * has been sent.
+    *
+    * @param {import('@athenna/http').InterceptContextContract} ctx
+    */
+    async intercept({ body }) {
+      body.intercepted = true
+
+      return body
+    }
+
+    /**
+    * Terminate method is executed after the response
+    * has been sent.
+    *
+    * @param {import('@athenna/http').TerminateContextContract} ctx
+    * @return any
+    */
+    async terminate({ next }) {
+      next()
+    }
+}
