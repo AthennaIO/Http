@@ -1,6 +1,6 @@
 {
   "name": "@athenna/http",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "description": "The Athenna Http server. Built on top of fastify.",
   "license": "MIT",
   "author": "João Lenon <lenon@athenna.io>",
@@ -49,6 +49,7 @@
     "#tests/*": "./tests/*.js"
   },
   "dependencies": {
+    "@athenna/artisan": "1.2.7",
     "@athenna/ioc": "1.2.0",
     "@athenna/logger": "1.2.5",
     "@secjs/utils": "1.9.4",
@@ -89,7 +90,11 @@
       "html"
     ],
     "report-dir": "./tests/Coverage",
-    "check-coverage": true
+    "check-coverage": true,
+    "statements": "70",
+    "branches": "70",
+    "functions": "70",
+    "lines": "70"
   },
   "husky": {
     "hooks": {
