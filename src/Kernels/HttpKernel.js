@@ -1,8 +1,7 @@
 import { Log } from '@athenna/logger'
-import { Config, Exec, Path, Uuid } from '@secjs/utils'
+import { Config, Module, Path, Uuid } from '@secjs/utils'
 
 import { Server } from '#src/Facades/Server'
-import { pathToFileURL } from 'url'
 
 export class HttpKernel {
   /**
@@ -10,18 +9,22 @@ export class HttpKernel {
    *
    * This middlewares are run during every request to your http server.
    *
-   * @type {any | Promise<any>}
+   * @return {any[] | Promise<any[]>}
    */
-  globalMiddlewares
+  get globalMiddlewares() {
+    return []
+  }
 
   /**
    * The application's named HTTP middlewares.
    *
    * Here you define all your named middlewares to use inside routes/http file.
    *
-   * @type {Record<string, any | Promise<any>>}
+   * @return {Record<string, any | Promise<any>>}
    */
-  namedMiddlewares
+  get namedMiddlewares() {
+    return {}
+  }
 
   /**
    * Register all global and named middlewares to the server.
@@ -29,35 +32,36 @@ export class HttpKernel {
    * @return void
    */
   async registerMiddlewares() {
+    const subAlias = 'App/Http/Middlewares'
+
     /**
      * Binding the named middlewares inside the container and
      * creating a simple alias to use it inside Route.
      */
     for (const key of Object.keys(this.namedMiddlewares)) {
-      const Middleware = await Exec.getModule(this.namedMiddlewares[key])
+      const midModule = this.namedMiddlewares[key]
 
-      if (!ioc.hasDependency(`App/Http/Middlewares/${Middleware.name}`)) {
-        ioc.bind(`App/Http/Middlewares/${Middleware.name}`, Middleware)
+      const { alias, module } = await Module.getWithAlias(midModule, subAlias)
+
+      if (!ioc.hasDependency(alias)) {
+        ioc.bind(alias, module)
       }
 
-      ioc.alias(
-        `App/Http/Middlewares/Names/${key}`,
-        `App/Http/Middlewares/${Middleware.name}`,
-      )
+      ioc.alias(`App/Http/Middlewares/Names/${key}`, alias)
     }
 
     /**
      * Binding the global middlewares inside the container and
      * resolving it inside the Http server using "use" method.
      */
-    for (const module of this.globalMiddlewares) {
-      let Middleware = await Exec.getModule(module)
+    for (const midModule of this.globalMiddlewares) {
+      const { alias, module } = await Module.getWithAlias(midModule, subAlias)
 
-      if (!ioc.hasDependency(`App/Http/Middlewares/${Middleware.name}`)) {
-        ioc.bind(`App/Http/Middlewares/${Middleware.name}`, Middleware)
+      if (!ioc.hasDependency(alias)) {
+        ioc.bind(alias, module)
       }
 
-      Middleware = ioc.safeUse(`App/Http/Middlewares/${Middleware.name}`)
+      const Middleware = ioc.safeUse(alias)
 
       if (Middleware.handle) {
         Server.use(Middleware.handle, 'handle')
@@ -109,9 +113,8 @@ export class HttpKernel {
       return
     }
 
-    const path = Path.app(`Http/Exceptions/Handler.js`)
+    const Handler = await Module.getFrom(Path.http('Exceptions/Handler.js'))
 
-    const Handler = await Exec.getModule(import(pathToFileURL(path).href))
     const handler = new Handler()
 
     Server.setErrorHandler(handler.handle.bind(handler))

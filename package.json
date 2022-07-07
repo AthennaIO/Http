@@ -1,6 +1,6 @@
 {
   "name": "@athenna/http",
-  "version": "1.4.5",
+  "version": "1.4.6",
   "description": "The Athenna Http server. Built on top of fastify.",
   "license": "MIT",
   "author": "João Lenon <lenon@athenna.io>",
@@ -54,10 +54,10 @@
     "#tests/*": "./tests/*.js"
   },
   "dependencies": {
-    "@athenna/artisan": "1.2.7",
-    "@athenna/ioc": "1.2.0",
-    "@athenna/logger": "1.2.5",
-    "@secjs/utils": "1.9.4",
+    "@athenna/artisan": "1.2.9",
+    "@athenna/ioc": "1.2.2",
+    "@athenna/logger": "1.2.7",
+    "@secjs/utils": "1.9.7",
     "fastify": "3.27.4",
     "fastify-cors": "6.0.3",
     "fastify-rate-limit": "5.8.0"
