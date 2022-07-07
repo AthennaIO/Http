@@ -22,7 +22,7 @@ export class HttpKernel {
    *
    * @type {any | Promise<any>}
    */
-  globalMiddlewares: any | Promise<any>
+  get globalMiddlewares(): any | Promise<any>
   /**
    * The application's named HTTP middlewares.
    *
@@ -30,7 +30,7 @@ export class HttpKernel {
    *
    * @type {Record<string, any | Promise<any>>}
    */
-  namedMiddlewares: Record<string, any | Promise<any>>
+  get namedMiddlewares(): Record<string, any | Promise<any>>
 
   /**
    * Register all global and named middlewares to the server.
@@ -81,13 +81,13 @@ export class HttpExceptionHandler {
    *
    * @type {string[]}
    */
-  ignoreCodes: string[]
+  get ignoreCodes(): string[]
   /**
    * Error statuses that should be ignored by Log.
    *
    * @type {number[]}
    */
-  ignoreStatuses: number[]
+  get ignoreStatuses(): number[]
 
   /**
    * The global exception handler of all HTTP requests.

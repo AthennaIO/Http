@@ -7,14 +7,18 @@ export class HttpExceptionHandler {
    *
    * @type {string[]}
    */
-  ignoreCodes = []
+  get ignoreCodes() {
+    return []
+  }
 
   /**
    * Error statuses that should be ignored by Log.
    *
    * @type {number[]}
    */
-  ignoreStatuses = []
+  get ignoreStatuses() {
+    return []
+  }
 
   /**
    * The global exception handler of all HTTP requests.
