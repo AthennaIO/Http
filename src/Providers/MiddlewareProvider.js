@@ -7,8 +7,8 @@
  * file that was distributed with this source code.
  */
 
+import { Module, Path } from '@secjs/utils'
 import { ServiceProvider } from '@athenna/ioc'
-import { Exec, Folder, Path } from '@secjs/utils'
 
 export class MiddlewareProvider extends ServiceProvider {
   /**
@@ -18,23 +18,12 @@ export class MiddlewareProvider extends ServiceProvider {
    */
   async boot() {
     const path = Path.app('Http/Middlewares')
+    const subAlias = 'App/Http/Middlewares'
 
-    if (!(await Folder.exists(path))) {
-      return
-    }
+    const middlewares = await Module.getAllFromWithAlias(path, subAlias)
 
-    const middlewares = (await new Folder(path).load()).getFilesByPattern(
-      '*/**/*.js',
-    )
-
-    const promises = middlewares.map(({ href }) => {
-      return Exec.getModule(import(href)).then(Middleware => {
-        const alias = `App/Http/Middlewares/${Middleware.name}`
-
-        this.container.singleton(alias, Middleware)
-      })
+    middlewares.forEach(({ alias, module }) => {
+      this.container.singleton(alias, module)
     })
-
-    await Promise.all(promises)
   }
 }

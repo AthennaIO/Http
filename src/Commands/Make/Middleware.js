@@ -7,24 +7,27 @@
  * file that was distributed with this source code.
  */
 
-import { fileURLToPath } from 'node:url'
-import { join, dirname } from 'node:path'
-import { Folder, Path, String } from '@secjs/utils'
+import { Path, String } from '@secjs/utils'
 import { Artisan, Command, TemplateHelper } from '@athenna/artisan'
-
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = dirname(__filename)
 
 export class MakeMiddleware extends Command {
   /**
    * The name and signature of the console command.
+   *
+   * @return {string}
    */
-  signature = 'make:middleware <name>'
+  get signature() {
+    return 'make:middleware <name>'
+  }
 
   /**
    * The console command description.
+   *
+   * @return {string}
    */
-  description = 'Make a new middleware file.'
+  get description() {
+    return 'Make a new middleware file.'
+  }
 
   /**
    * Set additional flags in the commander instance.
@@ -51,10 +54,6 @@ export class MakeMiddleware extends Command {
    * @return {Promise<void>}
    */
   async handle(name, options) {
-    TemplateHelper.setTemplatesFolder(
-      new Folder(join(__dirname, '..', '..', '..', 'templates')).loadSync(),
-    )
-
     const resource = 'Middleware'
     const subPath = Path.app(`Http/${String.pluralize(resource)}`)
 
@@ -74,14 +73,12 @@ export class MakeMiddleware extends Command {
     }
 
     if (options.register) {
-      await TemplateHelper.replaceObjectProperty(
+      await TemplateHelper.replaceObjectGetter(
         Path.http('Kernel.js'),
-        'namedMiddlewares =',
+        'namedMiddlewares',
         file.name,
         `#app/Http/Middlewares/${file.name}`,
       )
     }
-
-    TemplateHelper.setOriginalTemplatesFolder()
   }
 }

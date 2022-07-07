@@ -7,20 +7,29 @@
  * file that was distributed with this source code.
  */
 
-import { pathToFileURL } from 'node:url'
 import { Command } from '@athenna/artisan'
-import { Exec, Path, String } from '@secjs/utils'
+import { Module, Path, String } from '@secjs/utils'
+
+import { Route } from '#src/index'
 
 export class RouteList extends Command {
   /**
    * The name and signature of the console command.
+   *
+   * @return {string}
    */
-  signature = 'route:list'
+  get signature() {
+    return 'route:list'
+  }
 
   /**
    * The console command description.
+   *
+   * @return {string}
    */
-  description = 'List all the routes of your application.'
+  get description() {
+    return 'List all the routes of your application.'
+  }
 
   /**
    * Set additional flags in the commander instance.
@@ -46,11 +55,7 @@ export class RouteList extends Command {
   async handle(options) {
     this.simpleLog('[ ROUTE LISTING ]', 'rmNewLineStart', 'bold', 'green')
 
-    const Route = ioc.safeUse('Athenna/Core/HttpRoute')
-
-    const Kernel = await Exec.getModule(
-      import(pathToFileURL(Path.http('Kernel.js')).href),
-    )
+    const Kernel = await Module.getFrom(Path.http('Kernel.js'))
 
     const kernel = new Kernel()
 

@@ -7,7 +7,7 @@
  * file that was distributed with this source code.
  */
 
-import { Exec, Folder, Path } from '@secjs/utils'
+import { Module, Path } from '@secjs/utils'
 import { ServiceProvider } from '@athenna/ioc'
 
 export class ControllerProvider extends ServiceProvider {
@@ -18,23 +18,12 @@ export class ControllerProvider extends ServiceProvider {
    */
   async boot() {
     const path = Path.app('Http/Controllers')
+    const subAlias = 'App/Http/Controllers'
 
-    if (!(await Folder.exists(path))) {
-      return
-    }
+    const controllers = await Module.getAllFromWithAlias(path, subAlias)
 
-    const controllers = (await new Folder(path).load()).getFilesByPattern(
-      '*/**/*.js',
-    )
-
-    const promises = controllers.map(({ href }) => {
-      return Exec.getModule(import(href)).then(Controller => {
-        const alias = `App/Http/Controllers/${Controller.name}`
-
-        this.container.singleton(alias, Controller)
-      })
+    controllers.forEach(({ alias, module }) => {
+      this.container.singleton(alias, module)
     })
-
-    await Promise.all(promises)
   }
 }

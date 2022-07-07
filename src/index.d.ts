@@ -9,6 +9,7 @@
 
 import { Facade } from '@athenna/ioc'
 import { FastifyReply, FastifyRequest } from 'fastify'
+import { Exception } from '@secjs/utils'
 
 export const Server: Facade & Http
 export const Route: Facade & Router.Router
@@ -664,4 +665,215 @@ export interface MiddlewareContract {
   handle?: HandleHandlerContract
   intercept?: InterceptHandlerContract
   terminate?: TerminateHandlerContract
+}
+
+export class HttpException extends Exception {
+  /**
+   * Creates a new instance of HttpException.
+   *
+   * @example
+   *  throw new HttpException()
+   *  This exception uses the 500 status code and the "E_HTTP_ERROR" code.
+   *
+   * @param {string} [content]
+   * @param {number} [status]
+   * @param {string} [code]
+   * @param {string|null} [help]
+   */
+  constructor(content?: string, status?: number, code?: string, help?: string | null)
+}
+
+export class BadGatewayException extends Exception {
+  /**
+   * Creates a new instance of BadGatewayException.
+   *
+   * @example
+   *  throw new BadGatewayException()
+   *  This exception uses the 502 status code and the "E_BAD_GATEWAY_ERROR" code.
+   *
+   * @param {string} [content]
+   * @param {string} [code]
+   * @param {string|null} [help]
+   */
+  constructor(content?: string, code?: string, help?: string | null)
+}
+
+export class BadRequestException extends Exception {
+  /**
+   * Creates a new instance of BadRequestException.
+   *
+   * @example
+   *  throw new BadRequestException()
+   *  This exception uses the 400 status code and the "E_BAD_REQUEST_ERROR" code.
+   *
+   * @param {string} [content]
+   * @param {string} [code]
+   * @param {string|null} [help]
+   */
+  constructor(content?: string, code?: string, help?: string | null)
+}
+
+export class ForbiddenException extends Exception {
+  /**
+   * Creates a new instance of ForbiddenException.
+   *
+   * @example
+   *  throw new ForbiddenException()
+   *  This exception uses the 403 status code and the "E_FORBIDDEN_ERROR" code.
+   *
+   * @param {string} [content]
+   * @param {string} [code]
+   * @param {string|null} [help]
+   */
+  constructor(content?: string, code?: string, help?: string | null)
+}
+
+export class InternalServerException extends Exception {
+  /**
+   * Creates a new instance of InternalServerException.
+   *
+   * @example
+   *  throw new InternalServerException()
+   *  This exception uses the 500 status code and the "E_INTERNAL_ERROR" code.
+   *
+   * @param {string} [content]
+   * @param {string} [code]
+   * @param {string|null} [help]
+   */
+  constructor(content?: string, code?: string, help?: string | null)
+}
+
+export class MethodNotAllowedException extends Exception {
+  /**
+   * Creates a new instance of MethodNotAllowedException.
+   *
+   * @example
+   *  throw new MethodNotAllowedException()
+   *  This exception uses the 405 status code and the "E_METHOD_NOT_ALLOWED_ERROR" code.
+   *
+   * @param {string} [content]
+   * @param {string} [code]
+   * @param {string|null} [help]
+   */
+  constructor(content?: string, code?: string, help?: string | null)
+}
+
+export class NotAcceptableException extends Exception {
+  /**
+   * Creates a new instance of NotAcceptableException.
+   *
+   * @example
+   *  throw new NotAcceptableException()
+   *  This exception uses the 406 status code and the "E_NOT_ACCEPTABLE_ERROR" code.
+   *
+   * @param {string} [content]
+   * @param {string} [code]
+   * @param {string|null} [help]
+   */
+  constructor(content?: string, code?: string, help?: string | null)
+}
+
+export class NotFoundException extends Exception {
+  /**
+   * Creates a new instance of NotFoundException.
+   *
+   * @example
+   *  throw new NotFoundException()
+   *  This exception uses the 404 status code and the "E_NOT_FOUND_ERROR" code.
+   *
+   * @param {string} [content]
+   * @param {string} [code]
+   * @param {string|null} [help]
+   */
+  constructor(content?: string, code?: string, help?: string | null)
+}
+
+export class NotImplementedException extends Exception {
+  /**
+   * Creates a new instance of NotImplementedException.
+   *
+   * @example
+   *  throw new NotImplementedException()
+   *  This exception uses the 501 status code and the "E_NOT_IMPLEMENTED_ERROR" code.
+   *
+   * @param {string} [content]
+   * @param {string} [code]
+   * @param {string|null} [help]
+   */
+  constructor(content?: string, code?: string, help?: string | null)
+}
+
+export class PayloadTooLargeException extends Exception {
+  /**
+   * Creates a new instance of PayloadTooLargeException.
+   *
+   * @example
+   *  throw new PayloadTooLargeException()
+   *  This exception uses the 413 status code and the "E_PAYLOAD_TOO_LARGE_ERROR" code.
+   *
+   * @param {string} [content]
+   * @param {string} [code]
+   * @param {string|null} [help]
+   */
+  constructor(content?: string, code?: string, help?: string | null)
+}
+
+export class RequestTimeoutException extends Exception {
+  /**
+   * Creates a new instance of RequestTimeoutException.
+   *
+   * @example
+   *  throw new RequestTimeoutException()
+   *  This exception uses the 408 status code and the "E_REQUEST_TIMEOUT_ERROR" code.
+   *
+   * @param {string} [content]
+   * @param {string} [code]
+   * @param {string|null} [help]
+   */
+  constructor(content?: string, code?: string, help?: string | null)
+}
+
+export class ServiceUnavailableException extends Exception {
+  /**
+   * Creates a new instance of ServiceUnavailableException.
+   *
+   * @example
+   *  throw new ServiceUnavailableException()
+   *  This exception uses the 503 status code and the "E_SERVICE_UNAVAILABLE_ERROR" code.
+   *
+   * @param {string} [content]
+   * @param {string} [code]
+   * @param {string|null} [help]
+   */
+  constructor(content?: string, code?: string, help?: string | null)
+}
+
+export class UnauthorizedException extends Exception {
+  /**
+   * Creates a new instance of UnauthorizedException.
+   *
+   * @example
+   *  throw new UnauthorizedException()
+   *  This exception uses the 401 status code and the "E_UNAUTHORIZED_ERROR" code.
+   *
+   * @param {string} [content]
+   * @param {string} [code]
+   * @param {string|null} [help]
+   */
+  constructor(content?: string, code?: string, help?: string | null)
+}
+
+export class UnprocessableEntityException extends Exception {
+  /**
+   * Creates a new instance of UnprocessableEntityException.
+   *
+   * @example
+   *  throw new UnprocessableEntityException()
+   *  This exception uses the 422 status code and the "E_UNPROCESSABLE_ENTITY_ERROR" code.
+   *
+   * @param {string} [content]
+   * @param {string} [code]
+   * @param {string|null} [help]
+   */
+  constructor(content?: string, code?: string, help?: string | null)
 }

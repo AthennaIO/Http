@@ -7,24 +7,27 @@
  * file that was distributed with this source code.
  */
 
-import { fileURLToPath } from 'node:url'
-import { join, dirname } from 'node:path'
-import { Folder, Path, String } from '@secjs/utils'
+import { Path, String } from '@secjs/utils'
 import { Artisan, Command, TemplateHelper } from '@athenna/artisan'
-
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = dirname(__filename)
 
 export class MakeController extends Command {
   /**
    * The name and signature of the console command.
+   *
+   * @return {string}
    */
-  signature = 'make:controller <name>'
+  get signature() {
+    return 'make:controller <name>'
+  }
 
   /**
    * The console command description.
+   *
+   * @return {string}
    */
-  description = 'Make a new controller file.'
+  get description() {
+    return 'Make a new controller file.'
+  }
 
   /**
    * Set additional flags in the commander instance.
@@ -49,10 +52,6 @@ export class MakeController extends Command {
    * @return {Promise<void>}
    */
   async handle(name, options) {
-    TemplateHelper.setTemplatesFolder(
-      new Folder(join(__dirname, '..', '..', '..', 'templates')).loadSync(),
-    )
-
     const resource = 'Controller'
     const subPath = Path.app(`Http/${String.pluralize(resource)}`)
 
@@ -70,7 +69,5 @@ export class MakeController extends Command {
     if (options.lint) {
       await Artisan.call(`eslint:fix ${file.path} --resource ${resource}`)
     }
-
-    TemplateHelper.setOriginalTemplatesFolder()
   }
 }

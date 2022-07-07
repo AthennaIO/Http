@@ -24,6 +24,21 @@ export * from './Commands/Make/Controller.js'
 export * from './Commands/Make/Middleware.js'
 export * from './Helpers/HttpCommandsLoader.js'
 
+export * from './Exceptions/BadGatewayException.js'
+export * from './Exceptions/BadRequestException.js'
+export * from './Exceptions/ForbiddenException.js'
+export * from './Exceptions/HttpException.js'
+export * from './Exceptions/InternalServerException.js'
+export * from './Exceptions/MethodNotAllowedException.js'
+export * from './Exceptions/NotAcceptableException.js'
+export * from './Exceptions/NotFoundException.js'
+export * from './Exceptions/NotImplementedException.js'
+export * from './Exceptions/PayloadTooLargeException.js'
+export * from './Exceptions/RequestTimeoutException.js'
+export * from './Exceptions/ServiceUnavailableException.js'
+export * from './Exceptions/UnauthorizedException.js'
+export * from './Exceptions/UnprocessableEntityException.js'
+
 export class Http {
   /**
    * Holds the fastify server instance.
