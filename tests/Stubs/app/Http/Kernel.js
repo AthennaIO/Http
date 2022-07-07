@@ -15,14 +15,18 @@ export class Kernel extends HttpKernel {
    *
    * This middlewares are run during every request to your http server.
    */
-  globalMiddlewares = [import('./Controllers/TestMiddleware.js')]
+  get globalMiddlewares() {
+    return [import('./Controllers/TestMiddleware.js')]
+  }
 
   /**
    * The application's named HTTP middlewares.
    *
    * Here you define all your named middlewares to use inside routes/http file.
    */
-  namedMiddlewares = {
-    intercept: import('./Middlewares/InterceptMiddleware.js'),
+  get namedMiddlewares() {
+    return {
+      intercept: import('./Middlewares/InterceptMiddleware.js'),
+    }
   }
 }

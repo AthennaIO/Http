@@ -586,6 +586,13 @@ export class HttpCommandsLoader {
    * @return {any[]}
    */
   static loadCommands(): any[]
+
+  /**
+   * Return all custom templates from http package.
+   *
+   * @return {any[]}
+   */
+  static loadTemplates(): any[]
 }
 
 export interface NextContract {
