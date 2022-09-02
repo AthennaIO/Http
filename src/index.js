@@ -227,7 +227,7 @@ export class Http {
    * @return {void}
    */
   get(url, handler, middlewares) {
-    this.route(url, ['GET'], handler, middlewares)
+    this.route(url, ['GET', 'OPTIONS'], handler, middlewares)
   }
 
   /**
