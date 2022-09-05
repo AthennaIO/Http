@@ -59,7 +59,7 @@ export class MakeMiddleware extends Command {
 
     this.title(`MAKING ${resource}\n`, 'bold', 'green')
 
-    const file = await this.makeFile(path, 'controller', options.lint)
+    const file = await this.makeFile(path, 'middleware', options.lint)
 
     this.success(`${resource} ({yellow} "${file.name}") successfully created.`)
 
