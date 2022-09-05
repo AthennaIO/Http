@@ -1,5 +1,5 @@
 /**
- * @athenna/artisan
+ * @athenna/http
  *
  * (c) João Lenon <lenon@athenna.io>
  *
@@ -7,8 +7,8 @@
  * file that was distributed with this source code.
  */
 
-import { Path, String } from '@secjs/utils'
-import { Artisan, Command, TemplateHelper } from '@athenna/artisan'
+import { Path } from '@secjs/utils'
+import { Command } from '@athenna/artisan'
 
 export class MakeController extends Command {
   /**
@@ -53,21 +53,12 @@ export class MakeController extends Command {
    */
   async handle(name, options) {
     const resource = 'Controller'
-    const subPath = Path.app(`Http/${String.pluralize(resource)}`)
+    const path = Path.http(`Controllers/${name}.js`)
 
-    this.simpleLog(
-      `[ MAKING ${resource.toUpperCase()} ]\n`,
-      'rmNewLineStart',
-      'bold',
-      'green',
-    )
+    this.title(`MAKING ${resource}\n`, 'bold', 'green')
 
-    const file = await TemplateHelper.getResourceFile(name, resource, subPath)
+    const file = await this.makeFile(path, 'controller', options.lint)
 
     this.success(`${resource} ({yellow} "${file.name}") successfully created.`)
-
-    if (options.lint) {
-      await Artisan.call(`eslint:fix ${file.path} --resource ${resource}`)
-    }
   }
 }

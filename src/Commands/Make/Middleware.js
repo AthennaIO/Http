@@ -1,5 +1,5 @@
 /**
- * @athenna/artisan
+ * @athenna/http
  *
  * (c) João Lenon <lenon@athenna.io>
  *
@@ -7,8 +7,8 @@
  * file that was distributed with this source code.
  */
 
-import { Path, String } from '@secjs/utils'
-import { Artisan, Command, TemplateHelper } from '@athenna/artisan'
+import { Path } from '@secjs/utils'
+import { Command, FilePropertiesHelper } from '@athenna/artisan'
 
 export class MakeMiddleware extends Command {
   /**
@@ -55,29 +55,19 @@ export class MakeMiddleware extends Command {
    */
   async handle(name, options) {
     const resource = 'Middleware'
-    const subPath = Path.app(`Http/${String.pluralize(resource)}`)
+    const path = Path.http(`Middlewares/${name}.js`)
 
-    this.simpleLog(
-      `[ MAKING ${resource.toUpperCase()} ]\n`,
-      'rmNewLineStart',
-      'bold',
-      'green',
-    )
+    this.title(`MAKING ${resource}\n`, 'bold', 'green')
 
-    const file = await TemplateHelper.getResourceFile(name, resource, subPath)
+    const file = await this.makeFile(path, 'controller', options.lint)
 
     this.success(`${resource} ({yellow} "${file.name}") successfully created.`)
 
-    if (options.lint) {
-      await Artisan.call(`eslint:fix ${file.path} --resource ${resource}`)
-    }
-
     if (options.register) {
-      await TemplateHelper.replaceObjectGetter(
+      await FilePropertiesHelper.addContentToObjectGetter(
         Path.http('Kernel.js'),
         'namedMiddlewares',
-        file.name,
-        `#app/Http/Middlewares/${file.name}`,
+        `import('#app/Http/Middlewares/${name}')`,
       )
     }
   }

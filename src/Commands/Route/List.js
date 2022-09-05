@@ -53,7 +53,7 @@ export class RouteList extends Command {
    * @return {Promise<void>}
    */
   async handle(options) {
-    this.simpleLog('[ ROUTE LISTING ]', 'rmNewLineStart', 'bold', 'green')
+    this.title('ROUTE LISTING\n', 'bold', 'green')
 
     const Kernel = await Module.getFrom(Path.http('Kernel.js'))
 
@@ -102,6 +102,6 @@ export class RouteList extends Command {
       rows.push(row)
     })
 
-    this.logTable({ head: header }, ...rows)
+    this.log(this.createTable({ head: header }, ...rows))
   }
 }
