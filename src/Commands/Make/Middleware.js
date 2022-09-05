@@ -7,7 +7,7 @@
  * file that was distributed with this source code.
  */
 
-import { Path } from '@secjs/utils'
+import { Path, String } from '@secjs/utils'
 import { Command, FilePropertiesHelper } from '@athenna/artisan'
 
 export class MakeMiddleware extends Command {
@@ -67,7 +67,9 @@ export class MakeMiddleware extends Command {
       await FilePropertiesHelper.addContentToObjectGetter(
         Path.http('Kernel.js'),
         'namedMiddlewares',
-        `import('#app/Http/Middlewares/${name}')`,
+        `${String.toCamelCase(
+          file.name,
+        )}: import('#app/Http/Middlewares/${name}')`,
       )
     }
   }
