@@ -27,6 +27,17 @@ export default {
   */
 
   channels: {
+    console: {
+      driver: 'null',
+      formatter: 'cli',
+      streamType: 'stdout',
+      formatterConfig: {},
+    },
+    exception: {
+      driver: 'console',
+      formatter: 'none',
+      streamType: 'stdout',
+    },
     application: {
       driver: 'console',
       formatter: 'simple',
