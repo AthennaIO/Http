@@ -8,7 +8,7 @@
  */
 
 import { Path, String } from '@secjs/utils'
-import { Command, FilePropertiesHelper } from '@athenna/artisan'
+import { Artisan, Command, FilePropertiesHelper } from '@athenna/artisan'
 
 export class MakeMiddleware extends Command {
   /**
@@ -64,13 +64,17 @@ export class MakeMiddleware extends Command {
     this.success(`${resource} ({yellow} "${file.name}") successfully created.`)
 
     if (options.register) {
+      const path = Path.http('Kernel.js')
+
       await FilePropertiesHelper.addContentToObjectGetter(
-        Path.http('Kernel.js'),
+        path,
         'namedMiddlewares',
         `${String.toCamelCase(
           file.name,
         )}: import('#app/Http/Middlewares/${name}')`,
       )
+
+      await Artisan.call(`eslint:fix ${path} --quiet`)
     }
   }
 }
