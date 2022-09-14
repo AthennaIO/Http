@@ -85,7 +85,7 @@ export class Request {
    * @return {any}
    */
   get body() {
-    return this.#request.body
+    return this.#request.body || {}
   }
 
   /**
@@ -94,7 +94,7 @@ export class Request {
    * @return {any}
    */
   get params() {
-    return this.#request.params
+    return this.#request.params || {}
   }
 
   /**
@@ -103,7 +103,7 @@ export class Request {
    * @return {any}
    */
   get queries() {
-    return this.#request.query
+    return this.#request.query || {}
   }
 
   /**
@@ -112,7 +112,7 @@ export class Request {
    * @return {any}
    */
   get headers() {
-    return this.#request.headers
+    return this.#request.headers || {}
   }
 
   /**
@@ -123,9 +123,7 @@ export class Request {
    * @return {any}
    */
   param(param, defaultValue) {
-    const params = this.#request.params
-
-    return params[param] || defaultValue
+    return this.params[param] || defaultValue
   }
 
   /**
@@ -136,9 +134,7 @@ export class Request {
    * @return {any}
    */
   query(query, defaultValue) {
-    const queries = this.#request.query
-
-    return queries[query] || defaultValue
+    return this.queries[query] || defaultValue
   }
 
   /**
@@ -149,9 +145,7 @@ export class Request {
    * @return {any}
    */
   header(header, defaultValue) {
-    const headers = this.#request.headers
-
-    return headers[header] || defaultValue
+    return this.headers[header] || defaultValue
   }
 
   /**
@@ -162,9 +156,7 @@ export class Request {
    * @return {any}
    */
   payload(payload, defaultValue) {
-    const body = this.#request.body
-
-    return body[payload] || defaultValue
+    return this.body[payload] || defaultValue
   }
 
   /**

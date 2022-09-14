@@ -86,7 +86,7 @@ test.group('HttpTest', group => {
     assert.deepEqual(response.json(), {
       hello: 'world',
       ip: '127.0.0.1',
-      body: null,
+      body: {},
       params: {},
       queries: {},
       headers: {
@@ -116,7 +116,7 @@ test.group('HttpTest', group => {
     assert.deepEqual(response.json(), {
       hello: 'world',
       ip: '127.0.0.1',
-      body: null,
+      body: {},
       params: {},
       queries: {
         hello: 'true',
@@ -142,7 +142,7 @@ test.group('HttpTest', group => {
     assert.deepEqual(response.json(), {
       hello: 'world-intercepted',
       ip: '127.0.0.1',
-      body: null,
+      body: {},
       params: {},
       queries: {},
       headers: {
