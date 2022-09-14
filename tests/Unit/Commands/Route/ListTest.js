@@ -9,7 +9,7 @@
 
 import { test } from '@japa/runner'
 import { Artisan } from '@athenna/artisan'
-import { Config, Folder, Path } from '@secjs/utils'
+import { Config, File, Folder, Path } from '@secjs/utils'
 
 import { LoggerProvider } from '@athenna/logger/providers/LoggerProvider'
 import { ArtisanProvider } from '@athenna/artisan/providers/ArtisanProvider'
@@ -25,6 +25,7 @@ test.group('MakeControllerTest', group => {
     await new Folder(Path.stubs('app')).copy(Path.app())
     await new Folder(Path.stubs('routes')).copy(Path.routes())
     await new Folder(Path.stubs('config')).copy(Path.config())
+    await new File(Path.stubs('artisan.js')).copy(Path.pwd('artisan.js'))
 
     await new Config().safeLoad(Path.config('app.js'))
     await new Config().safeLoad(Path.config('http.js'))
@@ -48,9 +49,16 @@ test.group('MakeControllerTest', group => {
     await Folder.safeRemove(Path.app())
     await Folder.safeRemove(Path.routes())
     await Folder.safeRemove(Path.config())
+    await File.safeRemove(Path.pwd('artisan.js'))
   })
 
   test('should be able to list all application routes', async ({ assert }) => {
-    await Artisan.call('route:list')
+    const { stdout } = await Artisan.callInChild('route:list --middleware')
+
+    assert.isTrue(stdout.includes('[ ROUTE LISTING ]'))
+    assert.isTrue(stdout.includes('GET|HEAD'))
+    assert.isTrue(stdout.includes('/api'))
+    assert.isTrue(stdout.includes('Middlewares'))
+    assert.isTrue(stdout.includes('Not found'))
   }).timeout(60000)
 })

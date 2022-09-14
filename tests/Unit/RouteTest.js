@@ -23,7 +23,12 @@ import { TerminateMiddleware } from '#tests/Stubs/app/Http/Middlewares/Terminate
 
 test.group('RouteTest', group => {
   const handler = async ({ data, request, response }) => {
-    const body = { hello: 'world' }
+    const body = {
+      hello: request.payload('world', 'world'),
+      param: request.param('param', 'param'),
+      query: request.query('query', 'query'),
+      header: request.header('header', 'header'),
+    }
 
     if (data.param) body.param = data.param
     if (data.midHandler) body.midHandler = data.midHandler
@@ -56,7 +61,7 @@ test.group('RouteTest', group => {
     const response = await Server.request().get('/test')
 
     assert.equal(response.statusCode, 200)
-    assert.deepEqual(response.json(), { hello: 'world' })
+    assert.deepEqual(response.json(), { hello: 'world', param: 'param', query: 'query', header: 'header' })
   })
 
   test('should be able to redirect a route', async ({ assert }) => {
@@ -84,15 +89,15 @@ test.group('RouteTest', group => {
 
     await Server.listen(3041)
 
-    const get = await Server.request().get('/v1/test')
+    const get = await Server.request({ headers: { header: 'testing' } }).get('/v1/test?query=testing')
 
     assert.equal(get.statusCode, 200)
-    assert.deepEqual(get.json(), { hello: 'world' })
+    assert.deepEqual(get.json(), { hello: 'world', param: 'param', query: 'testing', header: 'testing' })
 
-    const post = await Server.request().post('/v1/test')
+    const post = await Server.request().post('/v1/test', { world: 'world' })
 
     assert.equal(post.statusCode, 200)
-    assert.deepEqual(post.json(), { hello: 'world' })
+    assert.deepEqual(post.json(), { hello: 'world', param: 'param', query: 'query', header: 'header' })
   })
 
   test('should be able to register a new route resource', async ({ assert }) => {

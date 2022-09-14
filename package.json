@@ -1,6 +1,6 @@
 {
   "name": "@athenna/http",
-  "version": "1.6.2",
+  "version": "1.6.3",
   "description": "The Athenna Http server. Built on top of fastify.",
   "license": "MIT",
   "author": "João Lenon <lenon@athenna.io>",
@@ -54,10 +54,10 @@
     "#tests/*": "./tests/*.js"
   },
   "dependencies": {
-    "@athenna/artisan": "1.4.4",
+    "@athenna/artisan": "1.4.5",
     "@athenna/ioc": "1.2.3",
-    "@athenna/logger": "1.2.8",
-    "@secjs/utils": "1.9.7",
+    "@athenna/logger": "1.2.9",
+    "@secjs/utils": "1.9.9",
     "fastify": "3.27.4",
     "fastify-cors": "6.0.3",
     "fastify-rate-limit": "5.8.0"
@@ -68,7 +68,7 @@
     "@japa/runner": "2.0.7",
     "@japa/spec-reporter": "1.1.12",
     "c8": "7.11.2",
-    "commitizen": "4.2.4",
+    "commitizen": "4.2.5",
     "cross-env": "7.0.3",
     "cz-conventional-changelog": "3.3.0",
     "eslint": "8.14.0",
@@ -89,6 +89,9 @@
     "all": true,
     "include": [
       "src/**/*.js"
+    ],
+    "exclude": [
+      "src/Exceptions/*.js"
     ],
     "reporter": [
       "text-summary",
