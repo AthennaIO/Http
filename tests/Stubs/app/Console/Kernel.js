@@ -1,4 +1,4 @@
-import { HttpCommandsLoader } from '#src/index'
+import { HttpLoader } from '#src/index'
 import { ConsoleKernel, ArtisanLoader } from '@athenna/artisan'
 
 export class Kernel extends ConsoleKernel {
@@ -8,10 +8,10 @@ export class Kernel extends ConsoleKernel {
    * @return {import('#src/index').Command[] | Promise<any[]>}
    */
   get commands() {
-    return [...ArtisanLoader.loadCommands(), ...HttpCommandsLoader.loadCommands()]
+    return [...ArtisanLoader.loadCommands(), ...HttpLoader.loadCommands()]
   }
 
   get templates() {
-    return [...ArtisanLoader.loadTemplates(), ...HttpCommandsLoader.loadTemplates()]
+    return [...ArtisanLoader.loadTemplates(), ...HttpLoader.loadTemplates()]
   }
 }

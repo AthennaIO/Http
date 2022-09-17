@@ -579,7 +579,7 @@ export interface ResponseContract {
   getFastifyResponse(): FastifyReply
 }
 
-export class HttpCommandsLoader {
+export class HttpLoader {
   /**
    * Return all commands from http package.
    *
