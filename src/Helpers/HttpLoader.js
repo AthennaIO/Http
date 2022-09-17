@@ -1,7 +1,7 @@
 import { join } from 'node:path'
 import { Folder, Module } from '@secjs/utils'
 
-export class HttpCommandsLoader {
+export class HttpLoader {
   /**
    * Return all commands from http package.
    *
