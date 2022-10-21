@@ -9,7 +9,8 @@
 
 import { test } from '@japa/runner'
 import { Artisan } from '@athenna/artisan'
-import { Config, File, Folder, Path } from '@secjs/utils'
+import { Config } from '@athenna/config'
+import { File, Folder, Path } from '@athenna/common'
 
 import { LoggerProvider } from '@athenna/logger/providers/LoggerProvider'
 import { ArtisanProvider } from '@athenna/artisan/providers/ArtisanProvider'
@@ -21,8 +22,8 @@ test.group('MakeControllerTest', group => {
     await new Folder(Path.stubs('app')).copy(Path.app())
     await new Folder(Path.stubs('config')).copy(Path.config())
 
-    await new Config().safeLoad(Path.config('app.js'))
-    await new Config().safeLoad(Path.config('logging.js'))
+    await Config.safeLoad(Path.config('app.js'))
+    await Config.safeLoad(Path.config('logging.js'))
 
     new LoggerProvider().register()
     new ArtisanProvider().register()

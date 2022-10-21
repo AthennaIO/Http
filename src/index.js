@@ -7,7 +7,7 @@
  * file that was distributed with this source code.
  */
 
-import { Options } from '@secjs/utils'
+import { Options } from '@athenna/common'
 
 import fastify from 'fastify'
 import fastifyCors from 'fastify-cors'

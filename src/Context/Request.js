@@ -7,7 +7,8 @@
  * file that was distributed with this source code.
  */
 
-import { Config, Is } from '@secjs/utils'
+import { Config } from '@athenna/config'
+import { Is } from '@athenna/common'
 
 export class Request {
   /**

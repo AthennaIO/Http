@@ -9,7 +9,7 @@
 
 import { Facade } from '@athenna/ioc'
 import { FastifyReply, FastifyRequest } from 'fastify'
-import { Exception } from '@secjs/utils'
+import { Exception } from '@athenna/common'
 
 export const Server: Facade & Http
 export const Route: Facade & Router.Router
@@ -23,6 +23,7 @@ export class HttpKernel {
    * @type {any | Promise<any>}
    */
   get globalMiddlewares(): any | Promise<any>
+
   /**
    * The application's named HTTP middlewares.
    *
@@ -82,6 +83,7 @@ export class HttpExceptionHandler {
    * @type {string[]}
    */
   get ignoreCodes(): string[]
+
   /**
    * Error statuses that should be ignored by Log.
    *
@@ -199,7 +201,12 @@ export class Http {
    * @param {any} [middlewares]
    * @return {void}
    */
-  route(url: string, methods: string[], handler: HandlerContract, middlewares?: any): void
+  route(
+    url: string,
+    methods: string[],
+    handler: HandlerContract,
+    middlewares?: any,
+  ): void
 
   /**
    * Add a new GET route to the http server.
@@ -420,7 +427,11 @@ declare module Router {
      * @param {string|any} handler
      * @return {Route}
      */
-    route(url: string, methods: string[], handler: string | HandlerContract): Route
+    route(
+      url: string,
+      methods: string[],
+      handler: string | HandlerContract,
+    ): Route
 
     /**
      * Creates a new route group.
@@ -687,7 +698,12 @@ export class HttpException extends Exception {
    * @param {string} [code]
    * @param {string|null} [help]
    */
-  constructor(content?: string, status?: number, code?: string, help?: string | null)
+  constructor(
+    content?: string,
+    status?: number,
+    code?: string,
+    help?: string | null,
+  )
 }
 
 export class BadGatewayException extends Exception {

@@ -8,7 +8,8 @@
  */
 
 import { test } from '@japa/runner'
-import { Config, Exception, Folder, Path } from '@secjs/utils'
+import { Config } from '@athenna/config'
+import { Exception, Folder, Path } from '@athenna/common'
 import { LoggerProvider } from '@athenna/logger/providers/LoggerProvider'
 
 import { Route, Server } from '#src/index'
@@ -34,8 +35,8 @@ test.group('KernelTest', group => {
     await new Folder(Path.stubs('app')).copy(Path.app())
     await new Folder(Path.stubs('config')).copy(Path.config())
 
-    await new Config().safeLoad(Path.config('http.js'))
-    await new Config().safeLoad(Path.config('logging.js'))
+    await Config.safeLoad(Path.config('http.js'))
+    await Config.safeLoad(Path.config('logging.js'))
 
     new HttpServerProvider().register()
     new HttpRouteProvider().boot()

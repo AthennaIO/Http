@@ -7,7 +7,7 @@
  * file that was distributed with this source code.
  */
 
-import { Is } from '@secjs/utils'
+import { Is } from '@athenna/common'
 import { Request } from '#src/Context/Request'
 import { Response } from '#src/Context/Response'
 

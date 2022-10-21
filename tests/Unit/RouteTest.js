@@ -8,7 +8,7 @@
  */
 
 import { test } from '@japa/runner'
-import { Exception, Folder, Path } from '@secjs/utils'
+import { Exception, Folder, Path } from '@athenna/common'
 
 import { Route, Server } from '#src/index'
 import { HttpRouteProvider } from '#src/Providers/HttpRouteProvider'
