@@ -1,5 +1,5 @@
 import { join } from 'node:path'
-import { Folder, Module } from '@secjs/utils'
+import { Folder, Module } from '@athenna/common'
 
 export class HttpLoader {
   /**

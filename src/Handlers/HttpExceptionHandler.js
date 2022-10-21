@@ -1,5 +1,6 @@
 import { Log } from '@athenna/logger'
-import { Config, Exception, String } from '@secjs/utils'
+import { Config } from '@athenna/config'
+import { Exception, String } from '@athenna/common'
 
 export class HttpExceptionHandler {
   /**

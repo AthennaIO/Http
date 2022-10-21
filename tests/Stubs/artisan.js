@@ -1,5 +1,6 @@
 import { Artisan } from '@athenna/artisan'
-import { Config, Path } from '@secjs/utils'
+import { Config } from '@athenna/config'
+import { Path } from '@athenna/common'
 import { LoggerProvider } from '@athenna/logger/providers/LoggerProvider'
 import { ArtisanProvider } from '@athenna/artisan/providers/ArtisanProvider'
 
@@ -9,8 +10,8 @@ import { HttpServerProvider } from '#src/Providers/HttpServerProvider'
 import { ControllerProvider } from '#src/Providers/ControllerProvider'
 import { MiddlewareProvider } from '#src/Providers/MiddlewareProvider'
 
-await new Config().safeLoad(Path.config('app.js'))
-await new Config().safeLoad(Path.config('logging.js'))
+await Config.safeLoad(Path.config('app.js'))
+await Config.safeLoad(Path.config('logging.js'))
 
 new LoggerProvider().register()
 new ArtisanProvider().register()

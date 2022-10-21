@@ -8,7 +8,7 @@
  */
 
 import { Route } from '#src/Router/Route'
-import { Is, String } from '@secjs/utils'
+import { Is, String } from '@athenna/common'
 
 export class RouteResource {
   /**

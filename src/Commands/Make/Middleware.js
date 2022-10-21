@@ -7,7 +7,7 @@
  * file that was distributed with this source code.
  */
 
-import { Path, String } from '@secjs/utils'
+import { Path, String } from '@athenna/common'
 import { Artisan, Command, FilePropertiesHelper } from '@athenna/artisan'
 
 export class MakeMiddleware extends Command {

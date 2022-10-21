@@ -8,7 +8,7 @@
  */
 
 import { Command } from '@athenna/artisan'
-import { Module, Path, String } from '@secjs/utils'
+import { Module, Path, String } from '@athenna/common'
 
 import { Route } from '#src/index'
 

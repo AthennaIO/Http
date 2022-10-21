@@ -1,5 +1,6 @@
 import { Log } from '@athenna/logger'
-import { Config, Module, Path, Uuid } from '@secjs/utils'
+import { Config } from '@athenna/config'
+import { Module, Path, Uuid } from '@athenna/common'
 
 import { Server } from '#src/Facades/Server'
 

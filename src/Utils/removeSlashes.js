@@ -1,4 +1,4 @@
-import { Is } from '@secjs/utils'
+import { Is } from '@athenna/common'
 
 /**
  * Remove additional slashes from url.

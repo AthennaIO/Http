@@ -15,7 +15,7 @@ export class Handler extends ConsoleExceptionHandler {
   /**
    * The global exception handler of all Artisan commands.
    *
-   * @param {import('@secjs/utils').Exception} error
+   * @param {import('@athenna/common').Exception} error
    * @return {Promise<void>}
    */
   async handle(error) {

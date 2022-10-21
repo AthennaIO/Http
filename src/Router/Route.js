@@ -7,7 +7,7 @@
  * file that was distributed with this source code.
  */
 
-import { Is } from '@secjs/utils'
+import { Is } from '@athenna/common'
 import { removeSlashes } from '#src/Utils/removeSlashes'
 import { isMiddlewareContract } from '#src/Utils/isMiddlewareContract'
 import { UndefinedMethodException } from '#src/Exceptions/UndefinedMethodException'

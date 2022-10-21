@@ -7,7 +7,7 @@
  * file that was distributed with this source code.
  */
 
-import { Is } from '@secjs/utils'
+import { Is } from '@athenna/common'
 
 import { Route } from '#src/Router/Route'
 import { Server } from '#src/Facades/Server'
