@@ -14,6 +14,7 @@ import { File, Folder, Path } from '@athenna/common'
 
 import { LoggerProvider } from '@athenna/logger/providers/LoggerProvider'
 import { ArtisanProvider } from '@athenna/artisan/providers/ArtisanProvider'
+import { TemplateProvider } from '@athenna/artisan/providers/TemplateProvider'
 
 import { Kernel } from '#tests/Stubs/app/Console/Kernel'
 
@@ -27,6 +28,7 @@ test.group('MakeControllerTest', group => {
 
     new LoggerProvider().register()
     new ArtisanProvider().register()
+    new TemplateProvider().register()
 
     const kernel = new Kernel()
 

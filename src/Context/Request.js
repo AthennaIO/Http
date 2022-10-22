@@ -7,8 +7,8 @@
  * file that was distributed with this source code.
  */
 
-import { Config } from '@athenna/config'
 import { Is } from '@athenna/common'
+import { Config } from '@athenna/config'
 
 export class Request {
   /**

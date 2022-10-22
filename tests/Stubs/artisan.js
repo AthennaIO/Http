@@ -3,6 +3,7 @@ import { Config } from '@athenna/config'
 import { Path } from '@athenna/common'
 import { LoggerProvider } from '@athenna/logger/providers/LoggerProvider'
 import { ArtisanProvider } from '@athenna/artisan/providers/ArtisanProvider'
+import { TemplateProvider } from '@athenna/artisan/providers/TemplateProvider'
 
 import { Kernel } from '#tests/Stubs/app/Console/Kernel'
 import { HttpRouteProvider } from '#src/Providers/HttpRouteProvider'
@@ -15,6 +16,7 @@ await Config.safeLoad(Path.config('logging.js'))
 
 new LoggerProvider().register()
 new ArtisanProvider().register()
+new TemplateProvider().register()
 new HttpServerProvider().register()
 new HttpRouteProvider().boot()
 await new ControllerProvider().boot()
