@@ -14,10 +14,11 @@ import { File, Folder, Path } from '@athenna/common'
 
 import { LoggerProvider } from '@athenna/logger/providers/LoggerProvider'
 import { ArtisanProvider } from '@athenna/artisan/providers/ArtisanProvider'
+import { TemplateProvider } from '@athenna/artisan/providers/TemplateProvider'
 
 import { Kernel } from '#tests/Stubs/app/Console/Kernel'
-import { HttpServerProvider } from '#src/Providers/HttpServerProvider'
 import { HttpRouteProvider } from '#src/Providers/HttpRouteProvider'
+import { HttpServerProvider } from '#src/Providers/HttpServerProvider'
 import { ControllerProvider } from '#src/Providers/ControllerProvider'
 import { MiddlewareProvider } from '#src/Providers/MiddlewareProvider'
 
@@ -34,6 +35,7 @@ test.group('MakeControllerTest', group => {
 
     new LoggerProvider().register()
     new ArtisanProvider().register()
+    new TemplateProvider().register()
     new HttpServerProvider().register()
     new HttpRouteProvider().boot()
     await new ControllerProvider().boot()
