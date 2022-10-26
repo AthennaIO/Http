@@ -19,4 +19,15 @@ export class HttpServerProvider extends ServiceProvider {
   register() {
     this.container.instance('Athenna/Core/HttpServer', new Http())
   }
+
+  /**
+   * Shutdown any application services.
+   *
+   * @return {void|Promise<void>}
+   */
+  async shutdown() {
+    const Server = this.container.safeUse('Athenna/Core/HttpServer')
+
+    await Server.close()
+  }
 }
