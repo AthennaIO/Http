@@ -26,7 +26,11 @@ export class HttpServerProvider extends ServiceProvider {
    * @return {void|Promise<void>}
    */
   async shutdown() {
-    const Server = this.container.safeUse('Athenna/Core/HttpServer')
+    const Server = this.container.use('Athenna/Core/HttpServer')
+
+    if (!Server) {
+      return
+    }
 
     await Server.close()
   }
