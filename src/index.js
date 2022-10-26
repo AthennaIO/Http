@@ -49,12 +49,20 @@ export class Http {
   #server
 
   /**
+   * Indicates if the http server is running or not.
+   *
+   * @type {boolean}
+   */
+  #isListening
+
+  /**
    * Creates a new instance of Http class.
    *
    * @return {Http}
    */
   constructor() {
     this.#server = fastify()
+    this.#isListening = false
   }
 
   /**
@@ -176,6 +184,8 @@ export class Http {
    * @return {Promise<string>}
    */
   async listen(port = 1335, host = '0.0.0.0') {
+    this.#isListening = true
+
     return this.#server.listen(port, host)
   }
 
@@ -185,6 +195,10 @@ export class Http {
    * @return {Promise<void>}
    */
   async close() {
+    if (!this.#isListening) {
+      return
+    }
+
     return this.#server.close()
   }
 
