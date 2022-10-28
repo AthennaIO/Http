@@ -92,6 +92,17 @@ export class Router {
   }
 
   /**
+   * Register a new vanila route using fastify options
+   * directly.
+   *
+   * @param {import('fastify').RouteOptions} options
+   * @return {void}
+   */
+  vanilaRoute(options) {
+    Server.getFastify().route(options)
+  }
+
+  /**
    * Creates a new route group.
    *
    * @param {() => void} callback
