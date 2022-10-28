@@ -53,8 +53,6 @@ test.group('KernelTest', group => {
   test('should be able to instantiate a new http kernel and register middlewares', async ({ assert }) => {
     const kernel = new Kernel()
 
-    await kernel.registerCors()
-    await kernel.registerRateLimit()
     await kernel.registerMiddlewares()
     await kernel.registerErrorHandler()
     await kernel.registerLogMiddleware()
@@ -74,5 +72,34 @@ test.group('KernelTest', group => {
 
     assert.equal(typeError.statusCode, 500)
     assert.equal(typeError.json().message, 'An internal server exception has occurred.')
+  })
+
+  test('should be able to instantiate a new http kernel and register plugins', async ({ assert }) => {
+    const kernel = new Kernel()
+
+    await kernel.registerCors()
+    await kernel.registerHelmet()
+    await kernel.registerSwagger()
+    await kernel.registerRateLimit()
+    await kernel.registerMiddlewares()
+    await kernel.registerErrorHandler()
+    await kernel.registerLogMiddleware()
+    await kernel.registerRequestIdMiddleware()
+
+    Route.get('test', handler)
+    Route.register()
+
+    await Server.listen(3040)
+
+    const response = await Server.request().get('/test')
+
+    assert.isDefined(response.headers['content-security-policy'])
+    assert.isDefined(response.headers['cross-origin-opener-policy'])
+    assert.isDefined(response.headers['access-control-allow-origin'])
+    assert.isDefined(response.headers['x-ratelimit-limit'])
+
+    const { statusCode } = await Server.request().get('/documentation')
+
+    assert.equal(statusCode, 302)
   })
 })

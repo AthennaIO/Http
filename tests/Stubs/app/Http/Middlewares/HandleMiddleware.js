@@ -14,11 +14,9 @@ export class HandleMiddleware {
    * @param {import('#src/index').HandleContextContract} ctx
    * @return {Promise<void>}
    */
-  async handle({ data, next }) {
+  async handle({ data }) {
     if (!data.middlewares) data.middlewares = []
 
     data.middlewares.push('handle')
-
-    return next()
   }
 }

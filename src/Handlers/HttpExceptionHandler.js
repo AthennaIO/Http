@@ -52,7 +52,7 @@ export class HttpExceptionHandler {
     }
 
     const isInternalServerError = statusCode === 500
-    const isDebugMode = Config.get('app.debug')
+    const isDebugMode = Config.get('app.debug', false)
 
     if (isInternalServerError && !isDebugMode) {
       body.name = 'Internal server error'
@@ -61,14 +61,14 @@ export class HttpExceptionHandler {
       delete body.stack
     }
 
+    response.status(statusCode).send(body)
+
     if (
       this.ignoreCodes.includes(code) ||
       this.ignoreStatuses.includes(statusCode)
     ) {
-      return response.status(statusCode).send(body)
+      return
     }
-
-    response.status(statusCode).send(body)
 
     if (error.prettify) {
       const prettyError = await error.prettify()
@@ -80,7 +80,7 @@ export class HttpExceptionHandler {
 
     const exception = new Exception(body.message, body.statusCode, body.code)
 
-    exception.stack = body.stack
+    exception.stack = error.stack
 
     const prettyError = await exception.prettify()
 

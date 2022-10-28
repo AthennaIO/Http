@@ -10,8 +10,7 @@
 import { Options } from '@athenna/common'
 
 import fastify from 'fastify'
-import fastifyCors from 'fastify-cors'
-import fastifyRateLimit from 'fastify-rate-limit'
+
 import { FastifyHandler } from '#src/Handlers/FastifyHandler'
 
 export * from './Facades/Route.js'
@@ -82,12 +81,12 @@ export class Http {
   /**
    * Register a new fastify plugin.
    *
-   * @param {import('fastify').FastifyPluginCallback<import('fastify').FastifyPluginOptions>} plugin
-   * @param {import('fastify').FastifyRegisterOptions<import('fastify').FastifyPluginOptions>} [options]
+   * @param {any} plugin
+   * @param {any} [options]
    * @return {Http}
    */
-  register(plugin, options) {
-    this.#server.register(plugin, options)
+  async register(plugin, options = {}) {
+    await this.#server.register(plugin, options)
 
     return this
   }
@@ -95,25 +94,46 @@ export class Http {
   /**
    * Register the cors plugin to fastify server.
    *
-   * @param {import('fastify-cors').FastifyCorsOptions} [options]
+   * @param {import('@fastify/cors').FastifyCorsOptions} [options]
    * @return {Http}
    */
-  registerCors(options) {
-    this.register(fastifyCors, options)
+  async registerCors(options) {
+    return this.register(import('@fastify/cors'), options)
+  }
 
-    return this
+  /**
+   * Register the helmet plugin to fastify server.
+   *
+   * @param {import('@fastify/helmet').FastifyHelmetOptions} [options]
+   * @return {Http}
+   */
+  async registerHelmet(options) {
+    return this.register(import('@fastify/helmet'), options)
+  }
+
+  /**
+   * Register the swagger plugin to fastify server.
+   *
+   * @param {{
+   *    ui: import('@fastify/swagger-ui').FastifySwaggerUiOptions,
+   *    configurations: import('@fastify/swagger').SwaggerOptions
+   *  }} [options]
+   * @return {Http}
+   */
+  async registerSwagger(options) {
+    await this.register(import('@fastify/swagger'), options.configurations)
+
+    return this.register(import('@fastify/swagger-ui'), options.ui)
   }
 
   /**
    * Register the rate limit plugin to fastify server.
    *
-   * @param {import('fastify-rate-limit').RateLimitPluginOptions} [options]
+   * @param {import('@fastify/rate-limit').RateLimitOptions} [options]
    * @return {Http}
    */
-  registerRateLimit(options) {
-    this.register(fastifyRateLimit, options)
-
-    return this
+  async registerRateLimit(options) {
+    return this.register(import('@fastify/rate-limit'), options)
   }
 
   /**
@@ -186,7 +206,7 @@ export class Http {
   async listen(port = 1335, host = '0.0.0.0') {
     this.#isListening = true
 
-    return this.#server.listen(port, host)
+    return this.#server.listen({ port, host })
   }
 
   /**

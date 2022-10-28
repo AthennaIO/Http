@@ -18,6 +18,6 @@ export class Handler extends HttpExceptionHandler {
    * @param {import('#src/index').ErrorContextContract} ctx
    */
   async handle(ctx) {
-    return super.handle(ctx)
+    await super.handle(ctx)
   }
 }

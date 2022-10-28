@@ -14,11 +14,9 @@ export class TestMiddleware {
    * @param {import('#src/index').HandleContextContract} ctx
    * @return {Promise<void>}
    */
-  async handle({ data, next, request }) {
+  async handle({ data, request }) {
     data.param = 'param'
     request.queries.test = 'middleware'
-
-    return next()
   }
 
   /**
@@ -40,9 +38,7 @@ export class TestMiddleware {
    * @param {import('#src/index').TerminateContextContract} ctx
    * @return {Promise<void>}
    */
-  async terminate({ next }) {
+  async terminate() {
     console.log('Terminate middleware executed!')
-
-    return next()
   }
 }

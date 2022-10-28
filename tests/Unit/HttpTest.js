@@ -50,15 +50,13 @@ test.group('HttpTest', group => {
       return body
     }
 
-    Server.use(({ data, request, next }) => {
+    Server.use(({ data, request }) => {
       if (!request.queries.hello) {
-        return next()
+        return
       }
 
       data.param = 'param'
       request.queries.test = 'middleware'
-
-      next()
     }, 'handle')
 
     Server.get('/test', handler)

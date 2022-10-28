@@ -130,10 +130,8 @@ test.group('RouteTest', group => {
       .middleware(new HandleMiddleware())
       .middleware(new InterceptMiddleware())
       .middleware(new TerminateMiddleware())
-      .middleware(({ data, next }) => {
+      .middleware(({ data }) => {
         data.midHandler = true
-
-        next()
       })
 
     Route.register()
@@ -152,34 +150,26 @@ test.group('RouteTest', group => {
 
   test('should be able to register a new group with resource inside', async ({ assert }) => {
     Route.group(() => {
-      Route.get('test', 'TestController.show').middleware(({ next, request }) => {
+      Route.get('test', 'TestController.show').middleware(({ request }) => {
         request.queries.throwError = 'true'
-
-        next()
       })
 
-      Route.patch('test', 'TestController.show').middleware(({ data, next }) => {
+      Route.patch('test', 'TestController.show').middleware(({ data }) => {
         data.midHandler = false
         data.patchHandler = true
-
-        next()
       })
 
       Route.resource('tests', 'TestController')
         .only(['store'])
-        .middleware(({ data, next }) => {
+        .middleware(({ data }) => {
           data.rscHandler = true
-
-          next()
         })
     })
       .prefix('v1')
       .middleware('HandleMiddleware')
       .middleware('TerminateMiddleware')
-      .middleware(({ data, next }) => {
+      .middleware(({ data }) => {
         data.midHandler = true
-
-        next()
       })
 
     Route.register()
@@ -231,10 +221,8 @@ test.group('RouteTest', group => {
   test('should be able to register a new route with terminate middleware', async ({ assert }) => {
     let terminated = false
 
-    Route.get('test', 'TestController.index').middleware(ctx => {
+    Route.get('test', 'TestController.index').middleware(() => {
       terminated = true
-
-      ctx.next()
     }, 'terminate')
 
     Route.register()
@@ -256,10 +244,8 @@ test.group('RouteTest', group => {
     Route.controller(new TestController())
       .get('test', 'index')
       .middleware(new HandleMiddleware())
-      .middleware(ctx => {
+      .middleware(() => {
         terminated = true
-
-        ctx.next()
       }, 'terminate')
 
     Route.register()
@@ -285,10 +271,8 @@ test.group('RouteTest', group => {
       })
       .prefix('api/v1')
       .middleware(new HandleMiddleware())
-      .middleware(({ next }) => {
+      .middleware(() => {
         terminated = true
-
-        next()
       }, 'terminate')
 
     Route.register()

@@ -127,19 +127,39 @@ export class Http {
   /**
    * Register the cors plugin to fastify server.
    *
-   * @param {import('fastify-cors').FastifyCorsOptions} [options]
+   * @param {import('@fastify/cors').FastifyCorsOptions} [options]
    * @return {Http}
    */
-  registerCors(options?: import('fastify-cors').FastifyCorsOptions): Http
+  registerCors(options?: import('@fastify/cors').FastifyCorsOptions): Http
+
+  /**
+   * Register the helmet plugin to fastify server.
+   *
+   * @param {import('@fastify/helmet').FastifyHelmetOptions} [options]
+   * @return {Http}
+   */
+  registerHelmet(
+    options?: import('@fastify/helmet').FastifyHelmetOptions,
+  ): Http
+
+  /**
+   * Register the swagger plugin to fastify server.
+   *
+   * @param {import('@fastify/swagger').SwaggerOptions} [options]
+   * @return {Http}
+   */
+  registerSwagger(
+    options?: import('@fastify/swagger').SwaggerOptions,
+  ): Http
 
   /**
    * Register the rate limit plugin to fastify server.
    *
-   * @param {import('fastify-rate-limit').RateLimitPluginOptions} [options]
+   * @param {import('@fastify/rate-limit').RateLimitOptions} [options]
    * @return {Http}
    */
   registerRateLimit(
-    options?: import('fastify-rate-limit').RateLimitPluginOptions,
+    options?: import('@fastify/rate-limit').RateLimitOptions,
   ): Http
 
   /**
@@ -633,7 +653,6 @@ export interface HandleContextContract {
   data: any
   params: any
   queries: any
-  next: NextContract
 }
 
 export interface InterceptContextContract {
@@ -656,7 +675,6 @@ export interface TerminateContextContract {
   headers: any
   status: number
   responseTime: number
-  next: NextContract
 }
 
 export interface ErrorHandlerContract {

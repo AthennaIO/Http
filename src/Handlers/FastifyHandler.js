@@ -54,7 +54,7 @@ export class FastifyHandler {
    * @return {any}
    */
   static createDoneHandler(handler) {
-    return (req, res, done) => {
+    return async (req, res) => {
       const request = new Request(req)
       const response = new Response(res)
 
@@ -66,7 +66,6 @@ export class FastifyHandler {
         params: req.params,
         queries: req.query,
         data: req.data,
-        next: done,
       })
     }
   }
@@ -78,7 +77,7 @@ export class FastifyHandler {
    * @return {any}
    */
   static createOnResponseHandler(handler) {
-    return (req, res, done) => {
+    return async (req, res) => {
       const request = new Request(req)
       const response = new Response(res)
 
@@ -94,7 +93,6 @@ export class FastifyHandler {
         headers: res.getHeaders(),
         status: res.statusCode,
         responseTime: res.getResponseTime(),
-        next: done,
       })
     }
   }
@@ -106,7 +104,7 @@ export class FastifyHandler {
    * @return {any}
    */
   static createErrorHandler(handler) {
-    return (error, req, res) => {
+    return async (error, req, res) => {
       const request = new Request(req)
       const response = new Response(res)
 
