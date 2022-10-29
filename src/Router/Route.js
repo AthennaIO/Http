@@ -7,7 +7,7 @@
  * file that was distributed with this source code.
  */
 
-import { Is } from '@athenna/common'
+import { Is, Options, Route as RouteHelper } from '@athenna/common'
 import { removeSlashes } from '#src/Utils/removeSlashes'
 import { isMiddlewareContract } from '#src/Utils/isMiddlewareContract'
 import { UndefinedMethodException } from '#src/Exceptions/UndefinedMethodException'
@@ -95,6 +95,8 @@ export class Route {
 
     this.#helmetOptions = {}
     this.#swaggerOptions = {}
+
+    RouteHelper.getParamsName(url).forEach(param => this.param(param))
 
     if (name) {
       this.name = name
@@ -185,9 +187,16 @@ export class Route {
    * Set up all helmet options for route.
    *
    * @param {any} options
+   * @param {boolean} [override]
    * @return {Route}
    */
-  helmet(options) {
+  helmet(options, override = true) {
+    if (!override) {
+      this.#helmetOptions = Options.create(this.#helmetOptions, options)
+
+      return this
+    }
+
     this.#helmetOptions = options
 
     return this
@@ -197,9 +206,16 @@ export class Route {
    * Set up all swagger options for route.
    *
    * @param {any} options
+   * @param {boolean} [override]
    * @return {Route}
    */
-  swagger(options) {
+  swagger(options, override = true) {
+    if (!override) {
+      this.#swaggerOptions = Options.create(this.#swaggerOptions, options)
+
+      return this
+    }
+
     this.#swaggerOptions = options
 
     return this
@@ -246,13 +262,61 @@ export class Route {
   }
 
   /**
-   * Set body for the route swagger docs.
+   * Set body param for the route swagger docs.
    *
-   * @param {any} body
+   * @param {string} name
+   * @param {string} [type]
+   * @param {string} [description]
    * @return {Route}
    */
-  body(body) {
-    this.#swaggerOptions.body = body
+  body(name, type = 'string', description = '') {
+    if (!this.#swaggerOptions.body) {
+      this.#swaggerOptions.body = {}
+      this.#swaggerOptions.body.type = 'object'
+      this.#swaggerOptions.body.properties = {}
+    }
+
+    this.#swaggerOptions.body.properties[name] = { type, description }
+
+    return this
+  }
+
+  /**
+   * Set param for the route swagger docs.
+   *
+   * @param {string} name
+   * @param {string} [type]
+   * @param {string} [description]
+   * @return {Route}
+   */
+  param(name, type = 'string', description = '') {
+    if (!this.#swaggerOptions.params) {
+      this.#swaggerOptions.params = {}
+      this.#swaggerOptions.params.type = 'object'
+      this.#swaggerOptions.params.properties = {}
+    }
+
+    this.#swaggerOptions.params.properties[name] = { type, description }
+
+    return this
+  }
+
+  /**
+   * Set query string for the route swagger docs.
+   *
+   * @param {string} name
+   * @param {string} [type]
+   * @param {string} [description]
+   * @return {Route}
+   */
+  queryString(name, type = 'string', description = '') {
+    if (!this.#swaggerOptions.queryString) {
+      this.#swaggerOptions.querystring = {}
+      this.#swaggerOptions.querystring.type = 'object'
+      this.#swaggerOptions.querystring.properties = {}
+    }
+
+    this.#swaggerOptions.querystring.properties[name] = { type, description }
 
     return this
   }

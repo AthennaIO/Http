@@ -76,10 +76,10 @@ export class RouteResource {
   /**
    * Register only the methods in the array.
    *
-   * @param {string[]} names
+   * @param {string} names
    * @return {RouteResource}
    */
-  only(names) {
+  only(...names) {
     this.#filter(names, true).forEach(route => (route.deleted = true))
 
     return this
@@ -88,10 +88,10 @@ export class RouteResource {
   /**
    * Register all methods except the methods in the array.
    *
-   * @param {string[]} names
+   * @param {string} names
    * @return {RouteResource}
    */
-  except(names) {
+  except(...names) {
     this.#filter(names, false).forEach(route => (route.deleted = true))
 
     return this
@@ -106,7 +106,7 @@ export class RouteResource {
    */
   helmet(action, options) {
     if (!options) {
-      this.routes.forEach(route => route.helmetOptions(options))
+      this.routes.forEach(route => route.helmet(options))
 
       return this
     }
@@ -118,7 +118,7 @@ export class RouteResource {
         return
       }
 
-      route.helmetOptions(options)
+      route.helmet(options)
     })
 
     return this

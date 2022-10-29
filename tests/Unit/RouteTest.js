@@ -296,4 +296,58 @@ test.group('RouteTest', group => {
 
     assert.throws(useCase, UndefinedMethodException)
   })
+
+  test('should be able to set swagger configurations to route', async ({ assert }) => {
+    await Server.registerSwagger()
+
+    Route.group(() => {
+      Route.get('hello/:id', ctx => {
+        return ctx.response.status(200).json({ hello: 'world' })
+      })
+        .queryString('name')
+        .response(200, {
+          description: 'Successful response',
+          properties: { hello: { type: 'string' } },
+        })
+      Route.resource('tests', 'TestController').except('update', 'delete').swagger('index', { description: 'Get all' })
+    }).swagger({ security: [] })
+
+    Route.register()
+
+    await Server.listen(3049)
+
+    const response = await Server.request().get('/documentation/json')
+
+    assert.deepEqual(response.json().swagger, '2.0')
+    assert.deepEqual(response.json().info, { version: '8.1.0', title: '@fastify/swagger' })
+    assert.isDefined(response.json().paths['/tests'])
+    assert.isDefined(response.json().paths['/tests/{id}'])
+    assert.isDefined(response.json().paths['/tests/{id}'].get.parameters[0].in, 'path')
+    assert.isDefined(response.json().paths['/tests/{id}'].get.parameters[0].name, 'id')
+    assert.deepEqual(response.json().paths['/hello/{id}'].get.security, [])
+    assert.deepEqual(response.json().paths['/hello/{id}'].get.parameters[0].in, 'query')
+    assert.deepEqual(response.json().paths['/hello/{id}'].get.parameters[0].name, 'name')
+    assert.deepEqual(response.json().paths['/hello/{id}'].get.parameters[1].in, 'path')
+    assert.deepEqual(response.json().paths['/hello/{id}'].get.parameters[1].name, 'id')
+    assert.deepEqual(response.json().paths['/hello/{id}'].get.responses['200'].schema.properties.hello.type, 'string')
+  })
+
+  test('should be able to set helmet configurations to route', async ({ assert }) => {
+    await Server.registerHelmet()
+
+    Route.group(() => {
+      Route.resource('tests', 'TestController')
+        .except('update', 'delete')
+        .helmet({ crossOriginEmbedderPolicy: false, contentSecurityPolicy: false })
+    }).helmet({ crossOriginEmbedderPolicy: true, contentSecurityPolicy: true })
+
+    Route.register()
+
+    await Server.listen(3049)
+
+    const response = await Server.request().get('/tests')
+
+    assert.isDefined(response.headers['content-security-policy'])
+    assert.isDefined(response.headers['cross-origin-embedder-policy'])
+  })
 })

@@ -22,8 +22,8 @@ interface FastifySwaggerSchema {
   tags?: string[]
   description?: string
   summary?: string
-  body: any
-  response: any
+  body?: any
+  response?: any
   consumes?: string[]
   produces?: string[]
   externalDocs?:
@@ -415,12 +415,34 @@ declare module Router {
     tags(...tags: string[]): this
 
     /**
-     * Set body for the route swagger docs.
+     * Set body param for the route swagger docs.
      *
-     * @param {any} body
+     * @param {string} name
+     * @param {string} [type]
+     * @param {string} [description]
      * @return {Route}
      */
-    body(body: any): this
+    body(name: string, type?: string, description?: string): Route
+
+    /**
+     * Set param for the route swagger docs.
+     *
+     * @param {string} name
+     * @param {string} [type]
+     * @param {string} [description]
+     * @return {Route}
+     */
+    param(name, type?: string, description?: string): Route
+
+    /**
+     * Set query string for the route swagger docs.
+     *
+     * @param {string} name
+     * @param {string} [type]
+     * @param {string} [description]
+     * @return {Route}
+     */
+    queryString(name, type?: string, description?: string): Route
 
     /**
      * Set response for the route swagger docs.
@@ -477,9 +499,23 @@ declare module Router {
       prepend?: boolean,
     ): this
 
+    /**
+     * Register only the methods in the array.
+     *
+     * @param {string} names
+     * @return {RouteResource}
+     */
     only(names: string[]): this
+    only(...names: string[]): this
 
+    /**
+     * Register all methods except the methods in the array.
+     *
+     * @param {string} names
+     * @return {RouteResource}
+     */
     except(names: string[]): this
+    except(...names: string[]): this
 
     /**
      * Set up helmet options for route resource.

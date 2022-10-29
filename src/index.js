@@ -120,7 +120,7 @@ export class Http {
    *  }} [options]
    * @return {Http}
    */
-  async registerSwagger(options) {
+  async registerSwagger(options = {}) {
     await this.register(import('@fastify/swagger'), options.configurations)
 
     return this.register(import('@fastify/swagger-ui'), options.ui)

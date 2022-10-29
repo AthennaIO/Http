@@ -62,7 +62,7 @@ export class RouteGroup {
    */
   helmet(options) {
     this.routes.forEach(route => {
-      this.#invoke(route, 'helmet', [options])
+      this.#invoke(route, 'helmet', [options, false])
     })
 
     return this
@@ -76,7 +76,7 @@ export class RouteGroup {
    */
   swagger(options) {
     this.routes.forEach(route => {
-      this.#invoke(route, 'swagger', [options])
+      this.#invoke(route, 'swagger', [options, false])
     })
 
     return this
