@@ -12,6 +12,7 @@ import { ControllerProvider } from '#src/Providers/ControllerProvider'
 import { MiddlewareProvider } from '#src/Providers/MiddlewareProvider'
 
 await Config.safeLoad(Path.config('app.js'))
+await Config.safeLoad(Path.config('http.js'))
 await Config.safeLoad(Path.config('logging.js'))
 
 new LoggerProvider().register()

@@ -32,7 +32,7 @@ export default {
       formatter: 'cli',
     },
     exception: {
-      driver: 'console',
+      driver: 'discard',
       formatter: 'none',
       streamType: 'stderr',
     },

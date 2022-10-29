@@ -10,8 +10,7 @@
 import { Options } from '@athenna/common'
 
 import fastify from 'fastify'
-import fastifyCors from 'fastify-cors'
-import fastifyRateLimit from 'fastify-rate-limit'
+
 import { FastifyHandler } from '#src/Handlers/FastifyHandler'
 
 export * from './Facades/Route.js'
@@ -82,12 +81,12 @@ export class Http {
   /**
    * Register a new fastify plugin.
    *
-   * @param {import('fastify').FastifyPluginCallback<import('fastify').FastifyPluginOptions>} plugin
-   * @param {import('fastify').FastifyRegisterOptions<import('fastify').FastifyPluginOptions>} [options]
+   * @param {any} plugin
+   * @param {any} [options]
    * @return {Http}
    */
-  register(plugin, options) {
-    this.#server.register(plugin, options)
+  async register(plugin, options = {}) {
+    await this.#server.register(plugin, options)
 
     return this
   }
@@ -95,25 +94,46 @@ export class Http {
   /**
    * Register the cors plugin to fastify server.
    *
-   * @param {import('fastify-cors').FastifyCorsOptions} [options]
+   * @param {import('@fastify/cors').FastifyCorsOptions} [options]
    * @return {Http}
    */
-  registerCors(options) {
-    this.register(fastifyCors, options)
+  async registerCors(options) {
+    return this.register(import('@fastify/cors'), options)
+  }
 
-    return this
+  /**
+   * Register the helmet plugin to fastify server.
+   *
+   * @param {import('@fastify/helmet').FastifyHelmetOptions} [options]
+   * @return {Http}
+   */
+  async registerHelmet(options) {
+    return this.register(import('@fastify/helmet'), options)
+  }
+
+  /**
+   * Register the swagger plugin to fastify server.
+   *
+   * @param {{
+   *    ui: import('@fastify/swagger-ui').FastifySwaggerUiOptions,
+   *    configurations: import('@fastify/swagger').SwaggerOptions
+   *  }} [options]
+   * @return {Http}
+   */
+  async registerSwagger(options = {}) {
+    await this.register(import('@fastify/swagger'), options.configurations)
+
+    return this.register(import('@fastify/swagger-ui'), options.ui)
   }
 
   /**
    * Register the rate limit plugin to fastify server.
    *
-   * @param {import('fastify-rate-limit').RateLimitPluginOptions} [options]
+   * @param {import('@fastify/rate-limit').RateLimitOptions} [options]
    * @return {Http}
    */
-  registerRateLimit(options) {
-    this.register(fastifyRateLimit, options)
-
-    return this
+  async registerRateLimit(options) {
+    return this.register(import('@fastify/rate-limit'), options)
   }
 
   /**
@@ -186,7 +206,7 @@ export class Http {
   async listen(port = 1335, host = '0.0.0.0') {
     this.#isListening = true
 
-    return this.#server.listen(port, host)
+    return this.#server.listen({ port, host })
   }
 
   /**
@@ -209,9 +229,10 @@ export class Http {
    * @param {string[]} methods
    * @param {any} handler
    * @param {any} [middlewares]
+   * @param {import('fastify').RouteOptions} [otherOptions]
    * @return {void}
    */
-  route(url, methods, handler, middlewares) {
+  route(url, methods, handler, middlewares, otherOptions = {}) {
     const { handlers, terminators, interceptors } = Options.create(
       middlewares,
       {
@@ -230,6 +251,7 @@ export class Http {
       handler: FastifyHandler.createRequestHandler(handler),
       preHandler: handlers.map(m => FastifyHandler.createDoneHandler(m)),
       onSend: interceptors.map(m => FastifyHandler.createOnSendHandler(m)),
+      ...otherOptions,
     })
   }
 
@@ -239,10 +261,11 @@ export class Http {
    * @param {string} url
    * @param {any} handler
    * @param {any} [middlewares]
+   * @param {import('fastify').RouteOptions} [otherOptions]
    * @return {void}
    */
-  get(url, handler, middlewares) {
-    this.route(url, ['GET'], handler, middlewares)
+  get(url, handler, middlewares, otherOptions) {
+    this.route(url, ['GET'], handler, middlewares, otherOptions)
   }
 
   /**
@@ -251,10 +274,11 @@ export class Http {
    * @param {string} url
    * @param {any} handler
    * @param {any} [middlewares]
+   * @param {import('fastify').RouteOptions} [otherOptions]
    * @return {void}
    */
-  head(url, handler, middlewares) {
-    this.route(url, ['HEAD'], handler, middlewares)
+  head(url, handler, middlewares, otherOptions) {
+    this.route(url, ['HEAD'], handler, middlewares, otherOptions)
   }
 
   /**
@@ -263,10 +287,11 @@ export class Http {
    * @param {string} url
    * @param {any} handler
    * @param {any} [middlewares]
+   * @param {import('fastify').RouteOptions} [otherOptions]
    * @return {void}
    */
-  post(url, handler, middlewares) {
-    this.route(url, ['POST'], handler, middlewares)
+  post(url, handler, middlewares, otherOptions) {
+    this.route(url, ['POST'], handler, middlewares, otherOptions)
   }
 
   /**
@@ -275,10 +300,11 @@ export class Http {
    * @param {string} url
    * @param {any} handler
    * @param {any} [middlewares]
+   * @param {import('fastify').RouteOptions} [otherOptions]
    * @return {void}
    */
-  put(url, handler, middlewares) {
-    this.route(url, ['PUT'], handler, middlewares)
+  put(url, handler, middlewares, otherOptions) {
+    this.route(url, ['PUT'], handler, middlewares, otherOptions)
   }
 
   /**
@@ -287,10 +313,11 @@ export class Http {
    * @param {string} url
    * @param {any} handler
    * @param {any} [middlewares]
+   * @param {import('fastify').RouteOptions} [otherOptions]
    * @return {void}
    */
-  patch(url, handler, middlewares) {
-    this.route(url, ['PATCH'], handler, middlewares)
+  patch(url, handler, middlewares, otherOptions) {
+    this.route(url, ['PATCH'], handler, middlewares, otherOptions)
   }
 
   /**
@@ -299,10 +326,11 @@ export class Http {
    * @param {string} url
    * @param {any} handler
    * @param {any} [middlewares]
+   * @param {import('fastify').RouteOptions} [otherOptions]
    * @return {void}
    */
-  delete(url, handler, middlewares) {
-    this.route(url, ['DELETE'], handler, middlewares)
+  delete(url, handler, middlewares, otherOptions) {
+    this.route(url, ['DELETE'], handler, middlewares, otherOptions)
   }
 
   /**
@@ -311,9 +339,10 @@ export class Http {
    * @param {string} url
    * @param {any} handler
    * @param {any} [middlewares]
+   * @param {import('fastify').RouteOptions} [otherOptions]
    * @return {void}
    */
-  options(url, handler, middlewares) {
-    this.route(url, ['OPTIONS'], handler, middlewares)
+  options(url, handler, middlewares, otherOptions) {
+    this.route(url, ['OPTIONS'], handler, middlewares, otherOptions)
   }
 }

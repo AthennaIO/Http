@@ -13,14 +13,14 @@ export class RouteGroup {
   /**
    * All routes registered in the group.
    *
-   * @type {(import('./Route.js').Route | RouteResource | RouteGroup)[]}
+   * @type {(Route | RouteResource | RouteGroup)[]}
    */
   routes
 
   /**
    * Creates a new instance of RouteGroup.
    *
-   * @param {(import('./Route.js').Route | RouteResource | RouteGroup)[]} routes
+   * @param {(Route | RouteResource | RouteGroup)[]} routes
    */
   constructor(routes) {
     this.routes = routes
@@ -49,6 +49,34 @@ export class RouteGroup {
   middleware(middleware, type = 'handle', prepend = false) {
     this.routes.forEach(route => {
       this.#invoke(route, 'middleware', [middleware, type, prepend])
+    })
+
+    return this
+  }
+
+  /**
+   * Set up helmet options for route group.
+   *
+   * @param {any} options
+   * @return {RouteGroup}
+   */
+  helmet(options) {
+    this.routes.forEach(route => {
+      this.#invoke(route, 'helmet', [options, false])
+    })
+
+    return this
+  }
+
+  /**
+   * Set up swagger options for route group.
+   *
+   * @param {any} options
+   * @return {RouteGroup}
+   */
+  swagger(options) {
+    this.routes.forEach(route => {
+      this.#invoke(route, 'swagger', [options, false])
     })
 
     return this

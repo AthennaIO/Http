@@ -16,7 +16,7 @@ export class Kernel extends HttpKernel {
    * This middlewares are run during every request to your http server.
    */
   get globalMiddlewares() {
-    return [import('./Controllers/TestMiddleware.js')]
+    return [import('./Middlewares/TestMiddleware.js')]
   }
 
   /**

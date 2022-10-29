@@ -97,7 +97,33 @@ export class HttpKernel {
       return
     }
 
-    Server.registerCors(Config.get('http.cors'))
+    await Server.registerCors(Config.get('http.cors'))
+  }
+
+  /**
+   * Register helmet plugin.
+   *
+   * @return {Promise<void>}
+   */
+  async registerHelmet() {
+    if (Config.get('http.noHelmet')) {
+      return
+    }
+
+    await Server.registerHelmet(Config.get('http.helmet'))
+  }
+
+  /**
+   * Register swagger plugin.
+   *
+   * @return {Promise<void>}
+   */
+  async registerSwagger() {
+    if (Config.get('http.noSwagger')) {
+      return
+    }
+
+    await Server.registerSwagger(Config.get('http.swagger'))
   }
 
   /**
@@ -110,7 +136,7 @@ export class HttpKernel {
       return
     }
 
-    Server.registerRateLimit(Config.get('http.rateLimit'))
+    await Server.registerRateLimit(Config.get('http.rateLimit'))
   }
 
   /**
@@ -142,8 +168,6 @@ export class HttpKernel {
 
     Server.use(async ctx => {
       await Log.channel('request').info(ctx)
-
-      return ctx.next()
     }, 'terminate')
   }
 
@@ -159,8 +183,6 @@ export class HttpKernel {
 
     Server.use(async ctx => {
       ctx.data.requestId = Uuid.generate('ath')
-
-      return ctx.next()
     }, 'handle')
   }
 }

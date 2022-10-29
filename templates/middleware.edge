@@ -10,16 +10,16 @@ export class {{ namePascal }} {
     * in your controller.
     *
     * @param {import('@athenna/http').HandleContextContract} ctx
+    * @return {Promise<void>}
     */
-    async handle({ next }) {
-      next()
-    }
+    async handle(ctx) {}
 
     /**
     * Intercept method is executed before the response
     * has been sent.
     *
     * @param {import('@athenna/http').InterceptContextContract} ctx
+    * @return {Promise<any>}
     */
     async intercept({ body }) {
       body.intercepted = true
@@ -32,9 +32,7 @@ export class {{ namePascal }} {
     * has been sent.
     *
     * @param {import('@athenna/http').TerminateContextContract} ctx
-    * @return any
+    * @return {Promise<void>}
     */
-    async terminate({ next }) {
-      next()
-    }
+    async terminate(ctx) {}
 }

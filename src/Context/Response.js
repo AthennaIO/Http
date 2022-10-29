@@ -36,6 +36,28 @@ export class Response {
   }
 
   /**
+   * Terminate the request sending the response body.
+   *
+   * @param {any} [data]
+   * @return {void}
+   */
+  json(data) {
+    this.#response.send(data)
+  }
+
+  /**
+   * Apply helmet in response.
+   *
+   * @param {import('@fastify/helmet').FastifyHelmetOptions} [options]
+   * @return {void}
+   */
+  async helmet(options) {
+    await this.#response.helmet(options)
+
+    return this
+  }
+
+  /**
    * Set the response status code.
    *
    * @param {number} code

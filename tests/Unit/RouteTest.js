@@ -130,10 +130,8 @@ test.group('RouteTest', group => {
       .middleware(new HandleMiddleware())
       .middleware(new InterceptMiddleware())
       .middleware(new TerminateMiddleware())
-      .middleware(({ data, next }) => {
+      .middleware(({ data }) => {
         data.midHandler = true
-
-        next()
       })
 
     Route.register()
@@ -152,34 +150,26 @@ test.group('RouteTest', group => {
 
   test('should be able to register a new group with resource inside', async ({ assert }) => {
     Route.group(() => {
-      Route.get('test', 'TestController.show').middleware(({ next, request }) => {
+      Route.get('test', 'TestController.show').middleware(({ request }) => {
         request.queries.throwError = 'true'
-
-        next()
       })
 
-      Route.patch('test', 'TestController.show').middleware(({ data, next }) => {
+      Route.patch('test', 'TestController.show').middleware(({ data }) => {
         data.midHandler = false
         data.patchHandler = true
-
-        next()
       })
 
       Route.resource('tests', 'TestController')
         .only(['store'])
-        .middleware(({ data, next }) => {
+        .middleware(({ data }) => {
           data.rscHandler = true
-
-          next()
         })
     })
       .prefix('v1')
       .middleware('HandleMiddleware')
       .middleware('TerminateMiddleware')
-      .middleware(({ data, next }) => {
+      .middleware(({ data }) => {
         data.midHandler = true
-
-        next()
       })
 
     Route.register()
@@ -231,10 +221,8 @@ test.group('RouteTest', group => {
   test('should be able to register a new route with terminate middleware', async ({ assert }) => {
     let terminated = false
 
-    Route.get('test', 'TestController.index').middleware(ctx => {
+    Route.get('test', 'TestController.index').middleware(() => {
       terminated = true
-
-      ctx.next()
     }, 'terminate')
 
     Route.register()
@@ -256,10 +244,8 @@ test.group('RouteTest', group => {
     Route.controller(new TestController())
       .get('test', 'index')
       .middleware(new HandleMiddleware())
-      .middleware(ctx => {
+      .middleware(() => {
         terminated = true
-
-        ctx.next()
       }, 'terminate')
 
     Route.register()
@@ -285,10 +271,8 @@ test.group('RouteTest', group => {
       })
       .prefix('api/v1')
       .middleware(new HandleMiddleware())
-      .middleware(({ next }) => {
+      .middleware(() => {
         terminated = true
-
-        next()
       }, 'terminate')
 
     Route.register()
@@ -311,5 +295,58 @@ test.group('RouteTest', group => {
     const useCase = () => Route.register()
 
     assert.throws(useCase, UndefinedMethodException)
+  })
+
+  test('should be able to set swagger configurations to route', async ({ assert }) => {
+    await Server.registerSwagger()
+
+    Route.group(() => {
+      Route.get('hello/:id', ctx => {
+        return ctx.response.status(200).json({ hello: 'world' })
+      })
+        .queryString('name')
+        .response(200, {
+          description: 'Successful response',
+          properties: { hello: { type: 'string' } },
+        })
+      Route.resource('tests', 'TestController').except('update', 'delete').swagger('index', { description: 'Get all' })
+    }).swagger({ security: [] })
+
+    Route.register()
+
+    await Server.listen(3049)
+
+    const response = await Server.request().get('/documentation/json')
+
+    assert.deepEqual(response.json().swagger, '2.0')
+    assert.isDefined(response.json().paths['/tests'])
+    assert.isDefined(response.json().paths['/tests/{id}'])
+    assert.isDefined(response.json().paths['/tests/{id}'].get.parameters[0].in, 'path')
+    assert.isDefined(response.json().paths['/tests/{id}'].get.parameters[0].name, 'id')
+    assert.deepEqual(response.json().paths['/hello/{id}'].get.security, [])
+    assert.deepEqual(response.json().paths['/hello/{id}'].get.parameters[0].in, 'query')
+    assert.deepEqual(response.json().paths['/hello/{id}'].get.parameters[0].name, 'name')
+    assert.deepEqual(response.json().paths['/hello/{id}'].get.parameters[1].in, 'path')
+    assert.deepEqual(response.json().paths['/hello/{id}'].get.parameters[1].name, 'id')
+    assert.deepEqual(response.json().paths['/hello/{id}'].get.responses['200'].schema.properties.hello.type, 'string')
+  })
+
+  test('should be able to set helmet configurations to route', async ({ assert }) => {
+    await Server.registerHelmet()
+
+    Route.group(() => {
+      Route.resource('tests', 'TestController')
+        .except('update', 'delete')
+        .helmet({ crossOriginEmbedderPolicy: false, contentSecurityPolicy: false })
+    }).helmet({ crossOriginEmbedderPolicy: true, contentSecurityPolicy: true })
+
+    Route.register()
+
+    await Server.listen(3049)
+
+    const response = await Server.request().get('/tests')
+
+    assert.isDefined(response.headers['content-security-policy'])
+    assert.isDefined(response.headers['cross-origin-embedder-policy'])
   })
 })

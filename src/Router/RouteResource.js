@@ -76,10 +76,10 @@ export class RouteResource {
   /**
    * Register only the methods in the array.
    *
-   * @param {string[]} names
+   * @param {string} names
    * @return {RouteResource}
    */
-  only(names) {
+  only(...names) {
     this.#filter(names, true).forEach(route => (route.deleted = true))
 
     return this
@@ -88,11 +88,65 @@ export class RouteResource {
   /**
    * Register all methods except the methods in the array.
    *
-   * @param {string[]} names
+   * @param {string} names
    * @return {RouteResource}
    */
-  except(names) {
+  except(...names) {
     this.#filter(names, false).forEach(route => (route.deleted = true))
+
+    return this
+  }
+
+  /**
+   * Set up helmet options for route resource.
+   *
+   * @param {string|any} action
+   * @param {any} [options]
+   * @return {RouteResource}
+   */
+  helmet(action, options) {
+    if (!options) {
+      this.routes.forEach(route => route.helmet(options))
+
+      return this
+    }
+
+    const resourceName = `${this.#resourceName}.${action}`
+
+    this.routes.forEach(route => {
+      if (route.name !== resourceName) {
+        return
+      }
+
+      route.helmet(options)
+    })
+
+    return this
+  }
+
+  /**
+   * Set up swagger options for route resource method.
+   *
+   * @param {string|any} action
+   * @param {any} [options]
+   * @return {RouteResource}
+   */
+  swagger(action, options) {
+    if (!options) {
+      this.routes.forEach(route => route.swagger(options))
+
+      return this
+    }
+
+    const resourceName = `${this.#resourceName}.${action}`
+
+    this.routes.forEach(route => {
+      if (route.name !== resourceName) {
+        return
+      }
+
+      route.swagger(options)
+    })
 
     return this
   }
@@ -103,7 +157,7 @@ export class RouteResource {
    * @param {string} url
    * @param {string[]} methods
    * @param {string} action
-   * return {void}
+   * @return {void}
    */
   #makeRoute(url, methods, action) {
     let handler = ''
