@@ -63,6 +63,20 @@ export class Route {
   #prefixes
 
   /**
+   * Helmet options of this route.
+   *
+   * @type {any}
+   */
+  #helmetOptions
+
+  /**
+   * Swagger options of this route.
+   *
+   * @type {any}
+   */
+  #swaggerOptions
+
+  /**
    * Creates a new instance of Route.
    *
    * @param {string} url
@@ -78,6 +92,9 @@ export class Route {
     this.#prefixes = []
     this.#handler = handler
     this.#routeMiddlewares = { handlers: [], terminators: [], interceptors: [] }
+
+    this.#helmetOptions = {}
+    this.#swaggerOptions = {}
 
     if (name) {
       this.name = name
@@ -164,11 +181,112 @@ export class Route {
     return this
   }
 
+  /**
+   * Set up all helmet options for route.
+   *
+   * @param {any} options
+   * @return {Route}
+   */
+  helmet(options) {
+    this.#helmetOptions = options
+
+    return this
+  }
+
+  /**
+   * Set up all swagger options for route.
+   *
+   * @param {any} options
+   * @return {Route}
+   */
+  swagger(options) {
+    this.#swaggerOptions = options
+
+    return this
+  }
+
+  /**
+   * Set a summary for the route swagger docs.
+   *
+   * @param {string} summary
+   * @return {Route}
+   */
+  summary(summary) {
+    this.#swaggerOptions.summary = summary
+
+    return this
+  }
+
+  /**
+   * Set a description for the route swagger docs.
+   *
+   * @param {string} description
+   * @return {Route}
+   */
+  description(description) {
+    this.#swaggerOptions.description = description
+
+    return this
+  }
+
+  /**
+   * Set tags for the route swagger docs.
+   *
+   * @param {string} tags
+   * @return {Route}
+   */
+  tags(...tags) {
+    if (!this.#swaggerOptions.tags) {
+      this.#swaggerOptions.tags = []
+    }
+
+    tags.forEach(tag => this.#swaggerOptions.tags.push(tag))
+
+    return this
+  }
+
+  /**
+   * Set body for the route swagger docs.
+   *
+   * @param {any} body
+   * @return {Route}
+   */
+  body(body) {
+    this.#swaggerOptions.body = body
+
+    return this
+  }
+
+  /**
+   * Set response for the route swagger docs.
+   *
+   * @param {number|any} statusCode
+   * @param {any} [response]
+   * @return {Route}
+   */
+  response(statusCode, response) {
+    if (!this.#swaggerOptions.response) {
+      this.#swaggerOptions.response = {}
+    }
+
+    if (!response) {
+      this.#swaggerOptions.response.default = response
+
+      return this
+    }
+
+    this.#swaggerOptions.response[statusCode] = response
+
+    return this
+  }
+
   toJSON() {
     const json = {
       url: this.#getUrl(),
       methods: this.#methods,
       middlewares: this.#routeMiddlewares,
+      helmetOptions: this.#helmetOptions,
+      swaggerOptions: this.#swaggerOptions,
     }
 
     if (Is.String(this.#handler)) {

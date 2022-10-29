@@ -267,6 +267,10 @@ export class Router {
           route.url,
           route.handler,
           route.middlewares,
+          {
+            helmet: route.helmetOptions,
+            schema: route.swaggerOptions,
+          },
         )
       })
     })

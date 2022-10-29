@@ -8,11 +8,33 @@
  */
 
 import { Facade } from '@athenna/ioc'
-import { FastifyReply, FastifyRequest } from 'fastify'
 import { Exception } from '@athenna/common'
+import { OpenAPIV2, OpenAPIV3 } from 'openapi-types'
+import { FastifyHelmetOptions } from '@fastify/helmet'
+import { FastifyReply, FastifyRequest, RouteOptions } from 'fastify'
 
 export const Server: Facade & Http
 export const Route: Facade & Router.Router
+
+interface FastifySwaggerSchema {
+  hide?: boolean
+  deprecated?: boolean
+  tags?: string[]
+  description?: string
+  summary?: string
+  body: any
+  response: any
+  consumes?: string[]
+  produces?: string[]
+  externalDocs?:
+    | OpenAPIV2.ExternalDocumentationObject
+    | OpenAPIV3.ExternalDocumentationObject
+  security?: Array<{ [securityLabel: string]: string[] }>
+  /**
+   * OpenAPI operation unique identifier
+   */
+  operationId?: string
+}
 
 export class HttpKernel {
   /**
@@ -46,6 +68,20 @@ export class HttpKernel {
    * @return {Promise<void>}
    */
   registerCors(): Promise<void>
+
+  /**
+   * Register helmet plugin.
+   *
+   * @return {Promise<void>}
+   */
+  registerHelmet(): Promise<void>
+
+  /**
+   * Register swagger plugin.
+   *
+   * @return {Promise<void>}
+   */
+  registerSwagger(): Promise<void>
 
   /**
    * Register rate limit plugin.
@@ -138,9 +174,7 @@ export class Http {
    * @param {import('@fastify/helmet').FastifyHelmetOptions} [options]
    * @return {Http}
    */
-  registerHelmet(
-    options?: import('@fastify/helmet').FastifyHelmetOptions,
-  ): Http
+  registerHelmet(options?: import('@fastify/helmet').FastifyHelmetOptions): Http
 
   /**
    * Register the swagger plugin to fastify server.
@@ -148,9 +182,7 @@ export class Http {
    * @param {import('@fastify/swagger').SwaggerOptions} [options]
    * @return {Http}
    */
-  registerSwagger(
-    options?: import('@fastify/swagger').SwaggerOptions,
-  ): Http
+  registerSwagger(options?: import('@fastify/swagger').SwaggerOptions): Http
 
   /**
    * Register the rate limit plugin to fastify server.
@@ -342,6 +374,71 @@ declare module Router {
       prepend?: boolean,
     ): this
 
+    /**
+     * Set up all helmet options for route.
+     *
+     * @param {any} options
+     * @return {Route}
+     */
+    helmet(options: FastifyHelmetOptions): this
+
+    /**
+     * Set up all swagger options for route.
+     *
+     * @param {any} options
+     * @return {Route}
+     */
+    swagger(options: FastifySwaggerSchema): this
+
+    /**
+     * Set a summary for the route swagger docs.
+     *
+     * @param {string} summary
+     * @return {Route}
+     */
+    summary(summary: string): this
+
+    /**
+     * Set a description for the route swagger docs.
+     *
+     * @param {string} description
+     * @return {Route}
+     */
+    description(description: string): this
+
+    /**
+     * Set tags for the route swagger docs.
+     *
+     * @param {string} tags
+     * @return {Route}
+     */
+    tags(...tags: string[]): this
+
+    /**
+     * Set body for the route swagger docs.
+     *
+     * @param {any} body
+     * @return {Route}
+     */
+    body(body: any): this
+
+    /**
+     * Set response for the route swagger docs.
+     *
+     * @param {any} response
+     * @return {Route}
+     */
+    response(response: any): this
+
+    /**
+     * Set response for the route swagger docs.
+     *
+     * @param {number} statusCode
+     * @param {any} response
+     * @return {Route}
+     */
+    response(statusCode: number, response: any): this
+
     toJSON(): any
   }
 
@@ -383,6 +480,40 @@ declare module Router {
     only(names: string[]): this
 
     except(names: string[]): this
+
+    /**
+     * Set up helmet options for route resource.
+     *
+     * @param {FastifyHelmetOptions} options
+     * @return {RouteResource}
+     */
+    helmet(options: FastifyHelmetOptions): this
+
+    /**
+     * Set up helmet options for route resource.
+     *
+     * @param {string} action
+     * @param {FastifyHelmetOptions} options
+     * @return {RouteResource}
+     */
+    helmet(action: string, options: FastifyHelmetOptions): this
+
+    /**
+     * Set up swagger options for route resource method.
+     *
+     * @param {FastifySwaggerSchema} options
+     * @return {RouteResource}
+     */
+    swagger(options: FastifySwaggerSchema): this
+
+    /**
+     * Set up swagger options for route resource method.
+     *
+     * @param {string} action
+     * @param {FastifySwaggerSchema} options
+     * @return {RouteResource}
+     */
+    swagger(action: string, options: FastifySwaggerSchema): this
   }
 
   export class RouteGroup {
@@ -421,6 +552,22 @@ declare module Router {
       type?: 'terminate',
       prepend?: boolean,
     ): this
+
+    /**
+     * Set up helmet options for route group.
+     *
+     * @param {any} options
+     * @return {RouteGroup}
+     */
+    helmet(options: FastifyHelmetOptions): this
+
+    /**
+     * Set up swagger options for route group.
+     *
+     * @param {any} options
+     * @return {RouteGroup}
+     */
+    swagger(options: FastifySwaggerSchema): this
   }
 
   export class Router {
@@ -452,6 +599,15 @@ declare module Router {
       methods: string[],
       handler: string | HandlerContract,
     ): Route
+
+    /**
+     * Register a new vanila route using fastify options
+     * directly.
+     *
+     * @param {import('fastify').RouteOptions} options
+     * @return {void}
+     */
+    vanilaRoute(options: RouteOptions): void
 
     /**
      * Creates a new route group.
@@ -569,44 +725,192 @@ declare module Router {
 }
 
 export interface RequestContract {
-  ip: string
-  method: string
-  hostUrl: string
-  baseUrl: string
-  originalUrl: string
-  body: any
-  params: any
-  queries: any
-  headers: any
+  /**
+   * Get the request ip.
+   *
+   * @return {string}
+   */
+  get ip(): string
+  /**
+   * Get the request method.
+   *
+   * @return {string}
+   */
+  get method(): string
 
-  param(param: string, defaultValue?: string): string | undefined
+  /**
+   * Get the host url from request.
+   *
+   * @return {string}
+   */
+  get hostUrl(): string
 
-  query(query: string, defaultValue?: string): string | undefined
+  /**
+   * Get the base request url.
+   *
+   * @return {string}
+   */
+  get baseUrl(): string
 
-  header(header: string, defaultValue?: string): string | string[] | undefined
+  /**
+   * Get the original request url.
+   *
+   * @return {string}
+   */
+  get originalUrl(): string
 
-  payload(payload: string, defaultValue?: string): any | undefined
+  /**
+   * Get all body from request.
+   *
+   * @return {any}
+   */
+  get body(): any
 
+  /**
+   * Get all params from request.
+   *
+   * @return {any}
+   */
+  get params(): any
+
+  /**
+   * Get all queries from request.
+   *
+   * @return {any}
+   */
+  get queries(): any
+
+  /**
+   * Get all headers from request.
+   *
+   * @return {any}
+   */
+  get headers(): any
+
+  /**
+   * Get a value from the request params or the default value.
+   *
+   * @param {string} param
+   * @param {string} [defaultValue]
+   * @return {any}
+   */
+  param(param, defaultValue): any
+
+  /**
+   * Get a value from the request query param or the default value.
+   *
+   * @param {string} query
+   * @param {string} [defaultValue]
+   * @return {any}
+   */
+  query(query, defaultValue): any
+
+  /**
+   * Get a value from the request header or the default value.
+   *
+   * @param {string} header
+   * @param {string} [defaultValue]
+   * @return {any}
+   */
+  header(header, defaultValue): any
+
+  /**
+   * Get a value from the request body or the default value.
+   *
+   * @param {string} payload
+   * @param {string} [defaultValue]
+   * @return {any}
+   */
+  payload(payload, defaultValue): any
+  /**
+   * Get the default fastify request object.
+   *
+   * @return {import('fastify').FastifyRequest}
+   */
   getFastifyRequest(): FastifyRequest
 }
 
 export interface ResponseContract {
-  send(data?: any): Promise<void> | void
+  /**
+   * Terminate the request sending the response body.
+   *
+   * @param {any} [data]
+   * @return {void}
+   */
+  send(data?: any): Promise<void>
 
-  json(data?: any): Promise<void> | void
+  /**
+   * Terminate the request sending the response body.
+   *
+   * @param {any} [data]
+   * @return {void}
+   */
+  json(data?: any): Promise<void>
 
+  /**
+   * Apply helmet in response.
+   *
+   * @param {import('@fastify/helmet').FastifyHelmetOptions} [options]
+   * @return {void}
+   */
+  helmet(options?: FastifyHelmetOptions): Promise<void>
+
+  /**
+   * Set the response status code.
+   *
+   * @param {number} code
+   * @return {Response}
+   */
   status(code: number): this
 
+  /**
+   * Remove some header from the response.
+   *
+   * @param {string} header
+   * @return {Response}
+   */
   removeHeader(header: string): this
 
+  /**
+   * Add some header to the response.
+   *
+   * @param {string} header
+   * @param {any} value
+   * @return {Response}
+   */
   header(header: string, value: any): this
 
+  /**
+   * Only add some header to the response if it's not defined yet.
+   *
+   * @param {string} header
+   * @param {any} value
+   * @return {Response}
+   */
   safeHeader(header: string, value: any): this
 
+  /**
+   * Redirect the response to other url with different status code.
+   *
+   * @param {string} url
+   * @return {void}
+   */
   redirectTo(url: string): Promise<void> | void
 
-  redirectTo(url: string, statusCode: number): Promise<void> | void
+  /**
+   * Redirect the response to other url with different status code.
+   *
+   * @param {string} url
+   * @param {number} statusCode
+   * @return {void}
+   */
+  redirectTo(url: string, statusCode: number): Promise<void>
 
+  /**
+   * Get the default fastify response object.
+   *
+   * @return {import('fastify').FastifyReply}
+   */
   getFastifyResponse(): FastifyReply
 }
 
@@ -624,10 +928,6 @@ export class HttpLoader {
    * @return {any[]}
    */
   static loadTemplates(): any[]
-}
-
-export interface NextContract {
-  (...params: any[]): void
 }
 
 export interface ContextContract {

@@ -98,12 +98,66 @@ export class RouteResource {
   }
 
   /**
+   * Set up helmet options for route resource.
+   *
+   * @param {string|any} action
+   * @param {any} [options]
+   * @return {RouteResource}
+   */
+  helmet(action, options) {
+    if (!options) {
+      this.routes.forEach(route => route.helmetOptions(options))
+
+      return this
+    }
+
+    const resourceName = `${this.#resourceName}.${action}`
+
+    this.routes.forEach(route => {
+      if (route.name !== resourceName) {
+        return
+      }
+
+      route.helmetOptions(options)
+    })
+
+    return this
+  }
+
+  /**
+   * Set up swagger options for route resource method.
+   *
+   * @param {string|any} action
+   * @param {any} [options]
+   * @return {RouteResource}
+   */
+  swagger(action, options) {
+    if (!options) {
+      this.routes.forEach(route => route.swagger(options))
+
+      return this
+    }
+
+    const resourceName = `${this.#resourceName}.${action}`
+
+    this.routes.forEach(route => {
+      if (route.name !== resourceName) {
+        return
+      }
+
+      route.swagger(options)
+    })
+
+    return this
+  }
+
+  /**
    * Create the route.
    *
    * @param {string} url
    * @param {string[]} methods
    * @param {string} action
-   * return {void}
+   * @return {void}
    */
   #makeRoute(url, methods, action) {
     let handler = ''
