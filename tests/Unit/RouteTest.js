@@ -319,7 +319,6 @@ test.group('RouteTest', group => {
     const response = await Server.request().get('/documentation/json')
 
     assert.deepEqual(response.json().swagger, '2.0')
-    assert.deepEqual(response.json().info, { version: '8.1.0', title: '@fastify/swagger' })
     assert.isDefined(response.json().paths['/tests'])
     assert.isDefined(response.json().paths['/tests/{id}'])
     assert.isDefined(response.json().paths['/tests/{id}'].get.parameters[0].in, 'path')
