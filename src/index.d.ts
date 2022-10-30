@@ -12,6 +12,7 @@ import { Exception } from '@athenna/common'
 import { OpenAPIV2, OpenAPIV3 } from 'openapi-types'
 import { FastifyHelmetOptions } from '@fastify/helmet'
 import { FastifyReply, FastifyRequest, RouteOptions } from 'fastify'
+import { RateLimitOptions } from '@fastify/rate-limit'
 
 export const Server: Facade & Http
 export const Route: Facade & Router.Router
@@ -391,6 +392,14 @@ declare module Router {
     swagger(options: FastifySwaggerSchema): this
 
     /**
+     * Set up all rate limit options for route.
+     *
+     * @param {any} options
+     * @return {Route}
+     */
+    rateLimit(options: RateLimitOptions): this
+
+    /**
      * Set a summary for the route swagger docs.
      *
      * @param {string} summary
@@ -550,6 +559,23 @@ declare module Router {
      * @return {RouteResource}
      */
     swagger(action: string, options: FastifySwaggerSchema): this
+
+    /**
+     * Set up rate limit options for route resource method.
+     *
+     * @param {RateLimitOptions} options
+     * @return {RouteResource}
+     */
+    rateLimit(options: RateLimitOptions): this
+
+    /**
+     * Set up rate limit options for route resource method.
+     *
+     * @param {string} action
+     * @param {RateLimitOptions} options
+     * @return {RouteResource}
+     */
+    rateLimit(action: string, options: RateLimitOptions): this
   }
 
   export class RouteGroup {
@@ -604,6 +630,14 @@ declare module Router {
      * @return {RouteGroup}
      */
     swagger(options: FastifySwaggerSchema): this
+
+    /**
+     * Set up rate limit options for route group.
+     *
+     * @param {any} options
+     * @return {RouteGroup}
+     */
+    rateLimit(options: RateLimitOptions): this
   }
 
   export class Router {

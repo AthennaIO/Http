@@ -106,7 +106,7 @@ export class RouteResource {
    */
   helmet(action, options) {
     if (!options) {
-      this.routes.forEach(route => route.helmet(options))
+      this.routes.forEach(route => route.helmet(action))
 
       return this
     }
@@ -133,7 +133,7 @@ export class RouteResource {
    */
   swagger(action, options) {
     if (!options) {
-      this.routes.forEach(route => route.swagger(options))
+      this.routes.forEach(route => route.swagger(action))
 
       return this
     }
@@ -146,6 +146,33 @@ export class RouteResource {
       }
 
       route.swagger(options)
+    })
+
+    return this
+  }
+
+  /**
+   * Set up rate limit options for route resource method.
+   *
+   * @param {string|any} action
+   * @param {any} [options]
+   * @return {RouteResource}
+   */
+  rateLimit(action, options) {
+    if (!options) {
+      this.routes.forEach(route => route.rateLimit(action))
+
+      return this
+    }
+
+    const resourceName = `${this.#resourceName}.${action}`
+
+    this.routes.forEach(route => {
+      if (route.name !== resourceName) {
+        return
+      }
+
+      route.rateLimit(options)
     })
 
     return this

@@ -77,6 +77,13 @@ export class Route {
   #swaggerOptions
 
   /**
+   * Rate limit options of this route.
+   *
+   * @type {any}
+   */
+  #rateLimitOptions
+
+  /**
    * Creates a new instance of Route.
    *
    * @param {string} url
@@ -95,6 +102,7 @@ export class Route {
 
     this.#helmetOptions = {}
     this.#swaggerOptions = {}
+    this.#rateLimitOptions = {}
 
     RouteHelper.getParamsName(url).forEach(param => this.param(param))
 
@@ -217,6 +225,25 @@ export class Route {
     }
 
     this.#swaggerOptions = options
+
+    return this
+  }
+
+  /**
+   * Set up all rate limit options for route.
+   *
+   * @param {any} options
+   * @param {boolean} [override]
+   * @return {Route}
+   */
+  rateLimit(options, override = true) {
+    if (!override) {
+      this.#rateLimitOptions = Options.create(this.#rateLimitOptions, options)
+
+      return this
+    }
+
+    this.#rateLimitOptions = options
 
     return this
   }
@@ -351,6 +378,7 @@ export class Route {
       middlewares: this.#routeMiddlewares,
       helmetOptions: this.#helmetOptions,
       swaggerOptions: this.#swaggerOptions,
+      rateLimitOptions: this.#rateLimitOptions,
     }
 
     if (Is.String(this.#handler)) {
