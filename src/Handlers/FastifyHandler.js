@@ -25,25 +25,27 @@ export class FastifyHandler {
 
       if (!req.data) req.data = {}
 
-      let body = payload
+      const isJson = Is.Json(payload)
 
-      if (Is.Json(payload)) {
-        body = JSON.parse(body)
+      if (isJson) {
+        payload = JSON.parse(payload)
       }
 
-      body = await handler({
+      payload = await handler({
         request,
         response,
-        body,
+        body: payload,
         status: res.statusCode,
         params: req.params,
         queries: req.query,
         data: req.data,
       })
 
-      if (Is.Object(body)) body = JSON.stringify(body)
+      if (isJson) {
+        payload = JSON.stringify(payload)
+      }
 
-      return body
+      return payload
     }
   }
 
