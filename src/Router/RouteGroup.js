@@ -83,6 +83,20 @@ export class RouteGroup {
   }
 
   /**
+   * Set up rate limit options for route group.
+   *
+   * @param {any} options
+   * @return {RouteGroup}
+   */
+  rateLimit(options) {
+    this.routes.forEach(route => {
+      this.#invoke(route, 'rateLimit', [options, false])
+    })
+
+    return this
+  }
+
+  /**
    * Invoke a method from route.
    *
    * @param {import('./Route.js').Route|RouteResource|RouteGroup} route

@@ -270,6 +270,7 @@ export class Router {
           {
             helmet: route.helmetOptions,
             schema: route.swaggerOptions,
+            config: { rateLimit: route.rateLimitOptions },
           },
         )
       })

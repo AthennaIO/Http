@@ -297,6 +297,25 @@ test.group('RouteTest', group => {
     assert.throws(useCase, UndefinedMethodException)
   })
 
+  test('should be able to set helmet configurations to route', async ({ assert }) => {
+    await Server.registerHelmet()
+
+    Route.group(() => {
+      Route.resource('tests', 'TestController')
+        .except('update', 'delete')
+        .helmet({ crossOriginEmbedderPolicy: false, contentSecurityPolicy: false })
+    }).helmet({ crossOriginEmbedderPolicy: true, contentSecurityPolicy: true })
+
+    Route.register()
+
+    await Server.listen(3049)
+
+    const response = await Server.request().get('/tests')
+
+    assert.isUndefined(response.headers['content-security-policy'])
+    assert.isUndefined(response.headers['cross-origin-embedder-policy'])
+  })
+
   test('should be able to set swagger configurations to route', async ({ assert }) => {
     await Server.registerSwagger()
 
@@ -331,22 +350,24 @@ test.group('RouteTest', group => {
     assert.deepEqual(response.json().paths['/hello/{id}'].get.responses['200'].schema.properties.hello.type, 'string')
   })
 
-  test('should be able to set helmet configurations to route', async ({ assert }) => {
-    await Server.registerHelmet()
+  test('should be able to set rate limit configurations to route', async ({ assert }) => {
+    await Server.registerRateLimit()
 
     Route.group(() => {
       Route.resource('tests', 'TestController')
         .except('update', 'delete')
-        .helmet({ crossOriginEmbedderPolicy: false, contentSecurityPolicy: false })
-    }).helmet({ crossOriginEmbedderPolicy: true, contentSecurityPolicy: true })
+        .rateLimit({ max: 1, timeWindow: 1000 * 60 })
+    })
 
     Route.register()
 
-    await Server.listen(3049)
+    await Server.listen(3050)
 
+    await Server.request().get('/tests')
     const response = await Server.request().get('/tests')
 
-    assert.isDefined(response.headers['content-security-policy'])
-    assert.isDefined(response.headers['cross-origin-embedder-policy'])
+    assert.deepEqual(response.headers['retry-after'], 60000)
+    assert.deepEqual(response.headers['x-ratelimit-limit'], 1)
+    assert.deepEqual(response.headers['x-ratelimit-remaining'], 0)
   })
 })
