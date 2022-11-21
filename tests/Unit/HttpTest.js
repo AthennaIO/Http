@@ -30,6 +30,13 @@ test.group('HttpTest', group => {
     if (data.param) body.param = data.param
     if (request.query('test')) body.test = request.query('test')
     if (request.query('throwError')) throw new Exception('Testing', 400)
+    if (request.query('only')) body.only = request.only('hello')
+    if (request.query('except')) body.except = request.except('hello')
+    if (request.query('input')) {
+      body.input = request.input('hello')
+      body.inputNested = request.input('hello.0.world')
+      body.inputNestedDefault = request.input('hello.0.world.not-found', 'default')
+    }
 
     response.header('testing', 'hello')
     response.removeHeader('testing')
@@ -159,5 +166,20 @@ test.group('HttpTest', group => {
 
     assert.isTrue(routes.includes('test (HEAD)'))
     assert.isTrue(routes.includes('preHandler'))
+  })
+
+  test('should be able to get values from the body using the input, only and except method', async ({ assert }) => {
+    const response = await Server.request()
+      .post('/test?input=true&only=true&except=true')
+      .body({ hello: [{ world: 'nice' }], world: 'hello' })
+
+    const body = response.json()
+
+    assert.deepEqual(body.except, { world: 'hello' })
+    assert.deepEqual(body.only, { hello: [{ world: 'nice' }] })
+
+    assert.deepEqual(body.input, [{ world: 'nice' }])
+    assert.deepEqual(body.inputNested, 'nice')
+    assert.deepEqual(body.inputNestedDefault, 'default')
   })
 })

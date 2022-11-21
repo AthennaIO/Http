@@ -119,6 +119,8 @@ export class Response {
   redirectTo(url, statusCode) {
     if (statusCode) {
       this.#response.redirect(statusCode, url)
+
+      return
     }
 
     this.#response.redirect(url)

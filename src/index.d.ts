@@ -8,7 +8,7 @@
  */
 
 import { Facade } from '@athenna/ioc'
-import { Exception } from '@athenna/common'
+import { Exception, Json } from '@athenna/common'
 import { OpenAPIV2, OpenAPIV3 } from 'openapi-types'
 import { FastifyHelmetOptions } from '@fastify/helmet'
 import { FastifyReply, FastifyRequest, RouteOptions } from 'fastify'
@@ -885,13 +885,41 @@ export interface RequestContract {
   header(header, defaultValue): any
 
   /**
-   * Get a value from the request body or the default value.
+   * Get only the selected values from the request body.
    *
-   * @param {string} payload
-   * @param {string} [defaultValue]
+   * @param {string} keys
    * @return {any}
    */
-  payload(payload, defaultValue): any
+  only(...keys: string[]): any
+  only(keys: string[]): any
+
+  /**
+   * Get all the values from the request body except the selected ones.
+   *
+   * @param {string[]} keys
+   * @return {any}
+   */
+  except(...keys: string[]): any
+  except(keys: string): any
+
+  /**
+   * Get a value from the request body or the default value.
+   *
+   * @param {string} key
+   * @param {any} [defaultValue]
+   * @return {any}
+   */
+  input(key: string, defaultValue?: any): any
+
+  /**
+   * Get a value from the request body or the default value.
+   *
+   * @param {string} key
+   * @param {any} [defaultValue]
+   * @return {any}
+   */
+  payload(key: string, defaultValue?: any): any
+
   /**
    * Get the default fastify request object.
    *
@@ -962,19 +990,10 @@ export interface ResponseContract {
   /**
    * Redirect the response to other url with different status code.
    *
-   * @param {string} url
    * @return {void}
    */
   redirectTo(url: string): Promise<void> | void
-
-  /**
-   * Redirect the response to other url with different status code.
-   *
-   * @param {string} url
-   * @param {number} statusCode
-   * @return {void}
-   */
-  redirectTo(url: string, statusCode: number): Promise<void>
+  redirectTo(url: string, statusCode: number): Promise<void> | void
 
   /**
    * Get the default fastify response object.
