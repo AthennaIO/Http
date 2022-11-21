@@ -7,8 +7,8 @@
  * file that was distributed with this source code.
  */
 
-import { Is } from '@athenna/common'
 import { Config } from '@athenna/config'
+import { Is, Json } from '@athenna/common'
 
 export class Request {
   /**
@@ -150,14 +150,65 @@ export class Request {
   }
 
   /**
+   * Get only the selected values from the request body.
+   *
+   * @param {string} keys
+   * @return {any}
+   */
+  only(...keys) {
+    const body = {}
+
+    Object.keys(this.body).forEach(key => {
+      if (!keys.includes(key)) {
+        return
+      }
+
+      body[key] = this.body[key]
+    })
+
+    return body
+  }
+
+  /**
+   * Get all the values from the request body except the selected ones.
+   *
+   * @param {string[]} keys
+   * @return {any}
+   */
+  except(...keys) {
+    const body = {}
+
+    Object.keys(this.body).forEach(key => {
+      if (keys.includes(key)) {
+        return
+      }
+
+      body[key] = this.body[key]
+    })
+
+    return body
+  }
+
+  /**
    * Get a value from the request body or the default value.
    *
-   * @param {string} payload
+   * @param {string} key
    * @param {string} [defaultValue]
    * @return {any}
    */
-  payload(payload, defaultValue) {
-    return this.body[payload] || defaultValue
+  input(key, defaultValue) {
+    return this.payload(key, defaultValue)
+  }
+
+  /**
+   * Get a value from the request body or the default value.
+   *
+   * @param {string} key
+   * @param {string} [defaultValue]
+   * @return {any}
+   */
+  payload(key, defaultValue) {
+    return Json.get(this.body, key, defaultValue)
   }
 
   /**
