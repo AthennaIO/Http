@@ -9,6 +9,7 @@
 
 import { Config } from '@athenna/config'
 import { Is, Json } from '@athenna/common'
+import { Server } from '#src/index'
 
 export class Request {
   /**
@@ -52,7 +53,7 @@ export class Request {
    * @return {string}
    */
   get hostUrl() {
-    const port = Config.get('http.port', 1335)
+    const port = Config.get('http.port', Server.getPort())
     let host = Config.get('http.domain', `http://localhost:${port}`)
 
     if (!Is.Ip(host) && !host.includes('localhost')) {

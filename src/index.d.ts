@@ -211,6 +211,13 @@ export class Http {
   getRoutes(options?: import('fastify').PrintRoutesOptions): string
 
   /**
+   * Get the server port where http is being running.
+   *
+   * @return {number}
+   */
+  getPort(): number
+
+  /**
    * Print all routes registered.
    *
    * @param {any} handler

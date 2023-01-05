@@ -93,7 +93,7 @@ export class HttpKernel {
    * @return {Promise<void>}
    */
   async registerCors() {
-    if (Config.get('http.noCors')) {
+    if (Config.is('http.noCors', true)) {
       return
     }
 
@@ -106,7 +106,7 @@ export class HttpKernel {
    * @return {Promise<void>}
    */
   async registerHelmet() {
-    if (Config.get('http.noHelmet')) {
+    if (Config.is('http.noHelmet', true)) {
       return
     }
 
@@ -119,7 +119,7 @@ export class HttpKernel {
    * @return {Promise<void>}
    */
   async registerSwagger() {
-    if (Config.get('http.noSwagger')) {
+    if (Config.is('http.noSwagger', true)) {
       return
     }
 
@@ -132,7 +132,7 @@ export class HttpKernel {
    * @return {Promise<void>}
    */
   async registerRateLimit() {
-    if (Config.get('http.noRateLimit')) {
+    if (Config.is('http.noRateLimit', true)) {
       return
     }
 
@@ -145,7 +145,7 @@ export class HttpKernel {
    * @return {Promise<void>}
    */
   async registerErrorHandler() {
-    if (Config.get('http.noErrorHandler')) {
+    if (Config.is('http.noErrorHandler', true)) {
       return
     }
 
@@ -162,7 +162,7 @@ export class HttpKernel {
    * @return {Promise<void>}
    */
   async registerLogMiddleware() {
-    if (!Config.get('http.logRequests')) {
+    if (Config.is('http.logRequests', false)) {
       return
     }
 
@@ -177,7 +177,7 @@ export class HttpKernel {
    * @return {Promise<void>}
    */
   async registerRequestIdMiddleware() {
-    if (Config.get('http.noRequestId')) {
+    if (Config.is('http.noRequestId', true)) {
       return
     }
 

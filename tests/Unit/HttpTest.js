@@ -74,7 +74,7 @@ test.group('HttpTest', group => {
     Server.delete('/test', handler)
     Server.options('/test', handler)
 
-    await Server.listen()
+    await Server.listen(1335)
   })
 
   group.each.teardown(async () => {
