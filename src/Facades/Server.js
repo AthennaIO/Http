@@ -10,6 +10,6 @@
 import { Facade } from '@athenna/ioc'
 
 /**
- * @type {Facade & import('../index.js').Http}
+ * @type {typeof Facade & import('../index.js').Http}
  */
 export const Server = Facade.createFor('Athenna/Core/HttpServer')

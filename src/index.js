@@ -156,6 +156,15 @@ export class Http {
   }
 
   /**
+   * Get the server port where http is being running.
+   *
+   * @return {number}
+   */
+  getPort() {
+    return this.#server.server.address().port
+  }
+
+  /**
    * Print all routes registered.
    *
    * @param {any} handler
@@ -203,7 +212,7 @@ export class Http {
    * @param {string} [host]
    * @return {Promise<string>}
    */
-  async listen(port = 1335, host = '0.0.0.0') {
+  async listen(port = 0, host = '0.0.0.0') {
     this.#isListening = true
 
     return this.#server.listen({ port, host })
