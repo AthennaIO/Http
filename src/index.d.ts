@@ -14,8 +14,8 @@ import { FastifyHelmetOptions } from '@fastify/helmet'
 import { FastifyReply, FastifyRequest, RouteOptions } from 'fastify'
 import { RateLimitOptions } from '@fastify/rate-limit'
 
-export const Server: Facade & Http
-export const Route: Facade & Router.Router
+export const Server: typeof Facade & Http
+export const Route: typeof Facade & Router.Router
 
 interface FastifySwaggerSchema {
   hide?: boolean
