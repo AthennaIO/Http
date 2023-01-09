@@ -55,7 +55,7 @@ export class MakeMiddleware extends Command {
    */
   async handle(name, options) {
     const resource = 'Middleware'
-    const path = Path.http(`Middlewares/${name}.js`)
+    const path = Path.http(`Middlewares/${name}.${Path.ext()}`)
 
     this.title(`MAKING ${resource}\n`, 'bold', 'green')
 
@@ -64,7 +64,7 @@ export class MakeMiddleware extends Command {
     this.success(`${resource} ({yellow} "${file.name}") successfully created.`)
 
     if (options.register) {
-      const path = Path.http('Kernel.js')
+      const path = Path.http(`Kernel.${Path.ext()}`)
 
       await FilePropertiesHelper.addContentToObjectGetter(
         path,

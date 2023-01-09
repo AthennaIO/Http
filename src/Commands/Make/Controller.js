@@ -53,7 +53,7 @@ export class MakeController extends Command {
    */
   async handle(name, options) {
     const resource = 'Controller'
-    const path = Path.http(`Controllers/${name}.js`)
+    const path = Path.http(`Controllers/${name}.${Path.ext()}`)
 
     this.title(`MAKING ${resource}\n`, 'bold', 'green')
 
