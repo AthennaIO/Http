@@ -149,7 +149,9 @@ export class HttpKernel {
       return
     }
 
-    const Handler = await Module.getFrom(Path.http('Exceptions/Handler.js'))
+    const Handler = await Module.getFrom(
+      Path.http(`Exceptions/Handler.${Path.ext()}`),
+    )
 
     const handler = new Handler()
 
