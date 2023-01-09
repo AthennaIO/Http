@@ -55,7 +55,7 @@ export class RouteList extends Command {
   async handle(options) {
     this.title('ROUTE LISTING\n', 'bold', 'green')
 
-    const Kernel = await Module.getFrom(Path.http('Kernel.js'))
+    const Kernel = await Module.getFrom(Path.http(`Kernel.${Path.ext()}`))
 
     const kernel = new Kernel()
 
@@ -66,7 +66,7 @@ export class RouteList extends Command {
     await kernel.registerLogMiddleware()
     await kernel.registerRequestIdMiddleware()
 
-    const routePath = Path.routes('http.js')
+    const routePath = Path.routes(`http.${Path.ext()}`)
 
     await import(routePath)
     const routes = Route.listRoutes()
