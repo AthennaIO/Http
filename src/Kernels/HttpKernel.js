@@ -7,11 +7,12 @@
  * file that was distributed with this source code.
  */
 
+import rTracer from 'cls-rtracer'
+
 import { Log } from '@athenna/logger'
 import { Config } from '@athenna/config'
-import { Module, Path, Uuid } from '@athenna/common'
-
 import { Server } from '#src/Facades/Server'
+import { Module, Path } from '@athenna/common'
 
 export class HttpKernel {
   /**
@@ -101,6 +102,21 @@ export class HttpKernel {
   }
 
   /**
+   * Register the rTracer plugin.
+   *
+   * @return {Promise<void>}
+   */
+  async registerTracer() {
+    if (Config.is('http.noTracer', true)) {
+      return
+    }
+
+    Server.use(async ctx => (ctx.data.traceId = rTracer.id()))
+
+    await Server.registerTracer(Config.get('http.tracer'))
+  }
+
+  /**
    * Register helmet plugin.
    *
    * @return {Promise<void>}
@@ -168,23 +184,6 @@ export class HttpKernel {
       return
     }
 
-    Server.use(async ctx => {
-      await Log.channel('request').info(ctx)
-    }, 'terminate')
-  }
-
-  /**
-   * Register the requestId handle middleware.
-   *
-   * @return {Promise<void>}
-   */
-  async registerRequestIdMiddleware() {
-    if (Config.is('http.noRequestId', true)) {
-      return
-    }
-
-    Server.use(async ctx => {
-      ctx.data.requestId = Uuid.generate('ath')
-    }, 'handle')
+    Server.use(async ctx => Log.channel('request').info(ctx), 'terminate')
   }
 }

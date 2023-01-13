@@ -23,7 +23,7 @@ export class ControllerProvider extends ServiceProvider {
     const controllers = await Module.getAllFromWithAlias(path, subAlias)
 
     controllers.forEach(({ alias, module }) => {
-      this.container.singleton(alias, module)
+      this.container.bind(alias, module)
     })
   }
 }
