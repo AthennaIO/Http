@@ -7,10 +7,9 @@
  * file that was distributed with this source code.
  */
 
-import { Options } from '@athenna/common'
-
 import fastify from 'fastify'
 
+import { Options } from '@athenna/common'
 import { FastifyHandler } from '#src/Handlers/FastifyHandler'
 
 export * from './Facades/Route.js'
@@ -83,7 +82,7 @@ export class Http {
    *
    * @param {any} plugin
    * @param {any} [options]
-   * @return {Http}
+   * @return {Promise<Http>}
    */
   async register(plugin, options = {}) {
     await this.#server.register(plugin, options)
@@ -95,17 +94,29 @@ export class Http {
    * Register the cors plugin to fastify server.
    *
    * @param {import('@fastify/cors').FastifyCorsOptions} [options]
-   * @return {Http}
+   * @return {Promise<Http>}
    */
   async registerCors(options) {
     return this.register(import('@fastify/cors'), options)
   }
 
   /**
+   * Register the rTracer plugin to fastify server.
+   *
+   * @param {import('cls-rtracer').IFastifyOptions} [options]
+   * @return {Promise<Http>}
+   */
+  async registerTracer(options) {
+    const rTracer = await import('cls-rtracer')
+
+    return this.register(rTracer.fastifyPlugin, options)
+  }
+
+  /**
    * Register the helmet plugin to fastify server.
    *
    * @param {import('@fastify/helmet').FastifyHelmetOptions} [options]
-   * @return {Http}
+   * @return {Promise<Http>}
    */
   async registerHelmet(options) {
     return this.register(import('@fastify/helmet'), options)
@@ -118,7 +129,7 @@ export class Http {
    *    ui: import('@fastify/swagger-ui').FastifySwaggerUiOptions,
    *    configurations: import('@fastify/swagger').SwaggerOptions
    *  }} [options]
-   * @return {Http}
+   * @return {Promise<Http>}
    */
   async registerSwagger(options = {}) {
     await this.register(import('@fastify/swagger'), options.configurations)
@@ -130,7 +141,7 @@ export class Http {
    * Register the rate limit plugin to fastify server.
    *
    * @param {import('@fastify/rate-limit').RateLimitOptions} [options]
-   * @return {Http}
+   * @return {Promise<Http>}
    */
   async registerRateLimit(options) {
     return this.register(import('@fastify/rate-limit'), options)
@@ -162,6 +173,15 @@ export class Http {
    */
   getPort() {
     return this.#server.server.address().port
+  }
+
+  /**
+   * Get the server http version.
+   *
+   * @return {string}
+   */
+  getVersion() {
+    return this.#server.version
   }
 
   /**

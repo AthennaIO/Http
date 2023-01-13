@@ -9,7 +9,7 @@
 
 import { test } from '@japa/runner'
 import { Config } from '@athenna/config'
-import { Exception, Folder, Path } from '@athenna/common'
+import { Exception, Folder, Is, Path } from '@athenna/common'
 import { LoggerProvider } from '@athenna/logger/providers/LoggerProvider'
 
 import { Route, Server } from '#src/index'
@@ -28,7 +28,7 @@ test.group('KernelTest', group => {
     if (request.queries.throwError) throw new Exception('Testing', 400, 'EXCEPTION', 'Restart computer.')
     if (request.queries.throwTypeError) throw new TypeError('Type error happens')
 
-    response.status(200).send(body)
+    response.header('x-request-id', data.traceId).status(200).send(body)
   }
 
   group.each.setup(async () => {
@@ -53,10 +53,10 @@ test.group('KernelTest', group => {
   test('should be able to instantiate a new http kernel and register middlewares', async ({ assert }) => {
     const kernel = new Kernel()
 
+    await kernel.registerTracer()
     await kernel.registerMiddlewares()
     await kernel.registerErrorHandler()
     await kernel.registerLogMiddleware()
-    await kernel.registerRequestIdMiddleware()
 
     Route.get('test', handler).middleware('intercept')
     Route.register()
@@ -78,13 +78,13 @@ test.group('KernelTest', group => {
     const kernel = new Kernel()
 
     await kernel.registerCors()
+    await kernel.registerTracer()
     await kernel.registerHelmet()
     await kernel.registerSwagger()
     await kernel.registerRateLimit()
     await kernel.registerMiddlewares()
     await kernel.registerErrorHandler()
     await kernel.registerLogMiddleware()
-    await kernel.registerRequestIdMiddleware()
 
     Route.get('test', handler)
     Route.register()
@@ -97,6 +97,7 @@ test.group('KernelTest', group => {
     assert.isDefined(response.headers['cross-origin-opener-policy'])
     assert.isDefined(response.headers['access-control-allow-origin'])
     assert.isDefined(response.headers['x-ratelimit-limit'])
+    assert.isTrue(Is.Uuid(response.headers['x-request-id']))
 
     const { statusCode } = await Server.request().get('/documentation')
 

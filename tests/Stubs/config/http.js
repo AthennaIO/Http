@@ -1,5 +1,10 @@
 export default {
   logRequests: false,
+  noTracer: false,
+  tracer: {
+    useHeader: true,
+    headerName: 'X-Request-Id',
+  },
   noRateLimit: false,
   rateLimit: {
     global: true,

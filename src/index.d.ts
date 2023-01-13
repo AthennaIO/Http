@@ -11,8 +11,8 @@ import { Facade } from '@athenna/ioc'
 import { Exception, Json } from '@athenna/common'
 import { OpenAPIV2, OpenAPIV3 } from 'openapi-types'
 import { FastifyHelmetOptions } from '@fastify/helmet'
-import { FastifyReply, FastifyRequest, RouteOptions } from 'fastify'
 import { RateLimitOptions } from '@fastify/rate-limit'
+import { FastifyReply, FastifyRequest, RouteOptions } from 'fastify'
 
 export const Server: typeof Facade & Http
 export const Route: typeof Facade & Router.Router
@@ -71,6 +71,13 @@ export class HttpKernel {
   registerCors(): Promise<void>
 
   /**
+   * Register the rTracer plugin.
+   *
+   * @return {Promise<void>}
+   */
+  registerTracer(): Promise<void>
+
+  /**
    * Register helmet plugin.
    *
    * @return {Promise<void>}
@@ -104,13 +111,6 @@ export class HttpKernel {
    * @return {Promise<void>}
    */
   registerLogMiddleware(): Promise<void>
-
-  /**
-   * Register the requestId handle middleware.
-   *
-   * @return {Promise<void>}
-   */
-  registerRequestIdMiddleware(): Promise<void>
 }
 
 export class HttpExceptionHandler {
@@ -150,7 +150,7 @@ export class Http {
    *
    * @param {import('fastify').FastifyPluginCallback<import('fastify').FastifyPluginOptions>} plugin
    * @param {import('fastify').FastifyRegisterOptions<import('fastify').FastifyPluginOptions>} [options]
-   * @return {Http}
+   * @return {Promise<Http>}
    */
   register(
     plugin: import('fastify').FastifyPluginCallback<
@@ -159,41 +159,49 @@ export class Http {
     options?: import('fastify').FastifyRegisterOptions<
       import('fastify').FastifyPluginOptions
     >,
-  ): Http
+  ): Promise<Http>
 
   /**
    * Register the cors plugin to fastify server.
    *
    * @param {import('@fastify/cors').FastifyCorsOptions} [options]
-   * @return {Http}
+   * @return {Promise<Http>}
    */
-  registerCors(options?: import('@fastify/cors').FastifyCorsOptions): Http
+  registerCors(options?: import('@fastify/cors').FastifyCorsOptions): Promise<Http>
+
+  /**
+   * Register the rTracer plugin.
+   *
+   * @param {import('cls-rtracer').IFastifyOptions} options
+   * @return {Promise<Http>}
+   */
+  registerTracer(options?: import('cls-rtracer').IFastifyOptions): Promise<Http>
 
   /**
    * Register the helmet plugin to fastify server.
    *
    * @param {import('@fastify/helmet').FastifyHelmetOptions} [options]
-   * @return {Http}
+   * @return {Promise<Http>}
    */
-  registerHelmet(options?: import('@fastify/helmet').FastifyHelmetOptions): Http
+  registerHelmet(options?: import('@fastify/helmet').FastifyHelmetOptions): Promise<Http>
 
   /**
    * Register the swagger plugin to fastify server.
    *
    * @param {import('@fastify/swagger').SwaggerOptions} [options]
-   * @return {Http}
+   * @return {Promise<Http>}
    */
-  registerSwagger(options?: import('@fastify/swagger').SwaggerOptions): Http
+  registerSwagger(options?: import('@fastify/swagger').SwaggerOptions): Promise<Http>
 
   /**
    * Register the rate limit plugin to fastify server.
    *
    * @param {import('@fastify/rate-limit').RateLimitOptions} [options]
-   * @return {Http}
+   * @return {Promise<Http>}
    */
   registerRateLimit(
     options?: import('@fastify/rate-limit').RateLimitOptions,
-  ): Http
+  ): Promise<Http>
 
   /**
    * Get the fastify server instance.
@@ -216,6 +224,13 @@ export class Http {
    * @return {number}
    */
   getPort(): number
+
+  /**
+   * Get the server http version.
+   *
+   * @return {string}
+   */
+  getVersion(): string
 
   /**
    * Print all routes registered.

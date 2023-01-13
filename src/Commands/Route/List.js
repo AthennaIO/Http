@@ -60,11 +60,11 @@ export class RouteList extends Command {
     const kernel = new Kernel()
 
     await kernel.registerCors()
+    await kernel.registerTracer()
     await kernel.registerRateLimit()
     await kernel.registerMiddlewares()
     await kernel.registerErrorHandler()
     await kernel.registerLogMiddleware()
-    await kernel.registerRequestIdMiddleware()
 
     const routePath = Path.routes(`http.${Path.ext()}`)
 
