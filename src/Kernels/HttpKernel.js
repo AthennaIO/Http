@@ -9,7 +9,7 @@
 
 import rTracer from 'cls-rtracer'
 
-import { Log } from '@athenna/logger'
+import { Log, Logger } from '@athenna/logger'
 import { Config } from '@athenna/config'
 import { Server } from '#src/Facades/Server'
 import { Module, Path } from '@athenna/common'
@@ -184,6 +184,15 @@ export class HttpKernel {
       return
     }
 
-    Server.use(async ctx => Log.channel('request').info(ctx), 'terminate')
+    Server.use(async ctx => {
+      const logger = Config.exists('logging.channels.request')
+        ? Log.channel('request')
+        : Logger.getConsoleLogger({
+            level: 'trace',
+            formatter: 'none',
+          })
+
+      logger.info(ctx)
+    }, 'terminate')
   }
 }
