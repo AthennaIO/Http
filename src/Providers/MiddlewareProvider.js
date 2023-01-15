@@ -17,7 +17,7 @@ export class MiddlewareProvider extends ServiceProvider {
    * @return {Promise<void>}
    */
   async boot() {
-    const path = Path.app('Http/Middlewares')
+    const path = Path.http('Middlewares')
     const subAlias = 'App/Http/Middlewares'
 
     const middlewares = await Module.getAllFromWithAlias(path, subAlias)
