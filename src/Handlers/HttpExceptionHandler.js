@@ -7,9 +7,9 @@
  * file that was distributed with this source code.
  */
 
-import { Log } from '@athenna/logger'
 import { Config } from '@athenna/config'
-import { Exception, String } from '@athenna/common'
+import { String } from '@athenna/common'
+import { Log, Logger } from '@athenna/logger'
 
 export class HttpExceptionHandler {
   /**
@@ -61,8 +61,6 @@ export class HttpExceptionHandler {
       delete body.stack
     }
 
-    response.status(statusCode).send(body)
-
     if (
       this.ignoreCodes.includes(code) ||
       this.ignoreStatuses.includes(statusCode)
@@ -70,20 +68,20 @@ export class HttpExceptionHandler {
       return
     }
 
-    if (error.prettify) {
-      const prettyError = await error.prettify()
+    const logger = Config.exists('logging.channels.exception')
+      ? Log.channel('exception')
+      : Logger.getConsoleLogger({
+          level: 'trace',
+          streamType: 'stderr',
+          formatter: 'none',
+        })
 
-      Log.channel('exception').error(prettyError.concat('\n'))
-
-      return
+    if (!error.prettify) {
+      error = error.toAthennaException()
     }
 
-    const exception = new Exception(body.message, body.statusCode, body.code)
+    logger.error((await error.prettify()).concat('\n'))
 
-    exception.stack = error.stack
-
-    const prettyError = await exception.prettify()
-
-    Log.channel('exception').error(prettyError.concat('\n'))
+    return response.status(statusCode).send(body)
   }
 }

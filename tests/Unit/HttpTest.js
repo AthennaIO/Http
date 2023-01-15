@@ -78,7 +78,7 @@ test.group('HttpTest', group => {
   })
 
   group.each.teardown(async () => {
-    await Server.close()
+    await new HttpServerProvider().shutdown()
 
     await Folder.safeRemove(Path.app())
     await Folder.safeRemove(Path.config())
