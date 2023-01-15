@@ -70,8 +70,9 @@ export class HttpExceptionHandler {
 
     const logger = Config.exists('logging.channels.exception')
       ? Log.channel('exception')
-      : Logger.getConsoleLogger({
+      : Logger.getVanillaLogger({
           level: 'trace',
+          driver: 'console',
           streamType: 'stderr',
           formatter: 'none',
         })

@@ -187,8 +187,9 @@ export class HttpKernel {
     Server.use(async ctx => {
       const logger = Config.exists('logging.channels.request')
         ? Log.channel('request')
-        : Logger.getConsoleLogger({
+        : Logger.getVanillaLogger({
             level: 'trace',
+            driver: 'console',
             formatter: 'none',
           })
 
