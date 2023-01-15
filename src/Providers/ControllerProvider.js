@@ -17,7 +17,7 @@ export class ControllerProvider extends ServiceProvider {
    * @return {Promise<void>}
    */
   async boot() {
-    const path = Path.app('Http/Controllers')
+    const path = Path.http('Controllers')
     const subAlias = 'App/Http/Controllers'
 
     const controllers = await Module.getAllFromWithAlias(path, subAlias)
