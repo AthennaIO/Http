@@ -61,6 +61,8 @@ export class HttpExceptionHandler {
       delete body.stack
     }
 
+    response.status(statusCode).send(body)
+
     if (
       this.ignoreCodes.includes(code) ||
       this.ignoreStatuses.includes(statusCode)
@@ -82,7 +84,5 @@ export class HttpExceptionHandler {
     }
 
     logger.error((await error.prettify()).concat('\n'))
-
-    return response.status(statusCode).send(body)
   }
 }
