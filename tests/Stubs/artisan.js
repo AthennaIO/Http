@@ -29,4 +29,6 @@ await kernel.registerErrorHandler()
 await kernel.registerCommands()
 await kernel.registerTemplates()
 
+Config.delete('logging.channels.console')
+
 Artisan.main()

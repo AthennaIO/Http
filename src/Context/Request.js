@@ -30,6 +30,15 @@ export class Request {
   }
 
   /**
+   * Get the request id.
+   *
+   * @return {string}
+   */
+  get id() {
+    return this.#request.id
+  }
+
+  /**
    * Get the request ip.
    *
    * @return {string}
@@ -39,12 +48,39 @@ export class Request {
   }
 
   /**
+   * Get the request hostname.
+   *
+   * @return {string}
+   */
+  get hostname() {
+    return this.#request.hostname
+  }
+
+  /**
+   * Get the request protocol.
+   *
+   * @return {"http"|"https"}
+   */
+  get protocol() {
+    return this.#request.protocol
+  }
+
+  /**
    * Get the request method.
    *
    * @return {string}
    */
   get method() {
     return this.#request.method
+  }
+
+  /**
+   * Get the route url from request.
+   *
+   * @return {string}
+   */
+  get routeUrl() {
+    return this.#request.routerPath
   }
 
   /**
@@ -115,6 +151,15 @@ export class Request {
    */
   get headers() {
     return this.#request.headers || {}
+  }
+
+  /**
+   * Get the server version.
+   *
+   * @return {string}
+   */
+  get version() {
+    return this.#request.server.version
   }
 
   /**

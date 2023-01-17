@@ -38,7 +38,5 @@ export class TestMiddleware {
    * @param {import('#src/index').TerminateContextContract} ctx
    * @return {Promise<void>}
    */
-  async terminate() {
-    console.log('Terminate middleware executed!')
-  }
+  async terminate() {}
 }

@@ -8,7 +8,7 @@
  */
 
 import { test } from '@japa/runner'
-import { Exception, Folder, Path } from '@athenna/common'
+import { Exception, Folder, Is, Path } from '@athenna/common'
 
 import { Route, Server } from '#src/index'
 import { HttpRouteProvider } from '#src/Providers/HttpRouteProvider'
@@ -369,5 +369,25 @@ test.group('RouteTest', group => {
     assert.deepEqual(response.headers['retry-after'], 60000)
     assert.deepEqual(response.headers['x-ratelimit-limit'], 1)
     assert.deepEqual(response.headers['x-ratelimit-remaining'], 0)
+  })
+
+  test('should be able to get the response statusCode, headers and responseTime in terminate middlewares', async ({
+    assert,
+  }) => {
+    Route.get('/tests', 'TestController.index').middleware(ctx => {
+      assert.isTrue(ctx.response.sent)
+      assert.isTrue(Is.Number(ctx.response.responseTime))
+      assert.equal(ctx.response.statusCode, 200)
+      assert.deepEqual(ctx.response.headers, {
+        'content-type': 'application/json; charset=utf-8',
+        'content-length': '17',
+      })
+    }, 'terminate')
+
+    Route.register()
+
+    await Server.listen(3050)
+
+    await Server.request().get('/tests')
   })
 })
