@@ -360,12 +360,6 @@ export class Route {
       this.#swaggerOptions.response = {}
     }
 
-    if (!response) {
-      this.#swaggerOptions.response.default = response
-
-      return this
-    }
-
     this.#swaggerOptions.response[statusCode] = response
 
     return this
