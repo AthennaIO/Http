@@ -26,6 +26,42 @@ export class Response {
   }
 
   /**
+   * Verify if response has been already sent.
+   *
+   * @return {boolean}
+   */
+  get sent() {
+    return this.#response.sent
+  }
+
+  /**
+   * Get the status code sent in response.
+   *
+   * @return {number}
+   */
+  get statusCode() {
+    return this.#response.statusCode
+  }
+
+  /**
+   * Get the headers sent in response.
+   *
+   * @return {any}
+   */
+  get headers() {
+    return this.#response.getHeaders()
+  }
+
+  /**
+   * Get the response time.
+   *
+   * @return {number}
+   */
+  get responseTime() {
+    return this.#response.getResponseTime()
+  }
+
+  /**
    * Terminate the request sending the response body.
    *
    * @param {any} [data]

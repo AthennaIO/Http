@@ -14,15 +14,25 @@ import { Server } from '#src/index'
 import { HttpServerProvider } from '#src/Providers/HttpServerProvider'
 
 test.group('HttpTest', group => {
+  /**
+   * @param ctx {ContextContract}
+   * @returns {Promise<void>}
+   */
   const handler = async ({ data, request, response }) => {
     const body = { hello: 'world' }
 
+    body.id = request.id
+    body.ip = request.ip
     body.ip = request.getFastifyRequest().ip
+    body.hostname = request.hostname
+    body.protocol = request.protocol
     body.body = request.body
     body.params = request.params
+    body.version = request.version
     body.queries = request.queries
     body.headers = request.headers
     body.method = request.method
+    body.routeUrl = request.routeUrl
     body.hostUrl = request.hostUrl
     body.baseUrl = request.baseUrl
     body.originalUrl = request.originalUrl
@@ -90,7 +100,10 @@ test.group('HttpTest', group => {
     assert.equal(response.statusCode, 200)
     assert.deepEqual(response.json(), {
       hello: 'world',
+      id: 'req-1',
       ip: '127.0.0.1',
+      hostname: 'localhost:80',
+      protocol: 'http',
       body: {},
       params: {},
       queries: {},
@@ -98,7 +111,9 @@ test.group('HttpTest', group => {
         'user-agent': 'lightMyRequest',
         host: 'localhost:80',
       },
+      version: '4.9.2',
       method: 'GET',
+      routeUrl: '/test',
       hostUrl: 'http://localhost:1335/test',
       baseUrl: '/test',
       originalUrl: '/test',
@@ -120,7 +135,10 @@ test.group('HttpTest', group => {
     assert.equal(response.statusCode, 200)
     assert.deepEqual(response.json(), {
       hello: 'world',
+      id: 'req-1',
       ip: '127.0.0.1',
+      hostname: 'localhost:80',
+      protocol: 'http',
       body: {},
       params: {},
       queries: {
@@ -131,7 +149,9 @@ test.group('HttpTest', group => {
         'user-agent': 'lightMyRequest',
         host: 'localhost:80',
       },
+      version: '4.9.2',
       method: 'POST',
+      routeUrl: '/test',
       hostUrl: 'http://localhost:1335/test?hello=true',
       baseUrl: '/test',
       originalUrl: '/test?hello=true',
@@ -146,7 +166,10 @@ test.group('HttpTest', group => {
     assert.equal(response.statusCode, 200)
     assert.deepEqual(response.json(), {
       hello: 'world-intercepted',
+      id: 'req-1',
       ip: '127.0.0.1',
+      hostname: 'localhost:80',
+      protocol: 'http',
       body: {},
       params: {},
       queries: {},
@@ -154,7 +177,9 @@ test.group('HttpTest', group => {
         'user-agent': 'lightMyRequest',
         host: 'localhost:80',
       },
+      version: '4.9.2',
       method: 'PUT',
+      routeUrl: '/test',
       hostUrl: 'http://localhost:1335/test',
       baseUrl: '/test',
       originalUrl: '/test',

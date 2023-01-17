@@ -8,7 +8,7 @@
  */
 
 import { Facade } from '@athenna/ioc'
-import { Exception, Json } from '@athenna/common'
+import { Exception } from '@athenna/common'
 import { OpenAPIV2, OpenAPIV3 } from 'openapi-types'
 import { FastifyHelmetOptions } from '@fastify/helmet'
 import { RateLimitOptions } from '@fastify/rate-limit'
@@ -818,17 +818,46 @@ declare module Router {
 
 export interface RequestContract {
   /**
+   * Get the request id.
+   *
+   * @return {string}
+   */
+  get id(): string
+
+  /**
    * Get the request ip.
    *
    * @return {string}
    */
   get ip(): string
+
+  /**
+   * Get the request hostname.
+   *
+   * @return {string}
+   */
+  get hostname(): string
+
+  /**
+   * Get the request protocol.
+   *
+   * @return {"http"|"https"}
+   */
+  get protocol(): 'http' | 'https'
+
   /**
    * Get the request method.
    *
    * @return {string}
    */
   get method(): string
+
+  /**
+   * Get the route url from request.
+   *
+   * @return {string}
+   */
+  get routeUrl(): string
 
   /**
    * Get the host url from request.
@@ -878,6 +907,13 @@ export interface RequestContract {
    * @return {any}
    */
   get headers(): any
+
+  /**
+   * Get the server version.
+   *
+   * @return {string}
+   */
+  get version(): string
 
   /**
    * Get a value from the request params or the default value.
@@ -951,6 +987,34 @@ export interface RequestContract {
 }
 
 export interface ResponseContract {
+  /**
+   * Verify if response has been already sent.
+   *
+   * @return {boolean}
+   */
+  get sent(): boolean
+
+  /**
+   * Get the status code sent in response.
+   *
+   * @return {number}
+   */
+  get statusCode(): number
+
+  /**
+   * Get the headers sent in response.
+   *
+   * @return {any}
+   */
+  get headers(): any
+
+  /**
+   * Get the response time.
+   *
+   * @return {number}
+   */
+  get responseTime(): number
+
   /**
    * Terminate the request sending the response body.
    *
