@@ -14,7 +14,5 @@ export class TerminateMiddleware {
    * @param {import('#src/index').TerminateContextContract} ctx
    * @return {Promise<void>}
    */
-  async terminate() {
-    console.log('Request terminated!')
-  }
+  async terminate() {}
 }

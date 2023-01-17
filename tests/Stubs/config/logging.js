@@ -28,7 +28,7 @@ export default {
 
   channels: {
     console: {
-      driver: 'console',
+      driver: 'null',
       formatter: 'cli',
     },
     exception: {
@@ -37,11 +37,11 @@ export default {
       streamType: 'stderr',
     },
     application: {
-      driver: 'console',
+      driver: 'null',
       formatter: 'simple',
     },
     request: {
-      driver: 'console',
+      driver: 'null',
       formatter: 'request',
       formatterConfig: {
         asJson: false,
