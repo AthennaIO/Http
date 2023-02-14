@@ -54,7 +54,7 @@
     "#tests/*": "./tests/*.js"
   },
   "dependencies": {
-    "fastify": "4.9.2"
+    "fastify": "4.11.0"
   },
   "devDependencies": {
     "@athenna/artisan": "3.0.10",
