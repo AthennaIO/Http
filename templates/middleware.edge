@@ -1,38 +1,19 @@
+import {
+  Middleware,
+  HandleContextContract,
+  InterceptContextContract,
+  TerminateContextContract
+} from '@athenna/http'
+
+@Middleware()
 export class {{ namePascal }} {
-    /**
-    * Resolve any dependency of the service container
-    * inside the constructor.
-    */
-    constructor() {}
+    public async handle(ctx: HandleContextContract): Promise<void> {}
 
-    /**
-    * Handle method is executed before the request gets
-    * in your controller.
-    *
-    * @param {import('@athenna/http').HandleContextContract} ctx
-    * @return {Promise<void>}
-    */
-    async handle(ctx) {}
-
-    /**
-    * Intercept method is executed before the response
-    * has been sent.
-    *
-    * @param {import('@athenna/http').InterceptContextContract} ctx
-    * @return {Promise<any>}
-    */
-    async intercept({ body }) {
+    public async intercept({ body }: InterceptContextContract): Promise<any> {
       body.intercepted = true
 
       return body
     }
 
-    /**
-    * Terminate method is executed after the response
-    * has been sent.
-    *
-    * @param {import('@athenna/http').TerminateContextContract} ctx
-    * @return {Promise<void>}
-    */
-    async terminate(ctx) {}
+    public async terminate(ctx: TerminateContextContract): Promise<void> {}
 }
