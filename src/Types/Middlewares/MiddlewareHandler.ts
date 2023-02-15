@@ -1,0 +1,35 @@
+/**
+ * @athenna/http
+ *
+ * (c) João Lenon <lenon@athenna.io>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+import { Context } from '#src/Types/Contexts/Context'
+import { InterceptContext } from '#src/Types/Contexts/InterceptContext'
+import { TerminateContext } from '#src/Types/Contexts/TerminateContext'
+import { AthennaMiddleware } from '#src/Types/Middlewares/AthennaMiddleware'
+
+export type HandleHandler = (ctx: Context) => Promise<void>
+export type InterceptHandler = (
+  ctx: InterceptContext,
+) => Promise<string | Record<string, any> | Record<string, any>[]>
+export type TerminateHandler = (ctx: TerminateContext) => Promise<void>
+
+export type MiddlewareHandler =
+  | HandleHandler
+  | TerminateHandler
+  | InterceptHandler
+
+export type MiddlewareRecord = {
+  handlers: HandleHandler[]
+  terminators: TerminateHandler[]
+  interceptors: InterceptHandler[]
+}
+
+export type MiddlewareHandlerExt =
+  | string
+  | AthennaMiddleware
+  | MiddlewareHandler
