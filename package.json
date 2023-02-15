@@ -38,7 +38,12 @@
   "main": "./build/index.js",
   "types": "./build/index.d.ts",
   "exports": {
-    ".": "./src/index.js"
+    ".": "./build/index.js",
+    "./providers/RouteProvider": "./build/Providers/RouteProvider.js",
+    "./providers/ServerProvider": "./build/Providers/ServerProvider.js",
+    "./commands/RouteListCommand": "./build/Commands/RouteListCommand.js",
+    "./commands/MakeControllerCommand": "./build/Commands/MakeControllerCommand.js",
+    "./commands/MakeMiddlewareCommand": "./build/Commands/MakeMiddlewareCommand.js"
   },
   "imports": {
     "#src/*": "./src/*.js",
