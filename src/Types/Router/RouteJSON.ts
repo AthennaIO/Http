@@ -7,7 +7,7 @@
  * file that was distributed with this source code.
  */
 
-import { HTTPMethods, FastifySchema } from 'fastify'
+import { HTTPMethods } from 'fastify'
 import { RequestHandler } from '#src/Types/Contexts/Context'
 import { MiddlewareRecord } from '#src/Types/Middlewares/MiddlewareHandler'
 
@@ -16,7 +16,5 @@ export type RouteJSON = {
   methods: HTTPMethods[]
   handler: RequestHandler
   middlewares: MiddlewareRecord
-  fastifySchema: FastifySchema
-  helmetOptions: Omit<import('@fastify/helmet').FastifyHelmetOptions, 'global'>
-  rateLimitOptions: import('@fastify/rate-limit').RateLimitOptions
+  fastifyOptions?: any
 }

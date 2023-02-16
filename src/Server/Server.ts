@@ -13,8 +13,9 @@ import fastify, {
   PrintRoutesOptions,
   FastifyListenOptions,
   FastifyServerOptions,
-  FastifyPluginCallback,
   FastifyRegisterOptions,
+  LightMyRequestChain,
+  LightMyRequestResponse,
 } from 'fastify'
 
 import {
@@ -24,21 +25,16 @@ import {
 
 import { AddressInfo } from 'node:net'
 import { Options } from '@athenna/common'
-import { Chain, Response } from 'light-my-request'
-import { RouteOptions } from '#src/Types/Router/RouteOptions'
 import { RequestHandler } from '#src/Types/Contexts/Context'
+import { RouteOptions } from '#src/Types/Router/RouteOptions'
 import { FastifyHandler } from '#src/Handlers/FastifyHandler'
+import { ServerContract } from '#src/Contracts/ServerContract'
 import { ErrorHandler } from '#src/Types/Contexts/ErrorContext'
+import { MiddlewareTypes } from '#src/Types/Middlewares/MiddlewareTypes'
 
-export class Server {
-  /**
-   * Holds the fastify server instance.
-   */
+export class Server implements ServerContract {
   public fastify: FastifyInstance
 
-  /**
-   * Set if the Http server is listening for new requests.
-   */
   public isListening: boolean
 
   public constructor(options?: FastifyServerOptions) {
@@ -46,77 +42,45 @@ export class Server {
     this.isListening = false
   }
 
-  /**
-   * Get the representation of the internal radix tree used by the
-   * router.
-   */
-  public getRoutes(options?: PrintRoutesOptions) {
+  public getRoutes(options?: PrintRoutesOptions): string {
     return this.fastify.printRoutes(options)
   }
 
-  /**
-   * Get the address info of the server. This method will return the
-   * port used to listen the server, the family (IPv4, IPv6) and the
-   * server address (127.0.0.1).
-   */
   public getAddressInfo(): AddressInfo {
     return this.fastify.server.address() as AddressInfo
   }
 
-  /**
-   * Get the port where the server is running.
-   */
-  public getPort() {
-    return this.getAddressInfo().port
+  public getPort(): number {
+    return this.getAddressInfo()?.port
   }
 
-  /**
-   * Get the host where the server is running.
-   */
-  public getHost() {
-    return this.getAddressInfo().address
+  public getHost(): string {
+    return this.getAddressInfo()?.address
   }
 
-  /**
-   * Get the fastify version that is running the server.
-   */
-  public getFastifyVersion() {
+  public getFastifyVersion(): string {
     return this.fastify.version
   }
 
-  /**
-   * Set the error handler to handle errors that happens inside the server.
-   */
-  public setErrorHandler(handler: ErrorHandler): Server {
+  public setErrorHandler(handler: ErrorHandler): ServerContract {
     this.fastify.setErrorHandler(FastifyHandler.error(handler))
 
     return this
   }
 
-  /**
-   * Register a plugin inside the fastify server.
-   */
-  public async registerPlugin<T = any>(
-    plugin: FastifyPluginCallback,
+  public async plugin<T = any>(
+    plugin: any,
     options?: FastifyRegisterOptions<T>,
-  ): Promise<Server> {
+  ): Promise<ServerContract> {
     await this.fastify.register(plugin, options)
 
     return this
   }
 
-  public use(handler: RequestHandler): Server
-  public use(handler: RequestHandler, type: 'handle'): Server
-  public use(handler: InterceptHandler, type: 'intercept'): Server
-  public use(handler: TerminateHandler, type: 'terminate'): Server
-
-  /**
-   * Register a middleware inside the server.
-   */
   public use(
     handler: RequestHandler | InterceptHandler | TerminateHandler,
-    type: 'handle' | 'intercept' | 'terminate' = 'handle',
-  ): Server {
+    type: MiddlewareTypes = 'handle',
+  ): ServerContract {
     let hookName: any = 'preHandler'
 
     switch (type) {
@@ -135,13 +99,20 @@ export class Server {
     return this
   }
 
-  public request(options?: InjectOptions): Chain
-  public request(url: string): Promise<Response>
+  /**
+   * Return a request handler to make internal requests to the Http server.
+   */
+  public request(): LightMyRequestChain
 
   /**
    * Return a request handler to make internal requests to the Http server.
    */
-  public request(options?: InjectOptions | string): Chain | Promise<Response> {
+  public request(options: InjectOptions): Promise<LightMyRequestResponse>
+
+  /**
+   * Return a request handler to make internal requests to the Http server.
+   */
+  public request(options?: InjectOptions) {
     if (!options) {
       return this.fastify.inject()
     }
@@ -149,17 +120,11 @@ export class Server {
     return this.fastify.inject(options)
   }
 
-  /**
-   * Make the server start listening for requests.
-   */
-  public async listen(options: FastifyListenOptions) {
+  public async listen(options: FastifyListenOptions): Promise<any> {
     return this.fastify.listen(options).then(() => (this.isListening = true))
   }
 
-  /**
-   * Close the server,
-   */
-  public async close() {
+  public async close(): Promise<void> {
     if (!this.isListening) {
       return
     }
@@ -167,10 +132,7 @@ export class Server {
     await this.fastify.close().then(() => (this.isListening = true))
   }
 
-  /**
-   * Add a new route to the http server.
-   */
-  public route(options: RouteOptions) {
+  public route(options: RouteOptions): void {
     options = Options.create(options, {
       handlers: [],
       terminators: [],
@@ -190,53 +152,31 @@ export class Server {
     })
   }
 
-  /**
-   * Add a new GET route to the http server.
-   */
-  public get(options: Omit<RouteOptions, 'methods'>) {
+  public get(options: Omit<RouteOptions, 'methods'>): void {
     this.route({ ...options, methods: ['GET'] })
   }
 
-  /**
-   * Add a new HEAD route to the http server.
-   */
-  public head(options: Omit<RouteOptions, 'methods'>) {
+  public head(options: Omit<RouteOptions, 'methods'>): void {
     this.route({ ...options, methods: ['HEAD'] })
   }
 
-  /**
-  /**
-   * Add a new POST route to the http server.
-   */
-  public post(options: Omit<RouteOptions, 'methods'>) {
+  public post(options: Omit<RouteOptions, 'methods'>): void {
     this.route({ ...options, methods: ['POST'] })
   }
 
-  /**
-   * Add a new PUT route to the http server.
-   */
-  public put(options: Omit<RouteOptions, 'methods'>) {
+  public put(options: Omit<RouteOptions, 'methods'>): void {
     this.route({ ...options, methods: ['PUT'] })
   }
 
-  /**
-   * Add a new PATCH route to the http server.
-   */
-  public patch(options: Omit<RouteOptions, 'methods'>) {
+  public patch(options: Omit<RouteOptions, 'methods'>): void {
     this.route({ ...options, methods: ['PATCH'] })
   }
 
-  /**
-   * Add a new DELETE route to the http server.
-   */
-  public delete(options: Omit<RouteOptions, 'methods'>) {
+  public delete(options: Omit<RouteOptions, 'methods'>): void {
     this.route({ ...options, methods: ['DELETE'] })
   }
 
-  /**
-   * Add a new OPTIONS route to the http server.
-   */
-  public options(options: Omit<RouteOptions, 'methods'>) {
+  public options(options: Omit<RouteOptions, 'methods'>): void {
     this.route({ ...options, methods: ['OPTIONS'] })
   }
 }

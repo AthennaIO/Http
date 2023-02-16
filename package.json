@@ -113,7 +113,10 @@
     "include": [
       "src/**/*.ts"
     ],
-    "exclude": [],
+    "exclude": [
+      "src/Contracts/RouteContract.ts",
+      "src/Contracts/ServerContract.ts"
+    ],
     "reporter": [
       "text-summary",
       "html"

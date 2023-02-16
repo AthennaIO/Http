@@ -186,7 +186,7 @@ export class Request {
   /**
    * Get only the selected values from the request body.
    */
-  public only(...keys: string[]): any {
+  public only(keys: string[]): any {
     const body = {}
 
     Object.keys(this.body).forEach(key => {
@@ -203,7 +203,7 @@ export class Request {
   /**
    * Get all the values from the request body except the selected ones.
    */
-  public except(...keys: string[]): any {
+  public except(keys: string[]): any {
     const body = {}
 
     Object.keys(this.body).forEach(key => {

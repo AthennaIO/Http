@@ -35,28 +35,6 @@ export class RouteGroup {
   }
 
   /**
-   * Invokes a given method with params on the route instance or route
-   * resource instance
-   */
-  private invoke(
-    route: Route | RouteGroup | RouteResource,
-    method: string,
-    params: any[],
-  ) {
-    if (route instanceof RouteResource) {
-      route.routes.forEach(child => this.invoke(child, method, params))
-      return
-    }
-
-    if (route instanceof RouteGroup) {
-      route.routes.forEach(child => this.invoke(child, method, params))
-      return
-    }
-
-    route[method](...params)
-  }
-
-  /**
    * Define prefix all the routes in the group.
    *
    * @example
@@ -101,5 +79,27 @@ export class RouteGroup {
     }
 
     return this
+  }
+
+  /**
+   * Invokes a given method with params on the route instance or route
+   * resource instance.
+   */
+  private invoke(
+    route: Route | RouteGroup | RouteResource,
+    method: string,
+    params: any[],
+  ) {
+    if (route instanceof RouteResource) {
+      route.routes.forEach(child => this.invoke(child, method, params))
+      return
+    }
+
+    if (route instanceof RouteGroup) {
+      route.routes.forEach(child => this.invoke(child, method, params))
+      return
+    }
+
+    route[method](...params)
   }
 }

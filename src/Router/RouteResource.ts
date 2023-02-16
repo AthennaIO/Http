@@ -38,6 +38,11 @@ export class RouteResource {
 
   /**
    * Set a middleware for the route resource.
+   *
+   * @example
+   * ```ts
+   * Route.resource('/test', 'TestController').middleware('auth')
+   * ```
    */
   public middleware(
     middleware: MiddlewareHandlerExt,
@@ -51,10 +56,12 @@ export class RouteResource {
   /**
    * Register only the methods in the array.
    *
-   * @param {string} names
-   * @return {RouteResource}
+   * @example
+   * ```ts
+   * Route.resource('/test', 'TestController').only(['index'])
+   * ```
    */
-  public only(...names: string[]): RouteResource {
+  public only(names: string[]): RouteResource {
     this.filter(names, true).forEach(route => (route.deleted = true))
 
     return this
@@ -63,10 +70,12 @@ export class RouteResource {
   /**
    * Register all methods except the methods in the array.
    *
-   * @param {string} names
-   * @return {RouteResource}
+   * @example
+   * ```ts
+   * Route.resource('/test', 'TestController').except(['index'])
+   * ```
    */
-  public except(...names: string[]): RouteResource {
+  public except(names: string[]): RouteResource {
     this.filter(names, false).forEach(route => (route.deleted = true))
 
     return this
@@ -74,9 +83,16 @@ export class RouteResource {
 
   /**
    * Set up helmet options for route resource.
+   *
+   *@example
+   * ```ts
+   * Route.helmet({
+   *  dnsPrefetchControl: { allow: true }
+   * })
+   * ```
    */
   public helmet(
-    options: import('@fastify/helmet').FastifyHelmetRouteOptions,
+    options: Omit<import('@fastify/helmet').FastifyHelmetOptions, 'global'>,
   ): RouteResource {
     this.routes.forEach(route => route.helmet(options))
 
@@ -85,6 +101,14 @@ export class RouteResource {
 
   /**
    * Set up rate limit options for route resource method.
+   *
+   * @example
+   * ```ts
+   * Route.rateLimit({
+   *  max: 3,
+   *  timeWindow: '1 minute'
+   * })
+   * ```
    */
   public rateLimit(
     options: import('@fastify/rate-limit').FastifyRateLimitOptions,

@@ -9,8 +9,8 @@
 
 import { Is } from '@athenna/common'
 import { Route } from '#src/Router/Route'
-import { Server } from '#src/Facades/Server'
 import { RouteGroup } from '#src/Router/RouteGroup'
+import { HttpServer } from '#src/Facades/HttpServer'
 import { RouteJSON } from '#src/Types/Router/RouteJSON'
 import { RouteResource } from '#src/Router/RouteResource'
 import { RequestHandler } from '#src/Types/Contexts/Context'
@@ -77,7 +77,7 @@ export class Router {
    * Creates a vanilla fastify route without using Athenna router.
    */
   public vanillaRoute(options?: RouteOptions): FastifyInstance {
-    return Server.fastify.route(options)
+    return HttpServer.fastify.route(options)
   }
 
   /**
@@ -174,24 +174,11 @@ export class Router {
   }
 
   /**
-   * Register all the routes inside the Server. After routes are registered,
+   * Register all the routes inside the http server. After routes are registered,
    * anyone could be registered anymore.
    */
   public register() {
-    this.toJSON(this.routes).forEach(route => {
-      route.methods.forEach(method => {
-        Server[method.toLowerCase()](
-          route.url,
-          route.handler,
-          route.middlewares,
-          {
-            helmet: route.helmetOptions,
-            schema: route.fastifySchema,
-            config: { rateLimit: route.rateLimitOptions },
-          },
-        )
-      })
-    })
+    this.toJSON(this.routes).forEach(route => HttpServer.route(route))
   }
 
   /**

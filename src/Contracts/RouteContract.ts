@@ -13,7 +13,7 @@ import {
   InterceptHandler,
 } from '#src/Types/Middlewares/MiddlewareHandler'
 
-import { FastifySchema } from 'fastify'
+import { FastifySchema, RouteOptions } from 'fastify'
 import { RouteJSON } from '#src/Types/Router/RouteJSON'
 import { MiddlewareTypes } from '#src/Types/Middlewares/MiddlewareTypes'
 import { AthennaMiddleware } from '#src/Types/Middlewares/AthennaMiddleware'
@@ -28,6 +28,16 @@ export interface RouteContract {
    * Sets if route should be registered or not.
    */
   deleted: boolean
+
+  /**
+   * Set fastify vanilla route options.
+   *
+   * @example
+   * ```ts
+   * Route.vanillaOptions({ schema: {} })
+   * ```
+   */
+  vanillaOptions(options: RouteOptions): RouteContract
 
   /**
    * Set a prefix for the route.

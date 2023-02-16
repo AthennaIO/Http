@@ -58,9 +58,7 @@ export class FastifyHandler {
       const request = new Request(req)
       const response = new Response(res)
 
-      if (!req.data) {
-        req.data = {}
-      }
+      this.setData(req)
 
       if (Is.Json(payload)) {
         payload = JSON.parse(payload)
@@ -93,9 +91,7 @@ export class FastifyHandler {
       const request = new Request(req)
       const response = new Response(res)
 
-      if (!req.data) {
-        req.data = {}
-      }
+      this.setData(req)
 
       await handler({
         request,
@@ -119,9 +115,7 @@ export class FastifyHandler {
       const request = new Request(req)
       const response = new Response(res)
 
-      if (!req.data) {
-        req.data = {}
-      }
+      this.setData(req)
 
       await handler({
         request,
