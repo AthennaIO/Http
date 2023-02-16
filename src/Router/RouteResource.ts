@@ -20,6 +20,17 @@ export class RouteResource {
   public routes: Route[] = []
 
   /**
+   * The routes indexes in the resource.
+   */
+  public indexes = {
+    index: 0,
+    store: 1,
+    show: 2,
+    update: 3,
+    delete: 4,
+  }
+
+  /**
    * The resource name.
    */
   public resource: string
@@ -62,7 +73,9 @@ export class RouteResource {
    * ```
    */
   public only(names: string[]): RouteResource {
-    this.filter(names, true).forEach(route => (route.deleted = true))
+    this.routes.forEach(route => (route.deleted = true))
+
+    names.forEach(name => (this.routes[this.indexes[name]].deleted = false))
 
     return this
   }
@@ -76,7 +89,7 @@ export class RouteResource {
    * ```
    */
   public except(names: string[]): RouteResource {
-    this.filter(names, false).forEach(route => (route.deleted = true))
+    names.forEach(name => (this.routes[this.indexes[name]].deleted = true))
 
     return this
   }
@@ -111,22 +124,11 @@ export class RouteResource {
    * ```
    */
   public rateLimit(
-    options: import('@fastify/rate-limit').FastifyRateLimitOptions,
+    options: import('@fastify/rate-limit').RateLimitOptions,
   ): RouteResource {
     this.routes.forEach(route => route.rateLimit(options))
 
     return this
-  }
-
-  /**
-   * Filter the routes by name.
-   */
-  private filter(names: string[], inverse: boolean): Route[] {
-    return this.routes.filter(route => {
-      const match = names.find(name => route.name.endsWith(name))
-
-      return inverse ? !match : match
-    })
   }
 
   /**

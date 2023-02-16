@@ -82,6 +82,47 @@ export class RouteGroup {
   }
 
   /**
+   * Set up helmet options for route group.
+   *
+   * @example
+   * ```ts
+   * Route.group(() => {
+   *
+   * }).helmet({
+   *  dnsPrefetchControl: { allow: true }
+   * })
+   * ```
+   */
+  public helmet(
+    options: Omit<import('@fastify/helmet').FastifyHelmetOptions, 'global'>,
+  ): RouteGroup {
+    this.routes.forEach(route => this.invoke(route, 'helmet', [options]))
+
+    return this
+  }
+
+  /**
+   * Set up rate limit options for route group method.
+   *
+   * @example
+   * ```ts
+   * Route.group(() => {
+   *
+   * }).rateLimit({
+   *  max: 3,
+   *  timeWindow: '1 minute'
+   * })
+   * ```
+   */
+  public rateLimit(
+    options: import('@fastify/rate-limit').RateLimitOptions,
+  ): RouteGroup {
+    this.routes.forEach(route => this.invoke(route, 'rateLimit', [options]))
+
+    return this
+  }
+
+  /**
    * Invokes a given method with params on the route instance or route
    * resource instance.
    */

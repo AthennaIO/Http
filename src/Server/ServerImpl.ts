@@ -32,7 +32,7 @@ import { ServerContract } from '#src/Contracts/ServerContract'
 import { ErrorHandler } from '#src/Types/Contexts/ErrorContext'
 import { MiddlewareTypes } from '#src/Types/Middlewares/MiddlewareTypes'
 
-export class Server implements ServerContract {
+export class ServerImpl implements ServerContract {
   public fastify: FastifyInstance
 
   public isListening: boolean

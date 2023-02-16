@@ -8,6 +8,6 @@
  */
 
 import { Facade } from '@athenna/ioc'
-import { Server } from '#src/Server/Server'
+import { Router } from '#src/Router/Router'
 
-export const HttpServer = Facade.createFor<Server>('Athenna/Core/HttpServer')
+export const Route = Facade.createFor<Router>('Athenna/Core/HttpRoute')

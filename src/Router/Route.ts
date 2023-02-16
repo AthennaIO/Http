@@ -49,8 +49,7 @@ export class Route implements RouteContract {
 
   private fastifySchema: FastifySchema = {}
 
-  private rateLimitOptions: import('@fastify/rate-limit').FastifyRateLimitOptions =
-    {}
+  private rateLimitOptions: import('@fastify/rate-limit').RateLimitOptions = {}
 
   public constructor(
     url: string,
@@ -209,7 +208,7 @@ export class Route implements RouteContract {
     return this
   }
 
-  public body(name: string, body?: any): RouteContract {
+  public body(name: string, body: any = {}): RouteContract {
     if (!this.fastifySchema.body) {
       this.fastifySchema.body = {
         type: 'object',
@@ -224,7 +223,7 @@ export class Route implements RouteContract {
     return this
   }
 
-  public param(name: string, param?: any): RouteContract {
+  public param(name: string, param: any = {}): RouteContract {
     if (!this.fastifySchema.params) {
       this.fastifySchema.params = {
         type: 'object',
@@ -239,7 +238,7 @@ export class Route implements RouteContract {
     return this
   }
 
-  public queryString(name: string, queryString?: any): RouteContract {
+  public queryString(name: string, queryString: any = {}): RouteContract {
     if (!this.fastifySchema.querystring) {
       this.fastifySchema.querystring = {
         type: 'object',
@@ -254,7 +253,7 @@ export class Route implements RouteContract {
     return this
   }
 
-  public response(statusCode: number, response?: any): RouteContract {
+  public response(statusCode: number, response: any = {}): RouteContract {
     if (!this.fastifySchema.response) {
       this.fastifySchema.response = {}
     }

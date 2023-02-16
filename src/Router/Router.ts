@@ -9,8 +9,8 @@
 
 import { Is } from '@athenna/common'
 import { Route } from '#src/Router/Route'
+import { Server } from '#src/Facades/Server'
 import { RouteGroup } from '#src/Router/RouteGroup'
-import { HttpServer } from '#src/Facades/HttpServer'
 import { RouteJSON } from '#src/Types/Router/RouteJSON'
 import { RouteResource } from '#src/Router/RouteResource'
 import { RequestHandler } from '#src/Types/Contexts/Context'
@@ -21,7 +21,7 @@ export class Router {
   /**
    * All routes registered.
    */
-  public routes: (Route | RouteGroup | RouteResource)[]
+  public routes: (Route | RouteGroup | RouteResource)[] = []
 
   /**
    * Route groups opened.
@@ -44,6 +44,10 @@ export class Router {
    * Set the controller instance.
    */
   public controller(controller: any) {
+    if (Is.String(controller)) {
+      controller = ioc.safeUse(`App/Http/Controllers/${controller}`)
+    }
+
     this.controllerInstance = controller
 
     return this
@@ -77,14 +81,17 @@ export class Router {
    * Creates a vanilla fastify route without using Athenna router.
    */
   public vanillaRoute(options?: RouteOptions): FastifyInstance {
-    return HttpServer.fastify.route(options)
+    return Server.fastify.route(options)
   }
 
   /**
    * Creates a new route resource.
    */
-  public resource(resource: string, controller: any): RouteResource {
-    const resourceInstance = new RouteResource(resource, controller)
+  public resource(resource: string, controller?: any): RouteResource {
+    const resourceInstance = new RouteResource(
+      resource,
+      controller || this.controllerInstance,
+    )
     const openedGroup = this.getRecentGroup()
 
     if (openedGroup) {
@@ -112,6 +119,13 @@ export class Router {
    */
   public get(pattern: string, handler: RouteHandler): Route {
     return this.route(pattern, ['GET', 'HEAD'], handler)
+  }
+
+  /**
+   * Define HEAD route.
+   */
+  public head(pattern: string, handler: RouteHandler): Route {
+    return this.route(pattern, ['HEAD'], handler)
   }
 
   /**
@@ -178,7 +192,7 @@ export class Router {
    * anyone could be registered anymore.
    */
   public register() {
-    this.toJSON(this.routes).forEach(route => HttpServer.route(route))
+    this.toJSON(this.routes).forEach(route => Server.route(route))
   }
 
   /**

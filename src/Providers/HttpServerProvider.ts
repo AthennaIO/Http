@@ -7,16 +7,16 @@
  * file that was distributed with this source code.
  */
 
-import { Server } from '#src/Server/Server'
+import { ServerImpl } from '#src/Server/ServerImpl'
 import { ServiceProvider } from '@athenna/ioc'
 
 export class HttpServerProvider extends ServiceProvider {
   public register() {
-    this.container.instance('Athenna/Core/HttpServer', new Server())
+    this.container.instance('Athenna/Core/HttpServer', new ServerImpl())
   }
 
   public async shutdown() {
-    const Server = this.container.use<Server>('Athenna/Core/HttpServer')
+    const Server = this.container.use<ServerImpl>('Athenna/Core/HttpServer')
 
     if (!Server) {
       return
