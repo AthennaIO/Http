@@ -8,6 +8,6 @@
  */
 
 import { Facade } from '@athenna/ioc'
-import { ServerImpl } from '#src/Server/ServerImpl'
+import { Server } from '#src/Server/Server'
 
-export const Server = Facade.createFor<ServerImpl>('Athenna/Core/Server')
+export const HttpServer = Facade.createFor<Server>('Athenna/Core/HttpServer')

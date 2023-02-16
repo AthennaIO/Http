@@ -7,13 +7,16 @@
  * file that was distributed with this source code.
  */
 
+import {
+  InterceptHandler,
+  TerminateHandler,
+} from '#src/Types/Middlewares/MiddlewareHandler'
+
 import { Is } from '@athenna/common'
 import { Request } from '#src/Context/Request'
 import { Response } from '#src/Context/Response'
 import { RequestHandler } from '#src/Types/Contexts/Context'
 import { ErrorHandler } from '#src/Types/Contexts/ErrorContext'
-import { InterceptHandler } from '#src/Types/Contexts/InterceptContext'
-import { TerminateHandler } from '#src/Types/Contexts/TerminateContext'
 import { FastifyReply, FastifyRequest, RouteHandlerMethod } from 'fastify'
 
 export class FastifyHandler {
@@ -26,9 +29,7 @@ export class FastifyHandler {
       const request = new Request(req)
       const response = new Response(res)
 
-      if (!req.data) {
-        req.data = {}
-      }
+      this.setData(req)
 
       await handler({
         request,
@@ -61,9 +62,7 @@ export class FastifyHandler {
         req.data = {}
       }
 
-      const isJson = Is.Json(payload)
-
-      if (isJson) {
+      if (Is.Json(payload)) {
         payload = JSON.parse(payload)
       }
 
@@ -78,7 +77,7 @@ export class FastifyHandler {
         headers: req.headers,
       })
 
-      if (isJson) {
+      if (Is.Object(payload)) {
         payload = JSON.stringify(payload)
       }
 
@@ -135,5 +134,16 @@ export class FastifyHandler {
         error,
       })
     }
+  }
+
+  /**
+   * Set the data object in th
+   */
+  private static setData(request: FastifyRequest) {
+    if (request.data) {
+      return
+    }
+
+    request.data = {}
   }
 }

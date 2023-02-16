@@ -20,4 +20,4 @@ export type Context = {
   headers: any
 }
 
-export type RequestHandler = (ctx: Context) => Promise<void>
+export type RequestHandler = (ctx: Context) => any | Promise<any>

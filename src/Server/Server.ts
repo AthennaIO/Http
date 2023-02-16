@@ -17,17 +17,20 @@ import fastify, {
   FastifyRegisterOptions,
 } from 'fastify'
 
+import {
+  InterceptHandler,
+  TerminateHandler,
+} from '#src/Types/Middlewares/MiddlewareHandler'
+
 import { AddressInfo } from 'node:net'
 import { Options } from '@athenna/common'
 import { Chain, Response } from 'light-my-request'
-import { RouteOptions } from '#src/Types/RouteOptions'
+import { RouteOptions } from '#src/Types/Router/RouteOptions'
 import { RequestHandler } from '#src/Types/Contexts/Context'
 import { FastifyHandler } from '#src/Handlers/FastifyHandler'
 import { ErrorHandler } from '#src/Types/Contexts/ErrorContext'
-import { InterceptHandler } from '#src/Types/Contexts/InterceptContext'
-import { TerminateHandler } from '#src/Types/Contexts/TerminateContext'
 
-export class ServerImpl {
+export class Server {
   /**
    * Holds the fastify server instance.
    */
@@ -84,7 +87,7 @@ export class ServerImpl {
   /**
    * Set the error handler to handle errors that happens inside the server.
    */
-  public setErrorHandler(handler: ErrorHandler): ServerImpl {
+  public setErrorHandler(handler: ErrorHandler): Server {
     this.fastify.setErrorHandler(FastifyHandler.error(handler))
 
     return this
@@ -96,11 +99,16 @@ export class ServerImpl {
   public async registerPlugin<T = any>(
     plugin: FastifyPluginCallback,
     options?: FastifyRegisterOptions<T>,
-  ): Promise<ServerImpl> {
+  ): Promise<Server> {
     await this.fastify.register(plugin, options)
 
     return this
   }
+
+  public use(handler: RequestHandler): Server
+  public use(handler: RequestHandler, type: 'handle'): Server
+  public use(handler: InterceptHandler, type: 'intercept'): Server
+  public use(handler: TerminateHandler, type: 'terminate'): Server
 
   /**
    * Register a middleware inside the server.
@@ -108,7 +116,7 @@ export class ServerImpl {
   public use(
     handler: RequestHandler | InterceptHandler | TerminateHandler,
     type: 'handle' | 'intercept' | 'terminate' = 'handle',
-  ) {
+  ): Server {
     let hookName: any = 'preHandler'
 
     switch (type) {
@@ -120,7 +128,11 @@ export class ServerImpl {
         break
     }
 
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     this.fastify.addHook(hookName, FastifyHandler[type](handler))
+
+    return this
   }
 
   public request(options?: InjectOptions): Chain
@@ -181,14 +193,14 @@ export class ServerImpl {
   /**
    * Add a new GET route to the http server.
    */
-  public get(options: RouteOptions) {
+  public get(options: Omit<RouteOptions, 'methods'>) {
     this.route({ ...options, methods: ['GET'] })
   }
 
   /**
    * Add a new HEAD route to the http server.
    */
-  public head(options: RouteOptions) {
+  public head(options: Omit<RouteOptions, 'methods'>) {
     this.route({ ...options, methods: ['HEAD'] })
   }
 
@@ -196,35 +208,35 @@ export class ServerImpl {
   /**
    * Add a new POST route to the http server.
    */
-  public post(options: RouteOptions) {
+  public post(options: Omit<RouteOptions, 'methods'>) {
     this.route({ ...options, methods: ['POST'] })
   }
 
   /**
    * Add a new PUT route to the http server.
    */
-  public put(options: RouteOptions) {
+  public put(options: Omit<RouteOptions, 'methods'>) {
     this.route({ ...options, methods: ['PUT'] })
   }
 
   /**
    * Add a new PATCH route to the http server.
    */
-  public patch(options: RouteOptions) {
+  public patch(options: Omit<RouteOptions, 'methods'>) {
     this.route({ ...options, methods: ['PATCH'] })
   }
 
   /**
    * Add a new DELETE route to the http server.
    */
-  public delete(options: RouteOptions) {
+  public delete(options: Omit<RouteOptions, 'methods'>) {
     this.route({ ...options, methods: ['DELETE'] })
   }
 
   /**
    * Add a new OPTIONS route to the http server.
    */
-  public options(options: RouteOptions) {
+  public options(options: Omit<RouteOptions, 'methods'>) {
     this.route({ ...options, methods: ['OPTIONS'] })
   }
 }

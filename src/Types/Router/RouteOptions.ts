@@ -7,10 +7,13 @@
  * file that was distributed with this source code.
  */
 
+import {
+  TerminateHandler,
+  InterceptHandler,
+} from '#src/Types/Middlewares/MiddlewareHandler'
+
 import { HTTPMethods } from 'fastify'
 import { RequestHandler } from '#src/Types/Contexts/Context'
-import { TerminateHandler } from './Contexts/TerminateContext.js'
-import { InterceptHandler } from './Contexts/InterceptContext.js'
 
 export type RouteOptions = {
   url: string
