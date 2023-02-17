@@ -49,7 +49,7 @@ test.group('ServerTest', group => {
   })
 
   test('should be able to get the fastify version from the http server', async ({ assert }) => {
-    assert.equal(Server.getFastifyVersion(), '4.11.0')
+    assert.equal(Server.getFastifyVersion(), '4.12.0')
   })
 
   test('should be able to register fastify plugins in the http server', async ({ assert }) => {

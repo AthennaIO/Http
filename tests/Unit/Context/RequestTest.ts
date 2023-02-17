@@ -113,7 +113,7 @@ test.group('RequestTest', group => {
   test('should be able to get the server version from request', async ({ assert }) => {
     const ctx = { request: new Request(request) }
 
-    assert.equal(ctx.request.version, '4.11.0')
+    assert.equal(ctx.request.version, '4.12.0')
   })
 
   test('should be able to get the separated values from request body', async ({ assert }) => {
