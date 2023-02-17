@@ -1,24 +1,24 @@
-import { Controller, ContextContract } from '@athenna/http'
+import { Context, Controller } from '@athenna/http'
 
 @Controller()
 export class {{ namePascal }} {
-    public async index({ response }: ContextContract): Promise<void> {
+    public async index({ response }: Context): Promise<void> {
       return response.status(200).send([{}])
     }
 
-    public async store({ response }: ContextContract): Promise<void> {
+    public async store({ response }: Context): Promise<void> {
       return response.status(201).send({})
     }
 
-    public async show({ response }: ContextContract): Promise<void> {
+    public async show({ response }: Context): Promise<void> {
       return response.status(200).send({})
     }
 
-    public async update({ response, params }: ContextContract): Promise<void> {
+    public async update({ response, params }: Context): Promise<void> {
       return response.status(200).send({ id: params.id })
     }
 
-    public async delete({ response }: ContextContract): Promise<void> {
+    public async delete({ response }: Context): Promise<void> {
       return response.status(204)
     }
 }

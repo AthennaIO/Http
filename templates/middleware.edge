@@ -1,19 +1,6 @@
-import {
-  Middleware,
-  HandleContextContract,
-  InterceptContextContract,
-  TerminateContextContract
-} from '@athenna/http'
+import { Context, Middleware, MiddlewareContract } from '@athenna/http'
 
 @Middleware()
-export class {{ namePascal }} {
-    public async handle(ctx: HandleContextContract): Promise<void> {}
-
-    public async intercept({ body }: InterceptContextContract): Promise<any> {
-      body.intercepted = true
-
-      return body
-    }
-
-    public async terminate(ctx: TerminateContextContract): Promise<void> {}
+export class {{ namePascal }} implements MiddlewareContract {
+    public async handle(ctx: Context): Promise<void> {}
 }
