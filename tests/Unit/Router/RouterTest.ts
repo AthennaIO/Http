@@ -10,9 +10,13 @@
 import { test } from '@japa/runner'
 import { Route } from '#src/Facades/Route'
 import { Server } from '#src/Facades/Server'
+import { Middleware } from '#tests/Stubs/middlewares/Middleware'
+import { Terminator } from '#tests/Stubs/middlewares/Terminator'
+import { Interceptor } from '#tests/Stubs/middlewares/Interceptor'
 import { HttpRouteProvider } from '#src/Providers/HttpRouteProvider'
 import { HttpServerProvider } from '#src/Providers/HttpServerProvider'
 import { HelloController } from '#tests/Stubs/controllers/HelloController'
+import { UndefinedMethodException } from '#src/Exceptions/UndefinedMethodException'
 
 test.group('RouterTest', group => {
   group.each.setup(async () => {
@@ -139,6 +143,31 @@ test.group('RouterTest', group => {
     assert.deepEqual((await Server.request({ path: '/test', method: 'get' })).json(), { hello: 'world' })
   })
 
+  test('should throw an error when the controller dependency does not exist', async ({ assert }) => {
+    assert.throws(() => Route.controller('NotFoundController').get('/test', 'index'))
+  })
+
+  test('should throw an error when the controller method does not exist', async ({ assert }) => {
+    ioc.bind('App/Http/Controllers/HelloController', HelloController)
+
+    assert.throws(() => Route.controller('HelloController').get('/test', 'not-found'), UndefinedMethodException)
+  })
+
+  test('should be able to register controllers dependency methods as string in routes', async ({ assert }) => {
+    ioc.bind('App/Http/Controllers/HelloController', HelloController)
+
+    Route.get('/test', 'HelloController.index')
+    Route.register()
+
+    assert.deepEqual((await Server.request({ path: '/test', method: 'get' })).json(), { hello: 'world' })
+  })
+
+  test('should throw an error when the controller method does not exist', async ({ assert }) => {
+    ioc.bind('App/Http/Controllers/HelloController', HelloController)
+
+    assert.throws(() => Route.get('/test', 'HelloController.not-found'), UndefinedMethodException)
+  })
+
   test('should be able to register a middleware closure in route using router', async ({ assert }) => {
     Route.get('test', ctx => {
       ctx.response.send({ hello: 'world', handled: ctx.data.handled })
@@ -183,5 +212,138 @@ test.group('RouterTest', group => {
       hello: 'world',
     })
     assert.isTrue(terminated)
+  })
+
+  test('should be able to register a middleware class in route using router', async ({ assert }) => {
+    Route.get('test', ctx => {
+      ctx.response.send({ hello: 'world', handled: ctx.data.handled })
+    }).middleware(new Middleware())
+
+    Route.register()
+
+    assert.deepEqual((await Server.request({ path: '/test', method: 'get' })).json(), { hello: 'world', handled: true })
+  })
+
+  test('should be able to register an intercept middleware class in route using router', async ({ assert }) => {
+    Route.get('test', ctx => {
+      ctx.response.send({ hello: 'world', handled: ctx.data.handled })
+    }).interceptor(new Interceptor())
+
+    Route.register()
+
+    assert.deepEqual((await Server.request({ path: '/test', method: 'get' })).json(), {
+      hello: 'world',
+      intercepted: true,
+    })
+  })
+
+  test('should be able to register a terminate middleware class in route using router', async ({ assert }) => {
+    Route.get('test', ctx => {
+      ctx.response.send({ hello: 'world' })
+    }).terminator(new Terminator())
+
+    Route.register()
+
+    assert.deepEqual((await Server.request({ path: '/test', method: 'get' })).json(), {
+      hello: 'world',
+    })
+  })
+
+  test('should be able to register a middleware dependency in route using router', async ({ assert }) => {
+    ioc.bind('App/Http/Middlewares/Middleware', Middleware)
+
+    Route.get('test', ctx => {
+      ctx.response.send({ hello: 'world', handled: ctx.data.handled })
+    }).middleware('Middleware')
+
+    Route.register()
+
+    assert.deepEqual((await Server.request({ path: '/test', method: 'get' })).json(), { hello: 'world', handled: true })
+  })
+
+  test('should be able to register an intercept middleware dependency in route using router', async ({ assert }) => {
+    ioc.bind('App/Http/Middlewares/Interceptor', Interceptor)
+
+    Route.get('test', ctx => {
+      ctx.response.send({ hello: 'world', handled: ctx.data.handled })
+    }).interceptor('Interceptor')
+
+    Route.register()
+
+    assert.deepEqual((await Server.request({ path: '/test', method: 'get' })).json(), {
+      hello: 'world',
+      intercepted: true,
+    })
+  })
+
+  test('should be able to register a terminate middleware dependency in route using router', async ({ assert }) => {
+    ioc.bind('App/Http/Middlewares/Terminator', Terminator)
+
+    Route.get('test', ctx => {
+      ctx.response.send({ hello: 'world' })
+    }).terminator('Terminator')
+
+    Route.register()
+
+    assert.deepEqual((await Server.request({ path: '/test', method: 'get' })).json(), {
+      hello: 'world',
+    })
+  })
+
+  test('should be able to register a middleware dependency in route using router', async ({ assert }) => {
+    ioc.bind('App/Http/Middlewares/Names/middleware', Middleware)
+
+    Route.get('test', ctx => {
+      ctx.response.send({ hello: 'world', handled: ctx.data.handled })
+    }).middleware('middleware')
+
+    Route.register()
+
+    assert.deepEqual((await Server.request({ path: '/test', method: 'get' })).json(), { hello: 'world', handled: true })
+  })
+
+  test('should be able to register an intercept middleware dependency in route using router', async ({ assert }) => {
+    ioc.bind('App/Http/Middlewares/Names/interceptor', Interceptor)
+
+    Route.get('test', ctx => {
+      ctx.response.send({ hello: 'world', handled: ctx.data.handled })
+    }).interceptor('interceptor')
+
+    Route.register()
+
+    assert.deepEqual((await Server.request({ path: '/test', method: 'get' })).json(), {
+      hello: 'world',
+      intercepted: true,
+    })
+  })
+
+  test('should be able to register a named terminate middleware in route using router', async ({ assert }) => {
+    ioc.bind('App/Http/Middlewares/Names/terminator', Terminator)
+
+    Route.get('test', ctx => {
+      ctx.response.send({ hello: 'world' })
+    }).terminator('terminator')
+
+    Route.register()
+
+    assert.deepEqual((await Server.request({ path: '/test', method: 'get' })).json(), {
+      hello: 'world',
+    })
+  })
+
+  test('should throw an exception when trying to register a middleware that does not exist', async ({ assert }) => {
+    assert.throws(() => Route.get('test', () => {}).middleware('not-found'))
+  })
+
+  test('should throw an exception when trying to register a interceptor middleware that does not exist', async ({
+    assert,
+  }) => {
+    assert.throws(() => Route.get('test', () => {}).interceptor('not-found'))
+  })
+
+  test('should throw an exception when trying to register a terminator middleware that does not exist', async ({
+    assert,
+  }) => {
+    assert.throws(() => Route.get('test', () => {}).terminator('not-found'))
   })
 })

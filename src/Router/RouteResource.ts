@@ -13,6 +13,7 @@ import { Is, String } from '@athenna/common'
 import { TerminatorRouteType } from '#src/Types/Middlewares/TerminatorRouteType'
 import { MiddlewareRouteType } from '#src/Types/Middlewares/MiddlewareRouteType'
 import { InterceptorRouteType } from '#src/Types/Middlewares/InterceptorRouteType'
+import { RouteResourceTypes } from '#src/Types/Router/RouteResourceTypes'
 
 export class RouteResource {
   /**
@@ -96,7 +97,7 @@ export class RouteResource {
    * Route.resource('/test', 'TestController').only(['index'])
    * ```
    */
-  public only(names: string[]): RouteResource {
+  public only(names: RouteResourceTypes[]): RouteResource {
     this.filter(names, true).forEach(route => (route.route.deleted = true))
 
     return this
@@ -110,7 +111,7 @@ export class RouteResource {
    * Route.resource('/test', 'TestController').except(['index'])
    * ```
    */
-  public except(names: string[]): RouteResource {
+  public except(names: RouteResourceTypes[]): RouteResource {
     this.filter(names, false).forEach(route => (route.route.deleted = true))
 
     return this

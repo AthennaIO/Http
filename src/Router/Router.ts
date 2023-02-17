@@ -16,6 +16,7 @@ import { RouteResource } from '#src/Router/RouteResource'
 import { RequestHandler } from '#src/Types/Contexts/Context'
 import { RouteHandler } from '#src/Types/Router/RouteHandler'
 import { HTTPMethods, FastifyInstance, RouteOptions } from 'fastify'
+import { UndefinedMethodException } from '#src/Exceptions/UndefinedMethodException'
 
 export class Router {
   /**
@@ -62,6 +63,13 @@ export class Router {
     handler: RouteHandler,
   ): Route {
     if (this.isValidControllerHandler(handler)) {
+      if (!this.controllerInstance[handler]) {
+        throw new UndefinedMethodException(
+          handler,
+          this.controllerInstance.name,
+        )
+      }
+
       handler = this.controllerInstance[handler]
     }
 
