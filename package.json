@@ -114,8 +114,8 @@
       "src/**/*.ts"
     ],
     "exclude": [
-      "src/Contracts/RouteContract.ts",
-      "src/Contracts/ServerContract.ts"
+      "src/Types/*",
+      "src/Contracts/*"
     ],
     "reporter": [
       "text-summary",
