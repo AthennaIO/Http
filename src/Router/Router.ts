@@ -213,7 +213,7 @@ export class Router {
           return list
         }
 
-        if (!route.deleted) {
+        if (!route.route.deleted) {
           list.push(route.toJSON())
         }
 

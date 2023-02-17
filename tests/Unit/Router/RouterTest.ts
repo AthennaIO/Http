@@ -31,8 +31,12 @@ test.group('RouterTest', group => {
 
     assert.deepEqual(route.url, '/test')
     assert.deepEqual(route.methods, ['GET', 'HEAD'])
-    assert.deepEqual(route.middlewares, { handlers: [], terminators: [], interceptors: [] })
-    assert.deepEqual(route.fastifyOptions, { helmet: {}, schema: {}, rateLimitOptions: {}, config: { rateLimit: {} } })
+    assert.deepEqual(route.middlewares, {
+      middlewares: [],
+      terminators: [],
+      interceptors: [],
+    })
+    assert.deepEqual(route.fastify, {})
   })
 
   test('should be able to register vanilla fastify routes using route class', async ({ assert }) => {
@@ -119,196 +123,6 @@ test.group('RouterTest', group => {
     assert.deepEqual((await Server.request({ path: '/test', method: 'options' })).json(), { hello: 'world' })
   })
 
-  test('should be able to create a route group using route class', async ({ assert }) => {
-    Route.group(() => {
-      Route.get('/test', ctx => ctx.response.send({ hello: 'world' }))
-    }).prefix('/v1')
-
-    Route.register()
-
-    const response = await Server.request({ path: '/v1/test', method: 'get' })
-
-    assert.deepEqual(response.json(), { hello: 'world' })
-  })
-
-  test('should be able to create a route group inside other route group using route class', async ({ assert }) => {
-    Route.group(() => {
-      Route.group(() => {
-        Route.get('/test', ctx => ctx.response.send({ hello: 'world' }))
-      }).prefix('/v1')
-    }).prefix('/api')
-
-    Route.register()
-
-    const response = await Server.request({ path: '/api/v1/test', method: 'get' })
-
-    assert.deepEqual(response.json(), { hello: 'world' })
-  })
-
-  test('should be able to create a route group that adds helmet options using route class', async ({ assert }) => {
-    await Server.plugin(import('@fastify/helmet'), { global: false })
-
-    Route.group(() => {
-      Route.get('/test', ctx => ctx.response.send({ hello: 'world' }))
-    })
-      .prefix('/v1')
-      .helmet({
-        dnsPrefetchControl: { allow: true },
-      })
-
-    Route.register()
-
-    const response = await Server.request({ path: '/v1/test', method: 'get' })
-
-    assert.deepEqual(response.json(), { hello: 'world' })
-    assert.deepEqual(
-      response.headers['content-security-policy'],
-      "default-src 'self';base-uri 'self';font-src 'self' https: data:;form-action 'self';frame-ancestors 'self';img-src 'self' data:;object-src 'none';script-src 'self';script-src-attr 'none';style-src 'self' https: 'unsafe-inline';upgrade-insecure-requests",
-    )
-  })
-
-  test('should be able to create a route group that adds rate limit options using route class', async ({ assert }) => {
-    await Server.plugin(import('@fastify/rate-limit'))
-
-    Route.group(() => {
-      Route.get('/test', ctx => ctx.response.send({ hello: 'world' }))
-    })
-      .prefix('/v1')
-      .rateLimit({
-        max: 100,
-        timeWindow: '1 minute',
-      })
-
-    Route.register()
-
-    const response = await Server.request({ path: '/v1/test', method: 'get' })
-
-    assert.deepEqual(response.json(), { hello: 'world' })
-    assert.deepEqual(response.headers['x-ratelimit-limit'], 100)
-    assert.deepEqual(response.headers['x-ratelimit-remaining'], 99)
-    assert.deepEqual(response.headers['x-ratelimit-reset'], 60)
-  })
-
-  test('should be able to register a route resource using route class', async ({ assert }) => {
-    Route.resource('test', new HelloController())
-    Route.register()
-
-    assert.deepEqual((await Server.request({ path: '/test', method: 'get' })).json(), { hello: 'world' })
-    assert.deepEqual((await Server.request({ path: '/test', method: 'post' })).json(), { hello: 'world' })
-    assert.deepEqual((await Server.request({ path: '/test/:id', method: 'get' })).json(), { hello: 'world' })
-    assert.deepEqual((await Server.request({ path: '/test/:id', method: 'put' })).json(), { hello: 'world' })
-    assert.deepEqual((await Server.request({ path: '/test/:id', method: 'patch' })).json(), { hello: 'world' })
-    assert.deepEqual((await Server.request({ path: '/test/:id', method: 'delete' })).json(), { hello: 'world' })
-  })
-
-  test('should be able to register a route resource only some routes using route class', async ({ assert }) => {
-    Route.controller(new HelloController()).resource('test').only(['index'])
-    Route.register()
-
-    assert.deepEqual((await Server.request({ path: '/test', method: 'get' })).json(), { hello: 'world' })
-    assert.deepEqual((await Server.request({ path: '/test', method: 'post' })).json(), {
-      error: 'Not Found',
-      message: 'Route POST:/test not found',
-      statusCode: 404,
-    })
-    assert.deepEqual((await Server.request({ path: '/test/:id', method: 'get' })).json(), {
-      error: 'Not Found',
-      message: 'Route GET:/test/:id not found',
-      statusCode: 404,
-    })
-    assert.deepEqual((await Server.request({ path: '/test/:id', method: 'put' })).json(), {
-      error: 'Not Found',
-      message: 'Route PUT:/test/:id not found',
-      statusCode: 404,
-    })
-    assert.deepEqual((await Server.request({ path: '/test/:id', method: 'patch' })).json(), {
-      error: 'Not Found',
-      message: 'Route PATCH:/test/:id not found',
-      statusCode: 404,
-    })
-    assert.deepEqual((await Server.request({ path: '/test/:id', method: 'delete' })).json(), {
-      error: 'Not Found',
-      message: 'Route DELETE:/test/:id not found',
-      statusCode: 404,
-    })
-  })
-
-  test('should be able to register a route resource except some routes using route class', async ({ assert }) => {
-    Route.controller(new HelloController()).resource('test').except(['index'])
-    Route.register()
-
-    assert.deepEqual((await Server.request({ path: '/test', method: 'post' })).json(), { hello: 'world' })
-    assert.deepEqual((await Server.request({ path: '/test/:id', method: 'get' })).json(), { hello: 'world' })
-    assert.deepEqual((await Server.request({ path: '/test/:id', method: 'put' })).json(), { hello: 'world' })
-    assert.deepEqual((await Server.request({ path: '/test/:id', method: 'patch' })).json(), { hello: 'world' })
-    assert.deepEqual((await Server.request({ path: '/test/:id', method: 'delete' })).json(), { hello: 'world' })
-    assert.deepEqual((await Server.request({ path: '/test', method: 'get' })).json(), {
-      error: 'Not Found',
-      message: 'Route GET:/test not found',
-      statusCode: 404,
-    })
-  })
-
-  test('should be able to register a resource inside the group using route class', async ({ assert }) => {
-    Route.group(() => {
-      Route.resource('test', new HelloController())
-    }).prefix('/v1')
-
-    Route.register()
-
-    assert.deepEqual((await Server.request({ path: '/v1/test', method: 'get' })).json(), { hello: 'world' })
-    assert.deepEqual((await Server.request({ path: '/v1/test', method: 'post' })).json(), { hello: 'world' })
-    assert.deepEqual((await Server.request({ path: '/v1/test/:id', method: 'get' })).json(), { hello: 'world' })
-    assert.deepEqual((await Server.request({ path: '/v1/test/:id', method: 'put' })).json(), { hello: 'world' })
-    assert.deepEqual((await Server.request({ path: '/v1/test/:id', method: 'patch' })).json(), { hello: 'world' })
-    assert.deepEqual((await Server.request({ path: '/v1/test/:id', method: 'delete' })).json(), { hello: 'world' })
-  })
-
-  test('should be able to register a controller class as string in the resources of route', async ({ assert }) => {
-    ioc.bind('App/Http/Controllers/HelloController', HelloController)
-
-    Route.resource('test', 'HelloController').only(['index'])
-    Route.register()
-
-    assert.deepEqual((await Server.request({ path: '/test', method: 'get' })).json(), { hello: 'world' })
-  })
-
-  test('should be able to register a route resource with helmet options', async ({ assert }) => {
-    await Server.plugin(import('@fastify/helmet'), { global: false })
-
-    Route.resource('test', new HelloController())
-      .only(['index'])
-      .helmet({
-        dnsPrefetchControl: { allow: true },
-      })
-    Route.register()
-
-    const response = await Server.request({ path: '/test', method: 'get' })
-
-    assert.deepEqual(response.json(), { hello: 'world' })
-    assert.deepEqual(
-      response.headers['content-security-policy'],
-      "default-src 'self';base-uri 'self';font-src 'self' https: data:;form-action 'self';frame-ancestors 'self';img-src 'self' data:;object-src 'none';script-src 'self';script-src-attr 'none';style-src 'self' https: 'unsafe-inline';upgrade-insecure-requests",
-    )
-  })
-
-  test('should be able to register a route resource with rate limit options', async ({ assert }) => {
-    await Server.plugin(import('@fastify/rate-limit'), { global: false })
-
-    Route.resource('test', new HelloController()).only(['index']).rateLimit({
-      max: 100,
-      timeWindow: '1 minute',
-    })
-    Route.register()
-
-    const response = await Server.request({ path: '/test', method: 'get' })
-
-    assert.deepEqual(response.json(), { hello: 'world' })
-    assert.deepEqual(response.headers['x-ratelimit-limit'], 100)
-    assert.deepEqual(response.headers['x-ratelimit-remaining'], 99)
-    assert.deepEqual(response.headers['x-ratelimit-reset'], 60)
-  })
-
   test('should be able to register a controller class in the router to use in routes', async ({ assert }) => {
     Route.controller(new HelloController()).get('/test', 'index')
     Route.register()
@@ -323,5 +137,51 @@ test.group('RouterTest', group => {
     Route.register()
 
     assert.deepEqual((await Server.request({ path: '/test', method: 'get' })).json(), { hello: 'world' })
+  })
+
+  test('should be able to register a middleware closure in route using router', async ({ assert }) => {
+    Route.get('test', ctx => {
+      ctx.response.send({ hello: 'world', handled: ctx.data.handled })
+    }).middleware(ctx => {
+      ctx.data.handled = true
+    })
+
+    Route.register()
+
+    assert.deepEqual((await Server.request({ path: '/test', method: 'get' })).json(), { hello: 'world', handled: true })
+  })
+
+  test('should be able to register an intercept middleware closure in route using router', async ({ assert }) => {
+    Route.get('test', ctx => {
+      ctx.response.send({ hello: 'world', handled: ctx.data.handled })
+    }).interceptor(ctx => {
+      ctx.body.intercepted = true
+
+      return ctx.body
+    })
+
+    Route.register()
+
+    assert.deepEqual((await Server.request({ path: '/test', method: 'get' })).json(), {
+      hello: 'world',
+      intercepted: true,
+    })
+  })
+
+  test('should be able to register a terminate middleware closure in route using router', async ({ assert }) => {
+    let terminated = false
+
+    Route.get('test', ctx => {
+      ctx.response.send({ hello: 'world' })
+    }).terminator(() => {
+      terminated = true
+    })
+
+    Route.register()
+
+    assert.deepEqual((await Server.request({ path: '/test', method: 'get' })).json(), {
+      hello: 'world',
+    })
+    assert.isTrue(terminated)
   })
 })

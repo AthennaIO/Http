@@ -10,7 +10,6 @@
 import { Context } from '#src/Types/Contexts/Context'
 import { InterceptContext } from '#src/Types/Contexts/InterceptContext'
 import { TerminateContext } from '#src/Types/Contexts/TerminateContext'
-import { AthennaMiddleware } from '#src/Types/Middlewares/AthennaMiddleware'
 
 export type HandleHandler = (ctx: Context) => any | Promise<any>
 export type InterceptHandler = (
@@ -30,12 +29,7 @@ export type MiddlewareHandler =
   | InterceptHandler
 
 export type MiddlewareRecord = {
-  handlers: HandleHandler[]
+  middlewares: HandleHandler[]
   terminators: TerminateHandler[]
   interceptors: InterceptHandler[]
 }
-
-export type MiddlewareHandlerExt =
-  | string
-  | AthennaMiddleware
-  | MiddlewareHandler

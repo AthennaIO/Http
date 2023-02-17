@@ -132,8 +132,8 @@ test.group('ServerTest', group => {
     assert.deepEqual(response.json(), { status: 500, message: 'Something is wrong' })
   })
 
-  test('should be able to execute a handle middleware before going to the route handler', async ({ assert }) => {
-    Server.use(async ctx => (ctx.data.handled = true), 'handle').get({
+  test('should be able to execute a middleware before going to the route handler', async ({ assert }) => {
+    Server.middleware(async ctx => (ctx.data.handled = true)).get({
       url: '/test',
       handler: async ctx => ctx.response.send({ handled: ctx.data.handled }),
     })
@@ -144,11 +144,11 @@ test.group('ServerTest', group => {
   })
 
   test('should be able to execute a intercept middleware before returning the request', async ({ assert }) => {
-    Server.use(ctx => {
+    Server.intercept(ctx => {
       ctx.body.intercepted = true
 
       return ctx.body
-    }, 'intercept').get({
+    }).get({
       url: '/test',
       handler: async ctx => ctx.response.send({ hello: 'world' }),
     })
@@ -161,9 +161,9 @@ test.group('ServerTest', group => {
   test('should be able to execute a terminate middleware after returning the request', async ({ assert }) => {
     let terminated = false
 
-    Server.use(() => {
+    Server.terminate(() => {
       terminated = true
-    }, 'terminate').get({
+    }).get({
       url: '/test',
       handler: async ctx => ctx.response.send({ hello: 'world' }),
     })

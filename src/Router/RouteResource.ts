@@ -10,25 +10,15 @@
 import { HTTPMethods } from 'fastify'
 import { Route } from '#src/Router/Route'
 import { Is, String } from '@athenna/common'
-import { MiddlewareTypes } from '#src/Types/Middlewares/MiddlewareTypes'
-import { MiddlewareHandlerExt } from '#src/Types/Middlewares/MiddlewareHandler'
+import { TerminatorRouteType } from '#src/Types/Middlewares/TerminatorRouteType'
+import { MiddlewareRouteType } from '#src/Types/Middlewares/MiddlewareRouteType'
+import { InterceptorRouteType } from '#src/Types/Middlewares/InterceptorRouteType'
 
 export class RouteResource {
   /**
    * All routes registered in the resource.
    */
   public routes: Route[] = []
-
-  /**
-   * The routes indexes in the resource.
-   */
-  public indexes = {
-    index: 0,
-    store: 1,
-    show: 2,
-    update: 3,
-    delete: 4,
-  }
 
   /**
    * The resource name.
@@ -56,10 +46,44 @@ export class RouteResource {
    * ```
    */
   public middleware(
-    middleware: MiddlewareHandlerExt,
-    type: MiddlewareTypes = 'handle',
+    middleware: MiddlewareRouteType,
+    prepend?: boolean,
   ): RouteResource {
-    this.routes.forEach(route => route.middleware(middleware, type))
+    this.routes.forEach(route => route.middleware(middleware, prepend))
+
+    return this
+  }
+
+  /**
+   * Set a interceptor for the route resource.
+   *
+   * @example
+   * ```ts
+   * Route.resource('/test', 'TestController').interceptor('response')
+   * ```
+   */
+  public interceptor(
+    interceptor: InterceptorRouteType,
+    prepend?: boolean,
+  ): RouteResource {
+    this.routes.forEach(route => route.interceptor(interceptor, prepend))
+
+    return this
+  }
+
+  /**
+   * Set a terminator for the route resource.
+   *
+   * @example
+   * ```ts
+   * Route.resource('/test', 'TestController').terminator('response')
+   * ```
+   */
+  public terminator(
+    terminator: TerminatorRouteType,
+    prepend?: boolean,
+  ): RouteResource {
+    this.routes.forEach(route => route.terminator(terminator, prepend))
 
     return this
   }
@@ -73,9 +97,7 @@ export class RouteResource {
    * ```
    */
   public only(names: string[]): RouteResource {
-    this.routes.forEach(route => (route.deleted = true))
-
-    names.forEach(name => (this.routes[this.indexes[name]].deleted = false))
+    this.filter(names, true).forEach(route => (route.route.deleted = true))
 
     return this
   }
@@ -89,7 +111,7 @@ export class RouteResource {
    * ```
    */
   public except(names: string[]): RouteResource {
-    names.forEach(name => (this.routes[this.indexes[name]].deleted = true))
+    this.filter(names, false).forEach(route => (route.route.deleted = true))
 
     return this
   }
@@ -132,18 +154,32 @@ export class RouteResource {
   }
 
   /**
+   * Filter routes by name.
+   */
+  private filter(names: string[], inverse = false) {
+    return this.routes.filter(route => {
+      const match = names.find(name => route.route.name.endsWith(name))
+
+      return inverse ? !match : match
+    })
+  }
+
+  /**
    * Create the route.
    */
   private makeRoute(url: string, methods: HTTPMethods[], action: string) {
+    let name = ''
     let handler = ''
 
     if (Is.String(this.controller)) {
+      name = `${this.controller}.${action}`
       handler = `${this.controller}.${action}`
     } else {
+      name = `${this.controller.name}.${action}`
       handler = this.controller[action]
     }
 
-    this.routes.push(new Route(url, methods, handler))
+    this.routes.push(new Route(url, methods, handler).name(name))
   }
 
   /**

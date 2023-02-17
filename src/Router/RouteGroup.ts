@@ -9,7 +9,9 @@
 
 import { Route } from '#src/Router/Route'
 import { RouteResource } from '#src/Router/RouteResource'
-import { MiddlewareHandlerExt } from '#src/Types/Middlewares/MiddlewareHandler'
+import { MiddlewareRouteType } from '#src/Types/Middlewares/MiddlewareRouteType'
+import { TerminatorRouteType } from '#src/Types/Middlewares/TerminatorRouteType'
+import { InterceptorRouteType } from '#src/Types/Middlewares/InterceptorRouteType'
 
 export class RouteGroup {
   /**
@@ -17,18 +19,6 @@ export class RouteGroup {
    */
   // eslint-disable-next-line no-use-before-define
   public routes: (Route | RouteGroup | RouteResource)[]
-
-  /**
-   * Array of middleware registered on the group
-   */
-  private groupMiddleware: MiddlewareHandlerExt[] = []
-
-  /**
-   * We register the group middleware only once with the route and then mutate the internal stack.
-   * This ensures that group own middleware are pushed to the last, but the entire group of middleware
-   * is added to the front in the routes.
-   */
-  private registeredMiddlewareWithRoute = false
 
   public constructor(routes: (Route | RouteGroup | RouteResource)[]) {
     this.routes = routes
@@ -51,7 +41,7 @@ export class RouteGroup {
   }
 
   /**
-   * Add a middleware to all routes middleware.
+   * Add a middleware to all routes in the group.
    *
    * @example
    * ```ts
@@ -60,23 +50,46 @@ export class RouteGroup {
    * }).middleware('auth')
    * ```
    */
-  public middleware(
-    middleware: MiddlewareHandlerExt,
-    prepend = false,
-  ): RouteGroup {
-    if (prepend) {
-      this.groupMiddleware.unshift(middleware)
-    } else {
-      this.groupMiddleware.push(middleware)
-    }
+  public middleware(middleware: MiddlewareRouteType): RouteGroup {
+    this.routes.forEach(route =>
+      this.invoke(route, 'middleware', [middleware, true]),
+    )
 
-    if (!this.registeredMiddlewareWithRoute) {
-      this.registeredMiddlewareWithRoute = true
+    return this
+  }
 
-      this.routes.forEach(route =>
-        this.invoke(route, 'middleware', [this.groupMiddleware, true]),
-      )
-    }
+  /**
+   * Add an interceptor to all routes in the group.
+   *
+   * @example
+   * ```ts
+   * Route.group(() => {
+   *
+   * }).interceptor('response')
+   * ```
+   */
+  public interceptor(interceptor: InterceptorRouteType): RouteGroup {
+    this.routes.forEach(route =>
+      this.invoke(route, 'interceptor', [interceptor, true]),
+    )
+
+    return this
+  }
+
+  /**
+   * Add a terminator to all routes in the group.
+   *
+   * @example
+   * ```ts
+   * Route.group(() => {
+   *
+   * }).terminator('log')
+   * ```
+   */
+  public terminator(terminator: TerminatorRouteType): RouteGroup {
+    this.routes.forEach(route =>
+      this.invoke(route, 'terminator', [terminator, true]),
+    )
 
     return this
   }

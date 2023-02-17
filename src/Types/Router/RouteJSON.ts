@@ -7,14 +7,17 @@
  * file that was distributed with this source code.
  */
 
-import { HTTPMethods } from 'fastify'
+import { HTTPMethods, RouteOptions } from 'fastify'
 import { RequestHandler } from '#src/Types/Contexts/Context'
 import { MiddlewareRecord } from '#src/Types/Middlewares/MiddlewareHandler'
 
 export type RouteJSON = {
   url: string
-  methods: HTTPMethods[]
-  handler: RequestHandler
-  middlewares: MiddlewareRecord
-  fastifyOptions?: any
+  methods?: HTTPMethods[]
+  name?: string
+  deleted?: boolean
+  prefixes?: string[]
+  handler?: RequestHandler
+  middlewares?: MiddlewareRecord
+  fastify?: Partial<RouteOptions>
 }
