@@ -8,13 +8,10 @@
  */
 
 import { test } from '@japa/runner'
-import { Route } from '#src/Facades/Route'
-import { Server } from '#src/Facades/Server'
 import { Middleware } from '#tests/Stubs/middlewares/Middleware'
 import { Terminator } from '#tests/Stubs/middlewares/Terminator'
 import { Interceptor } from '#tests/Stubs/middlewares/Interceptor'
-import { HttpRouteProvider } from '#src/Providers/HttpRouteProvider'
-import { HttpServerProvider } from '#src/Providers/HttpServerProvider'
+import { Route, Server, HttpRouteProvider, HttpServerProvider } from '#src'
 
 test.group('RouteGroupTest', group => {
   group.each.setup(async () => {

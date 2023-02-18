@@ -8,14 +8,11 @@
  */
 
 import { test } from '@japa/runner'
-import { Route } from '#src/Facades/Route'
-import { Server } from '#src/Facades/Server'
 import { Middleware } from '#tests/Stubs/middlewares/Middleware'
 import { Terminator } from '#tests/Stubs/middlewares/Terminator'
 import { Interceptor } from '#tests/Stubs/middlewares/Interceptor'
-import { HttpRouteProvider } from '#src/Providers/HttpRouteProvider'
-import { HttpServerProvider } from '#src/Providers/HttpServerProvider'
 import { HelloController } from '#tests/Stubs/controllers/HelloController'
+import { Route, Server, HttpRouteProvider, HttpServerProvider } from '#src'
 import { UndefinedMethodException } from '#src/Exceptions/UndefinedMethodException'
 
 test.group('RouterTest', group => {

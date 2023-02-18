@@ -8,8 +8,7 @@
  */
 
 import { test } from '@japa/runner'
-import { Server } from '#src/Facades/Server'
-import { HttpServerProvider } from '#src/Providers/HttpServerProvider'
+import { Server, HttpServerProvider } from '#src'
 
 test.group('ServerTest', group => {
   group.each.setup(async () => {

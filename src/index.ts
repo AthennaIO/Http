@@ -30,3 +30,24 @@ declare module 'fastify' {
     operationId?: string
   }
 }
+
+export * from './Context/Request.js'
+export * from './Context/Response.js'
+export * from './Contracts/Middlewares/MiddlewareContract.js'
+export * from './Contracts/Middlewares/TerminatorContract.js'
+export * from './Contracts/Middlewares/InterceptorContract.js'
+export * from './Facades/Route.js'
+export * from './Facades/Server.js'
+export * from './Providers/HttpRouteProvider.js'
+export * from './Providers/HttpServerProvider.js'
+export * from './Handlers/FastifyHandler.js'
+export * from './Router/Router.js'
+export * from './Server/ServerImpl.js'
+export * from './Types/Router/RouteJSON.js'
+export * from './Types/Router/RouteHandler.js'
+export * from './Types/Router/RouteResourceTypes.js'
+export * from './Types/Contexts/Context.js'
+export * from './Types/Contexts/ErrorContext.js'
+export * from './Types/Contexts/TerminateContext.js'
+export * from './Types/Contexts/InterceptContext.js'
+export * from './Types/Middlewares/MiddlewareHandler.js'
