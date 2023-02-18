@@ -40,7 +40,7 @@ test.group('RouterTest', group => {
       terminators: [],
       interceptors: [],
     })
-    assert.deepEqual(route.fastify, {})
+    assert.deepEqual(route.fastify, { schema: {} })
   })
 
   test('should be able to register vanilla fastify routes using route class', async ({ assert }) => {
@@ -345,5 +345,21 @@ test.group('RouterTest', group => {
     assert,
   }) => {
     assert.throws(() => Route.get('test', () => {}).terminator('not-found'))
+  })
+
+  test('should be able to set vanilla fastify options in route', async ({ assert }) => {
+    let errorHappened = false
+    ioc.bind('App/Http/Controllers/HelloController', HelloController)
+
+    Route.get('test', 'HelloController.vanillaError').vanillaOptions({
+      onError: async () => {
+        errorHappened = true
+      },
+    })
+
+    Route.register()
+    await Server.request({ path: '/test', method: 'get' })
+
+    assert.isTrue(errorHappened)
   })
 })

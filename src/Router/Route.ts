@@ -48,7 +48,7 @@ export class Route {
         terminators: [],
         interceptors: [],
       },
-      fastify: {},
+      fastify: { schema: {} },
     }
 
     if (Is.String(handler)) {
@@ -90,7 +90,7 @@ export class Route {
    * Route.vanillaOptions({ schema: {} })
    * ```
    */
-  public vanillaOptions(options: RouteOptions): Route {
+  public vanillaOptions(options: Partial<RouteOptions>): Route {
     this.route.fastify = {
       ...this.route.fastify,
       ...options,
@@ -281,10 +281,6 @@ export class Route {
    * ```
    */
   public hide(): Route {
-    if (!this.route.fastify.schema) {
-      this.route.fastify.schema = {}
-    }
-
     this.route.fastify.schema.hide = true
 
     return this
@@ -299,10 +295,6 @@ export class Route {
    * ```
    */
   public deprecated(): Route {
-    if (!this.route.fastify.schema) {
-      this.route.fastify.schema = {}
-    }
-
     this.route.fastify.schema.deprecated = true
 
     return this
@@ -317,10 +309,6 @@ export class Route {
    * ```
    */
   public summary(summary: string): Route {
-    if (!this.route.fastify.schema) {
-      this.route.fastify.schema = {}
-    }
-
     this.route.fastify.schema.summary = summary
 
     return this
@@ -335,10 +323,6 @@ export class Route {
    * ```
    */
   public description(description: string): Route {
-    if (!this.route.fastify.schema) {
-      this.route.fastify.schema = {}
-    }
-
     this.route.fastify.schema.description = description
 
     return this
@@ -353,10 +337,6 @@ export class Route {
    * ```
    */
   public tags(tags: string[]): Route {
-    if (!this.route.fastify.schema) {
-      this.route.fastify.schema = {}
-    }
-
     if (!this.route.fastify.schema.tags) {
       this.route.fastify.schema.tags = []
     }
@@ -378,10 +358,6 @@ export class Route {
    * ```
    */
   public body(name: string, body: any = {}): Route {
-    if (!this.route.fastify.schema) {
-      this.route.fastify.schema = {}
-    }
-
     if (!this.route.fastify.schema.body) {
       this.route.fastify.schema.body = {
         type: 'object',
@@ -405,10 +381,6 @@ export class Route {
    * ```
    */
   public param(name: string, param: any = {}): Route {
-    if (!this.route.fastify.schema) {
-      this.route.fastify.schema = {}
-    }
-
     if (!this.route.fastify.schema.params) {
       this.route.fastify.schema.params = {
         type: 'object',
@@ -432,10 +404,6 @@ export class Route {
    * ```
    */
   public queryString(name: string, queryString: any = {}): Route {
-    if (!this.route.fastify.schema) {
-      this.route.fastify.schema = {}
-    }
-
     if (!this.route.fastify.schema.querystring) {
       this.route.fastify.schema.querystring = {
         type: 'object',
@@ -478,10 +446,6 @@ export class Route {
    * ```
    */
   public response(statusCode: number, response: any = {}): Route {
-    if (!this.route.fastify.schema) {
-      this.route.fastify.schema = {}
-    }
-
     if (!this.route.fastify.schema.response) {
       this.route.fastify.schema.response = {}
     }
@@ -500,10 +464,6 @@ export class Route {
    * ```
    */
   public security(key: string, values: string[]): Route {
-    if (!this.route.fastify.schema) {
-      this.route.fastify.schema = {}
-    }
-
     if (!this.route.fastify.schema.security) {
       this.route.fastify.schema.security = []
     }
@@ -522,10 +482,6 @@ export class Route {
    * ```
    */
   public externalDocs(url: string, description?: string): Route {
-    if (!this.route.fastify.schema) {
-      this.route.fastify.schema = {}
-    }
-
     if (!this.route.fastify.schema.externalDocs) {
       this.route.fastify.schema.externalDocs = {
         url: '',
@@ -548,10 +504,6 @@ export class Route {
    * ```
    */
   public consumes(consumes: string[]): Route {
-    if (!this.route.fastify.schema) {
-      this.route.fastify.schema = {}
-    }
-
     this.route.fastify.schema.consumes = consumes
 
     return this
@@ -566,10 +518,6 @@ export class Route {
    * ```
    */
   public produces(produces: string[]): Route {
-    if (!this.route.fastify.schema) {
-      this.route.fastify.schema = {}
-    }
-
     this.route.fastify.schema.produces = produces
 
     return this

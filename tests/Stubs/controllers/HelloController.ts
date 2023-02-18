@@ -40,4 +40,8 @@ export class HelloController {
 
     await ctx.response.send({ hello: 'world' })
   }
+
+  async vanillaError() {
+    throw new Error('error')
+  }
 }
