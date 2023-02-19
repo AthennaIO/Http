@@ -97,13 +97,15 @@ export class ServerImpl {
   public getSwagger(options?: {
     yaml: boolean
   }): import('openapi-types').OpenAPI.Document | string {
-    if (!this.fastify.swagger) {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    const swagger = this.fastify.swagger
+
+    if (!swagger) {
       return null
     }
 
-    return this.fastify.swagger(
-      options,
-    ) as import('openapi-types').OpenAPI.Document
+    return swagger(options) as import('openapi-types').OpenAPI.Document
   }
 
   /**
