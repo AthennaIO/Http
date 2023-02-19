@@ -12,9 +12,13 @@
     "router",
     "cors",
     "ctx",
+    "helmet",
+    "swagger",
     "exception-handling",
     "rate-limiting",
     "middlewares",
+    "terminators",
+    "interceptors",
     "http-server",
     "athenna",
     "esm"

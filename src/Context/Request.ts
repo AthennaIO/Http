@@ -235,7 +235,11 @@ export class Request {
    * Add the hostname and port to the url.
    */
   private getHostUrlFor(url: string): string {
-    const { address, port } = this.getAddressInfo()
+    let { address, port } = this.getAddressInfo()
+
+    if (address === '::1') {
+      address = '127.0.0.1'
+    }
 
     if (!Is.Ip(address) && address !== 'localhost') {
       return `${this.protocol}://${address}${url}`
