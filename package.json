@@ -47,7 +47,9 @@
     "./providers/ServerProvider": "./build/Providers/ServerProvider.js",
     "./commands/RouteListCommand": "./build/Commands/RouteListCommand.js",
     "./commands/MakeControllerCommand": "./build/Commands/MakeControllerCommand.js",
-    "./commands/MakeMiddlewareCommand": "./build/Commands/MakeMiddlewareCommand.js"
+    "./commands/MakeMiddlewareCommand": "./build/Commands/MakeMiddlewareCommand.js",
+    "./commands/MakeTerminatorCommand": "./build/Commands/MakeTerminatorCommand.js",
+    "./commands/MakeInterceptorCommand": "./build/Commands/MakeInterceptorCommand.js"
   },
   "imports": {
     "#src/*": "./src/*.js",
