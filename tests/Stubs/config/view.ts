@@ -60,6 +60,8 @@ export default {
     paths: {
       controller: Path.pwd('templates/controller.edge'),
       middleware: Path.pwd('templates/middleware.edge'),
+      terminator: Path.pwd('templates/terminator.edge'),
+      interceptor: Path.pwd('templates/interceptor.edge'),
     },
 
     /*

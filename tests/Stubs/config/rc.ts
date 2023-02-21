@@ -9,9 +9,9 @@
 
 import { Path, File } from '@athenna/common'
 
-const buffer = new File(Path.pwd('package.json')).getContentSync()
-const athennaRc = JSON.parse(buffer.toString()).athenna
+const buffer = new File(Path.pwd('.athennarc.json')).getContentSync()
+const athennaRc = JSON.parse(buffer.toString())
 
-athennaRc.isInPackageJson = true
+athennaRc.isInPackageJson = false
 
 export default athennaRc

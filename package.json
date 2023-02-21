@@ -206,11 +206,5 @@
         }
       ]
     }
-  },
-  "athenna": {
-    "preloads": [],
-    "commands": [],
-    "providers": [],
-    "commandsManifest": {}
   }
 }

@@ -155,8 +155,8 @@ export class Route {
 
     if (Is.String(interceptor)) {
       const inte =
-        ioc.use(`App/Http/Middlewares/Names/${interceptor}`) ||
-        ioc.safeUse(`App/Http/Middlewares/${interceptor}`)
+        ioc.use(`App/Http/Interceptors/Names/${interceptor}`) ||
+        ioc.safeUse(`App/Http/Interceptors/${interceptor}`)
 
       this.route.middlewares.interceptors[insertionType](
         inte.intercept.bind(inte),
@@ -187,8 +187,8 @@ export class Route {
 
     if (Is.String(terminator)) {
       const ter =
-        ioc.use(`App/Http/Middlewares/Names/${terminator}`) ||
-        ioc.safeUse(`App/Http/Middlewares/${terminator}`)
+        ioc.use(`App/Http/Terminators/Names/${terminator}`) ||
+        ioc.safeUse(`App/Http/Terminators/${terminator}`)
 
       this.route.middlewares.terminators[insertionType](ter.terminate.bind(ter))
 

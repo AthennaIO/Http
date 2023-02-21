@@ -259,7 +259,7 @@ test.group('RouterTest', group => {
   })
 
   test('should be able to register an intercept middleware dependency in route using router', async ({ assert }) => {
-    ioc.bind('App/Http/Middlewares/Interceptor', Interceptor)
+    ioc.bind('App/Http/Interceptors/Interceptor', Interceptor)
 
     Route.get('test', ctx => {
       ctx.response.send({ hello: 'world', handled: ctx.data.handled })
@@ -274,7 +274,7 @@ test.group('RouterTest', group => {
   })
 
   test('should be able to register a terminate middleware dependency in route using router', async ({ assert }) => {
-    ioc.bind('App/Http/Middlewares/Terminator', Terminator)
+    ioc.bind('App/Http/Terminators/Terminator', Terminator)
 
     Route.get('test', ctx => {
       ctx.response.send({ hello: 'world' })
@@ -300,7 +300,7 @@ test.group('RouterTest', group => {
   })
 
   test('should be able to register an intercept middleware dependency in route using router', async ({ assert }) => {
-    ioc.bind('App/Http/Middlewares/Names/interceptor', Interceptor)
+    ioc.bind('App/Http/Interceptors/Names/interceptor', Interceptor)
 
     Route.get('test', ctx => {
       ctx.response.send({ hello: 'world', handled: ctx.data.handled })
@@ -315,7 +315,7 @@ test.group('RouterTest', group => {
   })
 
   test('should be able to register a named terminate middleware in route using router', async ({ assert }) => {
-    ioc.bind('App/Http/Middlewares/Names/terminator', Terminator)
+    ioc.bind('App/Http/Terminators/Names/terminator', Terminator)
 
     Route.get('test', ctx => {
       ctx.response.send({ hello: 'world' })

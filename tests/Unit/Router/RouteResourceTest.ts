@@ -256,7 +256,7 @@ test.group('RouteResourceTest', group => {
     assert,
   }) => {
     ioc.bind('App/Http/Controllers/HelloController', HelloController)
-    ioc.bind('App/Http/Middlewares/Interceptor', Interceptor)
+    ioc.bind('App/Http/Interceptors/Interceptor', Interceptor)
 
     Route.controller('HelloController').resource('test').only(['index']).interceptor('Interceptor')
 
@@ -272,7 +272,7 @@ test.group('RouteResourceTest', group => {
     assert,
   }) => {
     ioc.bind('App/Http/Controllers/HelloController', HelloController)
-    ioc.bind('App/Http/Middlewares/Terminator', Terminator)
+    ioc.bind('App/Http/Terminators/Terminator', Terminator)
 
     Route.controller('HelloController').resource('test').only(['index']).terminator('Terminator')
 
@@ -298,7 +298,7 @@ test.group('RouteResourceTest', group => {
     assert,
   }) => {
     ioc.bind('App/Http/Controllers/HelloController', HelloController)
-    ioc.bind('App/Http/Middlewares/Names/my-interceptor', Interceptor)
+    ioc.bind('App/Http/Interceptors/Names/my-interceptor', Interceptor)
 
     Route.controller('HelloController').resource('test').only(['index']).interceptor('my-interceptor')
 
@@ -312,7 +312,7 @@ test.group('RouteResourceTest', group => {
 
   test('should be able to register a terminate named middleware in route resource using router', async ({ assert }) => {
     ioc.bind('App/Http/Controllers/HelloController', HelloController)
-    ioc.bind('App/Http/Middlewares/Names/my-terminator', Terminator)
+    ioc.bind('App/Http/Terminators/Names/my-terminator', Terminator)
 
     Route.controller('HelloController').resource('test').only(['index']).terminator('my-terminator')
 
