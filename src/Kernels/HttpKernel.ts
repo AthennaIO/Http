@@ -10,7 +10,8 @@
 export class HttpKernel {
   /**
    * Register all the middlewares found inside "rc.middlewares" config
-   * inside the service provider.
+   * inside the service provider. Also register if "rc.namedMiddlewares"
+   * and "rc.globalMiddlewares" exists.
    */
   public async registerMiddlewares() {}
 }
