@@ -61,8 +61,8 @@ test.group('MakeControllerCommandTest', group => {
       .getContent()
       .then(content => JSON.parse(content.toString()))
 
-    assert.containsSubset(Config.get('rc.services'), ['#app/Http/Controllers/TestController'])
-    assert.containsSubset(athennaRc.services, ['#app/Http/Controllers/TestController'])
+    assert.containsSubset(Config.get('rc.controllers'), ['#app/Http/Controllers/TestController'])
+    assert.containsSubset(athennaRc.controllers, ['#app/Http/Controllers/TestController'])
   })
 
   test('should throw an exception when the file already exists', async ({ assert }) => {

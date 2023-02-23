@@ -61,11 +61,8 @@ test.group('MakeMiddlewareCommandTest', group => {
       .getContent()
       .then(content => JSON.parse(content.toString()))
 
-    assert.containsSubset(Config.get('rc.services'), ['#app/Http/Middlewares/TestMiddleware'])
-    assert.containsSubset(athennaRc.services, ['#app/Http/Middlewares/TestMiddleware'])
-    assert.containsSubset(athennaRc.namedMiddlewares, {
-      testMiddleware: '#app/Http/Middlewares/TestMiddleware',
-    })
+    assert.containsSubset(Config.get('rc.middlewares'), ['#app/Http/Middlewares/TestMiddleware'])
+    assert.containsSubset(athennaRc.middlewares, ['#app/Http/Middlewares/TestMiddleware'])
   })
 
   test('should throw an exception when the file already exists', async ({ assert }) => {

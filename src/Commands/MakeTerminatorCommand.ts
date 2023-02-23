@@ -7,7 +7,7 @@
  * file that was distributed with this source code.
  */
 
-import { Path, String } from '@athenna/common'
+import { Path } from '@athenna/common'
 import { BaseCommand, Argument } from '@athenna/artisan'
 
 export class MakeTerminatorCommand extends BaseCommand {
@@ -37,19 +37,12 @@ export class MakeTerminatorCommand extends BaseCommand {
       `Terminator ({yellow} "${file.name}") successfully created.`,
     )
 
-    const camelName = String.toCamelCase(file.name)
     const importPath = `#app/Http/Terminators/${file.name}`
 
-    await this.rc
-      .pushTo('services', importPath)
-      .setTo('namedMiddlewares', camelName, importPath)
-      .save()
+    await this.rc.pushTo('middlewares', importPath).save()
 
     this.logger.success(
-      `Athenna RC updated: ({dim,yellow} [ services += "${importPath}" ])`,
-    )
-    this.logger.success(
-      `Athenna RC updated: ({dim,yellow} { namedMiddlewares += "${camelName}": "${importPath}" })`,
+      `Athenna RC updated: ({dim,yellow} [ middlewares += "${importPath}" ])`,
     )
   }
 }

@@ -39,14 +39,10 @@ export class MakeControllerCommand extends BaseCommand {
 
     const importPath = `#app/Http/Controllers/${file.name}`
 
-    try {
-      await this.rc.pushTo('services', importPath).save()
-    } catch (err) {
-      console.log(err)
-    }
+    await this.rc.pushTo('controllers', importPath).save()
 
     this.logger.success(
-      `Athenna RC updated: ({dim,yellow} [ services += "${importPath}" ])`,
+      `Athenna RC updated: ({dim,yellow} [ controllers += "${importPath}" ])`,
     )
   }
 }

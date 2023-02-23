@@ -61,11 +61,8 @@ test.group('MakeInterceptorCommandTest', group => {
       .getContent()
       .then(content => JSON.parse(content.toString()))
 
-    assert.containsSubset(Config.get('rc.services'), ['#app/Http/Interceptors/TestInterceptor'])
-    assert.containsSubset(athennaRc.services, ['#app/Http/Interceptors/TestInterceptor'])
-    assert.containsSubset(athennaRc.namedMiddlewares, {
-      testInterceptor: '#app/Http/Interceptors/TestInterceptor',
-    })
+    assert.containsSubset(Config.get('rc.middlewares'), ['#app/Http/Interceptors/TestInterceptor'])
+    assert.containsSubset(athennaRc.middlewares, ['#app/Http/Interceptors/TestInterceptor'])
   })
 
   test('should throw an exception when the file already exists', async ({ assert }) => {

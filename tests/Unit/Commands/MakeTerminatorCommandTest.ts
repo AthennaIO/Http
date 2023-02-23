@@ -61,11 +61,8 @@ test.group('MakeTerminatorCommandTest', group => {
       .getContent()
       .then(content => JSON.parse(content.toString()))
 
-    assert.containsSubset(Config.get('rc.services'), ['#app/Http/Terminators/TestTerminator'])
-    assert.containsSubset(athennaRc.services, ['#app/Http/Terminators/TestTerminator'])
-    assert.containsSubset(athennaRc.namedMiddlewares, {
-      testTerminator: '#app/Http/Terminators/TestTerminator',
-    })
+    assert.containsSubset(Config.get('rc.middlewares'), ['#app/Http/Terminators/TestTerminator'])
+    assert.containsSubset(athennaRc.middlewares, ['#app/Http/Terminators/TestTerminator'])
   })
 
   test('should throw an exception when the file already exists', async ({ assert }) => {

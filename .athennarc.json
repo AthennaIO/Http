@@ -8,11 +8,12 @@
   ],
   "services": [],
   "providers": [],
+  "controllers": [],
+  "middlewares": [],
   "commandsManifest": {
     "make:controller": "./src/Commands/MakeControllerCommand.js",
     "make:interceptor": "./src/Commands/MakeInterceptorCommand.js",
     "make:middleware": "./src/Commands/MakeMiddlewareCommand.js",
     "make:terminator": "./src/Commands/MakeTerminatorCommand.js"
-  },
-  "namedMiddlewares": {}
+  }
 }
