@@ -9,6 +9,7 @@
 
 import { Server } from '#src'
 import { Is } from '@athenna/common'
+import { Config } from '@athenna/config'
 
 export class HttpKernel {
   /**
