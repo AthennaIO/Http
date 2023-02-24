@@ -39,15 +39,21 @@ export class HttpKernel {
     }
 
     return Object.keys(namedMiddlewares).map(key => {
-      return import(namedMiddlewares[key]).then(Middleware => {
-        const createCamelAlias = false
-        const { alias, namedAlias } = this.getNamedMiddlewareAlias(
-          key,
-          Middleware,
-        )
+      return import.meta
+        .resolve(namedMiddlewares[key], Config.get('rc.meta'))
+        .then(importMetaPath =>
+          import(importMetaPath).then(Middleware => {
+            const createCamelAlias = false
+            const { alias, namedAlias } = this.getNamedMiddlewareAlias(
+              key,
+              Middleware,
+            )
 
-        ioc.bind(alias, Middleware, createCamelAlias).alias(namedAlias, alias)
-      })
+            ioc
+              .bind(alias, Middleware, createCamelAlias)
+              .alias(namedAlias, alias)
+          }),
+        )
     })
   }
 
@@ -63,16 +69,18 @@ export class HttpKernel {
     }
 
     return globalMiddlewares.map(path => {
-      return import(path).then(Middleware => {
-        const createCamelAlias = false
+      return import.meta
+        .resolve(path, Config.get('rc.meta'))
+        .then(Middleware => {
+          const createCamelAlias = false
 
-        const { alias, handler, serverMethod } =
-          this.getGlobalMiddlewareAliasAndHandler(Middleware)
+          const { alias, handler, serverMethod } =
+            this.getGlobalMiddlewareAliasAndHandler(Middleware)
 
-        ioc.bind(alias, Middleware, createCamelAlias)
+          ioc.bind(alias, Middleware, createCamelAlias)
 
-        Server[serverMethod](ioc.safeUse(alias)[handler])
-      })
+          Server[serverMethod](ioc.safeUse(alias)[handler])
+        })
     })
   }
 

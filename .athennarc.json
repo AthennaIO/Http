@@ -1,19 +1,19 @@
 {
   "preloads": [],
   "commands": [
-    "./src/Commands/MakeControllerCommand.js",
-    "./src/Commands/MakeInterceptorCommand.js",
-    "./src/Commands/MakeMiddlewareCommand.js",
-    "./src/Commands/MakeTerminatorCommand.js"
+    "#src/Commands/MakeControllerCommand",
+    "#src/Commands/MakeInterceptorCommand",
+    "#src/Commands/MakeMiddlewareCommand",
+    "#src/Commands/MakeTerminatorCommand"
   ],
   "services": [],
   "providers": [],
   "controllers": [],
   "middlewares": [],
   "commandsManifest": {
-    "make:controller": "./src/Commands/MakeControllerCommand.js",
-    "make:interceptor": "./src/Commands/MakeInterceptorCommand.js",
-    "make:middleware": "./src/Commands/MakeMiddlewareCommand.js",
-    "make:terminator": "./src/Commands/MakeTerminatorCommand.js"
+    "make:controller": "#src/Commands/MakeControllerCommand",
+    "make:interceptor": "#src/Commands/MakeInterceptorCommand",
+    "make:middleware": "#src/Commands/MakeMiddlewareCommand",
+    "make:terminator": "#src/Commands/MakeTerminatorCommand"
   }
 }

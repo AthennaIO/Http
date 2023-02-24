@@ -24,10 +24,12 @@
     "esm"
   ],
   "scripts": {
-    "build": "ts-node bin/build.ts",
+    "node": "node --experimental-import-meta-resolve --loader=ts-node/esm --no-warnings",
+    "build": "npm run node --silent bin/build.ts",
+    "artisan": "npm run node --silent bin/artisan.ts",
     "lint:fix": "eslint \"{src,tests}/**/*.ts\" --fix",
-    "test": "npm run --silent lint:fix && ts-node bin/test.ts",
-    "test:debug": "cross-env DEBUG=api:* ts-node bin/test.ts --inspect",
+    "test": "npm run --silent lint:fix && npm run --silent node bin/test.ts",
+    "test:debug": "cross-env DEBUG=api:* npm run --silent node bin/test.ts --inspect",
     "test:coverage": "c8 npm run --silent test"
   },
   "files": [
