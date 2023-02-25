@@ -14,6 +14,8 @@ import { Route, Server, HttpRouteProvider, HttpServerProvider } from '#src'
 
 test.group('RouteTest', group => {
   group.each.setup(async () => {
+    ioc.reconstruct()
+
     new HttpServerProvider().register()
     new HttpRouteProvider().register()
 

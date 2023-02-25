@@ -12,6 +12,8 @@ import { Server, HttpServerProvider } from '#src'
 
 test.group('ServerTest', group => {
   group.each.setup(async () => {
+    ioc.reconstruct()
+
     new HttpServerProvider().register()
   })
 

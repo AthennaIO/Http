@@ -7,23 +7,50 @@
  * file that was distributed with this source code.
  */
 
+import 'reflect-metadata'
+
 import { Server } from '#src'
-import { Is } from '@athenna/common'
 import { Config } from '@athenna/config'
+import { Is, Module } from '@athenna/common'
 
 export class HttpKernel {
+  /**
+   * Register all the controllers found inside "rc.controllers" config
+   * inside the service provider.
+   */
+  public async registerControllers() {
+    const controllers = Config.get<string[]>('rc.controllers', [])
+
+    const promises = controllers.map(path =>
+      this.resolvePathAndImport(path).then(Controller => {
+        if (Reflect.hasMetadata('provider:registered', Controller)) {
+          return
+        }
+
+        const createCamelAlias = false
+        const alias = `App/Http/Controllers/${Controller.name}`
+
+        ioc.bind(alias, Controller, createCamelAlias)
+      }),
+    )
+
+    await Promise.all(promises)
+  }
+
   /**
    * Register all the middlewares found inside "rc.middlewares" config
    * inside the service provider. Also register if "rc.namedMiddlewares"
    * and "rc.globalMiddlewares" exists.
    */
   public async registerMiddlewares() {
-    const paths = Config.get<string[]>('rc.middlewares')
-
-    await Promise.all(paths.map(path => import(path)))
-
     await this.registerNamedMiddlewares()
     await this.registerGlobalMiddlewares()
+
+    if (Config.exists('rc.middlewares')) {
+      await Promise.all(
+        Config.get<string[]>('rc.middlewares').map(this.resolvePathAndImport),
+      )
+    }
   }
 
   /**
@@ -39,23 +66,23 @@ export class HttpKernel {
       return
     }
 
-    return Object.keys(namedMiddlewares).map(key => {
-      return import.meta
-        .resolve(namedMiddlewares[key], Config.get('rc.meta'))
-        .then(importMetaPath =>
-          import(importMetaPath).then(Middleware => {
-            const createCamelAlias = false
-            const { alias, namedAlias } = this.getNamedMiddlewareAlias(
-              key,
-              Middleware,
-            )
+    const promises = Object.keys(namedMiddlewares).map(key =>
+      this.resolvePathAndImport(namedMiddlewares[key]).then(Middleware => {
+        if (Reflect.hasMetadata('provider:registered', Middleware)) {
+          return
+        }
 
-            ioc
-              .bind(alias, Middleware, createCamelAlias)
-              .alias(namedAlias, alias)
-          }),
+        const createCamelAlias = false
+        const { alias, namedAlias } = this.getNamedMiddlewareAlias(
+          key,
+          Middleware,
         )
-    })
+
+        ioc.bind(alias, Middleware, createCamelAlias).alias(namedAlias, alias)
+      }),
+    )
+
+    await Promise.all(promises)
   }
 
   /**
@@ -69,41 +96,46 @@ export class HttpKernel {
       return
     }
 
-    return globalMiddlewares.map(path => {
-      return import.meta
-        .resolve(path, Config.get('rc.meta'))
-        .then(Middleware => {
-          const createCamelAlias = false
+    const promises = globalMiddlewares.map(path =>
+      this.resolvePathAndImport(path).then(Middleware => {
+        if (Reflect.hasMetadata('provider:registered', Middleware)) {
+          return
+        }
 
-          const { alias, handler, serverMethod } =
-            this.getGlobalMiddlewareAliasAndHandler(Middleware)
+        const createCamelAlias = false
+        const { alias, handler, serverMethod } =
+          this.getGlobalMiddlewareAliasAndHandler(Middleware)
 
-          ioc.bind(alias, Middleware, createCamelAlias)
+        ioc.bind(alias, Middleware, createCamelAlias)
 
-          Server[serverMethod](ioc.safeUse(alias)[handler])
-        })
-    })
+        Server[serverMethod](ioc.safeUse(alias)[handler])
+      }),
+    )
+
+    await Promise.all(promises)
   }
 
   /**
    * Fabricate the named middlewares aliases.
    */
   private getNamedMiddlewareAlias(name: string, Middleware: any) {
-    if (Middleware.handle) {
+    const middleware = new Middleware()
+
+    if (middleware.handle) {
       return {
         alias: `App/Http/Middlewares/${Middleware.name}`,
         namedAlias: `App/Http/Middlewares/Names/${name}`,
       }
     }
 
-    if (Middleware.intercept) {
+    if (middleware.intercept) {
       return {
         alias: `App/Http/Interceptors/${Middleware.name}`,
         namedAlias: `App/Http/Interceptors/Names/${name}`,
       }
     }
 
-    if (Middleware.terminate) {
+    if (middleware.terminate) {
       return {
         alias: `App/Http/Terminators/${Middleware.name}`,
         namedAlias: `App/Http/Terminators/Names/${name}`,
@@ -116,7 +148,9 @@ export class HttpKernel {
    * server methods.
    */
   private getGlobalMiddlewareAliasAndHandler(Middleware: any) {
-    if (Middleware.handle) {
+    const middleware = new Middleware()
+
+    if (middleware.handle) {
       return {
         handler: 'handle',
         serverMethod: 'middleware',
@@ -124,7 +158,7 @@ export class HttpKernel {
       }
     }
 
-    if (Middleware.intercept) {
+    if (middleware.intercept) {
       return {
         handler: 'intercept',
         serverMethod: 'intercept',
@@ -132,12 +166,21 @@ export class HttpKernel {
       }
     }
 
-    if (Middleware.terminate) {
+    if (middleware.terminate) {
       return {
         handler: 'terminate',
         serverMethod: 'terminate',
         alias: `App/Http/Terminators/${Middleware.name}`,
       }
     }
+  }
+
+  /**
+   * Resolve the import path by meta URL and import it.
+   */
+  private resolvePathAndImport(path: string) {
+    return import.meta
+      .resolve(path, Config.get('rc.meta'))
+      .then(meta => Module.get(import(`${meta}?version=${Math.random()}`)))
   }
 }

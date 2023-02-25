@@ -19,6 +19,8 @@ test.group('MakeTerminatorCommandTest', group => {
   const originalRcJson = new File(Path.pwd('.athennarc.json')).getContentSync().toString()
 
   group.each.setup(async () => {
+    ioc.reconstruct()
+
     ExitFaker.fake()
 
     process.env.IS_TS = 'true'

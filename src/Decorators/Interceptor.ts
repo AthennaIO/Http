@@ -35,6 +35,8 @@ export function Interceptor(options?: MiddlewareOptions): ClassDecorator {
 
     ioc[options.type](alias, target, createCamelAlias)
 
+    Reflect.defineMetadata('provider:registered', true, target)
+
     if (!options.isGlobal) {
       ioc.alias(`App/Http/Interceptors/Names/${options.name}`, alias)
 

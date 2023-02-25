@@ -12,7 +12,7 @@ import { ServiceProvider } from '@athenna/ioc'
 
 export class HttpServerProvider extends ServiceProvider {
   public register() {
-    this.container.instance('Athenna/Core/HttpServer', new ServerImpl())
+    this.container.instance('Athenna/Core/HttpServer', new ServerImpl(), false)
   }
 
   public async shutdown() {

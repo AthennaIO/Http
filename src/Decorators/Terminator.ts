@@ -35,6 +35,8 @@ export function Terminator(options?: MiddlewareOptions): ClassDecorator {
 
     ioc[options.type](alias, target, createCamelAlias)
 
+    Reflect.defineMetadata('provider:registered', true, target)
+
     if (!options.isGlobal) {
       ioc.alias(`App/Http/Terminators/Names/${options.name}`, alias)
 

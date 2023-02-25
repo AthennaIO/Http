@@ -17,6 +17,8 @@ import { UndefinedMethodException } from '#src/Exceptions/UndefinedMethodExcepti
 
 test.group('RouterTest', group => {
   group.each.setup(async () => {
+    ioc.reconstruct()
+
     new HttpServerProvider().register()
     new HttpRouteProvider().register()
   })

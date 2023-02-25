@@ -30,5 +30,7 @@ export function Controller(options?: ControllerOptions): ClassDecorator {
     }
 
     ioc[options.type](alias, target, createCamelAlias)
+
+    Reflect.defineMetadata('provider:registered', true, target)
   }
 }

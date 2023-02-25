@@ -8,8 +8,33 @@
   ],
   "services": [],
   "providers": [],
-  "controllers": [],
-  "middlewares": [],
+  "controllers": [
+    "#tests/Stubs/controllers/HelloController",
+    "#tests/Stubs/controllers/DecoratedController"
+  ],
+  "middlewares": [
+    "#tests/Stubs/middlewares/Middleware",
+    "#tests/Stubs/middlewares/ImportedMiddleware",
+    "#tests/Stubs/middlewares/DecoratedMiddleware",
+    "#tests/Stubs/middlewares/DecoratedInterceptor",
+    "#tests/Stubs/middlewares/DecoratedTerminator"
+  ],
+  "namedMiddlewares": {
+    "middleware": "#tests/Stubs/middlewares/Middleware",
+    "interceptor": "#tests/Stubs/middlewares/Interceptor",
+    "terminator": "#tests/Stubs/middlewares/Terminator",
+    "not-found-middleware": "#tests/Stubs/middlewares/DecoratedMiddleware",
+    "not-found-interceptor": "#tests/Stubs/middlewares/DecoratedInterceptor",
+    "not-found-terminator": "#tests/Stubs/middlewares/DecoratedTerminator"
+  },
+  "globalMiddlewares": [
+    "#tests/Stubs/middlewares/Middleware",
+    "#tests/Stubs/middlewares/Interceptor",
+    "#tests/Stubs/middlewares/Terminator",
+    "#tests/Stubs/middlewares/DecoratedGlobalMiddleware",
+    "#tests/Stubs/middlewares/DecoratedGlobalInterceptor",
+    "#tests/Stubs/middlewares/DecoratedGlobalTerminator"
+  ],
   "commandsManifest": {
     "make:controller": "#src/Commands/MakeControllerCommand",
     "make:interceptor": "#src/Commands/MakeInterceptorCommand",
