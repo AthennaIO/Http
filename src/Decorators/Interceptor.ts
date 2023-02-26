@@ -12,7 +12,7 @@ import 'reflect-metadata'
 import { Server } from '#src/Facades/Server'
 import { Options, String } from '@athenna/common'
 import { MiddlewareOptions } from '#src/Types/Middlewares/MiddlewareOptions'
-import { InterceptorContract } from '#src/Contracts/Middlewares/InterceptorContract'
+import { InterceptorContract } from '#src/Contracts/InterceptorContract'
 
 /**
  * Create a interceptor inside the service provider.

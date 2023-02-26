@@ -8,7 +8,7 @@
  */
 
 import { InterceptHandler } from '#src/Types/Middlewares/MiddlewareHandler'
-import { InterceptorContract } from '#src/Contracts/Middlewares/InterceptorContract'
+import { InterceptorContract } from '#src/Contracts/InterceptorContract'
 
 export type InterceptorRouteType =
   | string

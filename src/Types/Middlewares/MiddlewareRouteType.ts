@@ -8,6 +8,6 @@
  */
 
 import { HandleHandler } from '#src/Types/Middlewares/MiddlewareHandler'
-import { MiddlewareContract } from '#src/Contracts/Middlewares/MiddlewareContract'
+import { MiddlewareContract } from '#src/Contracts/MiddlewareContract'
 
 export type MiddlewareRouteType = string | HandleHandler | MiddlewareContract

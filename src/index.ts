@@ -33,9 +33,9 @@ declare module 'fastify' {
 
 export * from './Context/Request.js'
 export * from './Context/Response.js'
-export * from './Contracts/Middlewares/MiddlewareContract.js'
-export * from './Contracts/Middlewares/TerminatorContract.js'
-export * from './Contracts/Middlewares/InterceptorContract.js'
+export * from './Contracts/MiddlewareContract.js'
+export * from './Contracts/TerminatorContract.js'
+export * from './Contracts/InterceptorContract.js'
 export * from './Decorators/Controller.js'
 export * from './Decorators/Middleware.js'
 export * from './Decorators/Interceptor.js'

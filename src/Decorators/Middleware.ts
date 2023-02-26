@@ -12,7 +12,7 @@ import 'reflect-metadata'
 import { Server } from '#src/Facades/Server'
 import { Options, String } from '@athenna/common'
 import { MiddlewareOptions } from '#src/Types/Middlewares/MiddlewareOptions'
-import { MiddlewareContract } from '#src/Contracts/Middlewares/MiddlewareContract'
+import { MiddlewareContract } from '#src/Contracts/MiddlewareContract'
 
 /**
  * Create a middleware inside the service provider.

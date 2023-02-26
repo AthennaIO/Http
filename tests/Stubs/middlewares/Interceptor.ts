@@ -1,5 +1,5 @@
 import { InterceptContext } from '#src/Types/Contexts/InterceptContext'
-import { InterceptorContract } from '#src/Contracts/Middlewares/InterceptorContract'
+import { InterceptorContract } from '#src/Contracts/InterceptorContract'
 
 export class Interceptor implements InterceptorContract {
   intercept(ctx: InterceptContext): unknown {

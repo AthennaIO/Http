@@ -1,6 +1,6 @@
 import { Context } from '#src/Types/Contexts/Context'
 import { Middleware } from '#src/Decorators/Middleware'
-import { MiddlewareContract } from '#src/Contracts/Middlewares/MiddlewareContract'
+import { MiddlewareContract } from '#src/Contracts/MiddlewareContract'
 
 @Middleware({ alias: 'importedMiddleware', isGlobal: false })
 export class ImportedMiddleware implements MiddlewareContract {

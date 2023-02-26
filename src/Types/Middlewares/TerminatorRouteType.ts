@@ -8,6 +8,6 @@
  */
 
 import { TerminateHandler } from '#src/Types/Middlewares/MiddlewareHandler'
-import { TerminatorContract } from '#src/Contracts/Middlewares/TerminatorContract'
+import { TerminatorContract } from '#src/Contracts/TerminatorContract'
 
 export type TerminatorRouteType = string | TerminateHandler | TerminatorContract

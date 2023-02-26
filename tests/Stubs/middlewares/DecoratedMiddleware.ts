@@ -1,6 +1,6 @@
 import { Context } from '#src/Types/Contexts/Context'
 import { Middleware } from '#src/Decorators/Middleware'
-import { MiddlewareContract } from '#src/Contracts/Middlewares/MiddlewareContract'
+import { MiddlewareContract } from '#src/Contracts/MiddlewareContract'
 
 @Middleware({ name: 'middleware', type: 'singleton', alias: 'decoratedMiddleware', isGlobal: false })
 export class DecoratedMiddleware implements MiddlewareContract {
