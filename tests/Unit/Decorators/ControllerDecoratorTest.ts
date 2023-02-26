@@ -39,4 +39,14 @@ test.group('ControllerDecoratorTest', group => {
 
     assert.equal(ioc.getRegistration('myController').lifetime, 'SINGLETON')
   })
+
+  test('should not register the dependency again if the dependency is already registered', async ({ assert }) => {
+    @Controller({ alias: 'myController', type: 'singleton' })
+    class _MyController {}
+
+    @Controller({ alias: 'myController', type: 'transient' })
+    class __MyController {}
+
+    assert.equal(ioc.getRegistration('myController').lifetime, 'SINGLETON')
+  })
 })

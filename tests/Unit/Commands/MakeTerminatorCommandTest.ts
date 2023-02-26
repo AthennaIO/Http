@@ -68,8 +68,8 @@ test.group('MakeTerminatorCommandTest', group => {
   })
 
   test('should throw an exception when the file already exists', async ({ assert }) => {
-    await Artisan.call('make:interceptor TestTerminator')
-    await Artisan.call('make:interceptor TestTerminator')
+    await Artisan.call('make:terminator TestTerminator')
+    await Artisan.call('make:terminator TestTerminator')
 
     assert.isTrue(ExitFaker.faker.calledWith(1))
   })
