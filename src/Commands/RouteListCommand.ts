@@ -11,7 +11,10 @@ import { BaseCommand } from '@athenna/artisan'
 import { Route, HttpKernel, HttpRouteProvider, HttpServerProvider } from '#src'
 
 export class RouteListCommand extends BaseCommand {
-  public routeFilePath = Env('HTTP_ROUTE_FILE_PATH', Path.routes('http.js'))
+  public routeFilePath = Env(
+    'HTTP_ROUTE_FILE_PATH',
+    Path.routes(`http.${Path.ext()}`),
+  )
 
   public static signature(): string {
     return 'route:list'
