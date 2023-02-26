@@ -30,7 +30,7 @@ test.group('RouterTest', group => {
   test('should be able to list the route registered in the route class', async ({ assert }) => {
     Route.get('/test', ctx => ctx.response.send({ hello: 'world' }))
 
-    const [route] = Route.listRoutes()
+    const [route] = Route.list()
 
     assert.deepEqual(route.url, '/test')
     assert.deepEqual(route.methods, ['GET', 'HEAD'])

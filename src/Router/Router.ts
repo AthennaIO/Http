@@ -37,7 +37,7 @@ export class Router {
   /**
    * List the routes registered.
    */
-  public listRoutes(): RouteJSON[] {
+  public list(): RouteJSON[] {
     return this.toJSON(this.routes)
   }
 

@@ -24,12 +24,11 @@
     "esm"
   ],
   "scripts": {
-    "node": "node --experimental-import-meta-resolve --loader=ts-node/esm --no-warnings",
-    "build": "npm run node --silent bin/build.ts",
-    "artisan": "npm run node --silent bin/artisan.ts",
+    "build": "node --experimental-import-meta-resolve --loader=ts-node/esm --no-warnings bin/build.ts",
+    "artisan": "node --experimental-import-meta-resolve --loader=ts-node/esm --no-warnings bin/artisan.ts",
     "lint:fix": "eslint \"{src,tests}/**/*.ts\" --fix",
-    "test": "npm run --silent lint:fix && npm run --silent node bin/test.ts",
-    "test:debug": "cross-env DEBUG=api:* npm run --silent node bin/test.ts --inspect",
+    "test": "npm run --silent lint:fix && node --experimental-import-meta-resolve --loader=ts-node/esm --no-warnings bin/test.ts",
+    "test:debug": "cross-env DEBUG=api:* node --experimental-import-meta-resolve --loader=ts-node/esm --no-warnings bin/test.ts --inspect",
     "test:coverage": "c8 npm run --silent test"
   },
   "files": [

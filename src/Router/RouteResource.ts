@@ -176,7 +176,7 @@ export class RouteResource {
       name = `${this.controller}.${action}`
       handler = `${this.controller}.${action}`
     } else {
-      name = `${this.controller.name}.${action}`
+      name = `${this.controller.constructor.name}.${action}`
       handler = this.controller[action]
     }
 

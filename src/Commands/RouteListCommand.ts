@@ -7,15 +7,11 @@
  * file that was distributed with this source code.
  */
 
-import { BaseCommand, Option } from '@athenna/artisan'
+import { BaseCommand } from '@athenna/artisan'
+import { Route, HttpKernel, HttpRouteProvider, HttpServerProvider } from '#src'
 
 export class RouteListCommand extends BaseCommand {
-  @Option({
-    default: false,
-    signature: '-m, --middleware',
-    description: 'List the middlewares of each route.',
-  })
-  public addMiddleware: boolean
+  public routeFilePath = Env('HTTP_ROUTE_FILE_PATH', Path.routes('http.js'))
 
   public static signature(): string {
     return 'route:list'
@@ -27,5 +23,35 @@ export class RouteListCommand extends BaseCommand {
 
   public async handle(): Promise<void> {
     this.logger.simple('({bold,green} [ LISTING ROUTES ])\n')
+
+    new HttpServerProvider().register()
+    new HttpRouteProvider().register()
+
+    const kernel = new HttpKernel()
+
+    await kernel.registerControllers()
+    await kernel.registerMiddlewares()
+
+    await import(this.routeFilePath)
+
+    const routes = Route.list()
+    const table = this.logger.table()
+
+    table.head('Methods', 'Route', 'Name', 'Handler')
+
+    routes.forEach(route => {
+      if (route.deleted) {
+        return
+      }
+
+      table.row([
+        route.methods.join('|'),
+        route.url,
+        route.name || 'Not found',
+        route.handler.name || 'closure',
+      ])
+    })
+
+    table.render()
   }
 }

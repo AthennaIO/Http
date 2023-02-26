@@ -4,7 +4,8 @@
     "#src/Commands/MakeControllerCommand",
     "#src/Commands/MakeInterceptorCommand",
     "#src/Commands/MakeMiddlewareCommand",
-    "#src/Commands/MakeTerminatorCommand"
+    "#src/Commands/MakeTerminatorCommand",
+    "#src/Commands/RouteListCommand"
   ],
   "services": [],
   "providers": [],
@@ -36,6 +37,7 @@
     "#tests/Stubs/middlewares/DecoratedGlobalTerminator"
   ],
   "commandsManifest": {
+    "route:list": "#src/Commands/RouteListCommand",
     "make:controller": "#src/Commands/MakeControllerCommand",
     "make:interceptor": "#src/Commands/MakeInterceptorCommand",
     "make:middleware": "#src/Commands/MakeMiddlewareCommand",
