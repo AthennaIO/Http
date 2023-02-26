@@ -10,6 +10,8 @@
 import 'reflect-metadata'
 
 import { Server } from '#src'
+import { resolve } from 'node:path'
+import { pathToFileURL } from 'node:url'
 import { Config } from '@athenna/config'
 import { Is, Module } from '@athenna/common'
 
@@ -179,6 +181,14 @@ export class HttpKernel {
    * Resolve the import path by meta URL and import it.
    */
   private resolvePathAndImport(path: string) {
+    if (path.includes('./') || path.includes('../')) {
+      path = resolve(path)
+    }
+
+    if (!path.startsWith('#')) {
+      path = pathToFileURL(path).href
+    }
+
     return import.meta
       .resolve(path, Config.get('rc.meta'))
       .then(meta => Module.get(import(`${meta}?version=${Math.random()}`)))
