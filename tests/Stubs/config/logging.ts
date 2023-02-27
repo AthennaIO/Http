@@ -23,5 +23,11 @@ export default {
       streamType: 'stderr',
       formatter: 'none',
     },
+
+    request: {
+      driver: 'null',
+      level: 'trace',
+      formatter: 'request',
+    },
   },
 }

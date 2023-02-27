@@ -11,16 +11,97 @@ import 'reflect-metadata'
 
 import { Server } from '#src'
 import { resolve } from 'node:path'
+import { Log } from '@athenna/logger'
 import { pathToFileURL } from 'node:url'
 import { Config } from '@athenna/config'
 import { Is, Module } from '@athenna/common'
 
 export class HttpKernel {
   /**
+   * Register the @fastify/cors plugin in the Http server.
+   */
+  public async registerCors(): Promise<void> {
+    if (!Config.exists('http.cors')) {
+      return
+    }
+
+    await Server.plugin(import('@fastify/cors'), Config.get('http.cors'))
+  }
+
+  /**
+   * Register the @fastify/helmet plugin in the Http server.
+   */
+  public async registerHelmet(): Promise<void> {
+    if (!Config.exists('http.helmet')) {
+      return
+    }
+
+    await Server.plugin(import('@fastify/helmet'), Config.get('http.helmet'))
+  }
+
+  /**
+   * Register the @fastify/swagger plugin in the Http server.
+   */
+  public async registerSwagger(): Promise<void> {
+    if (!Config.exists('http.swagger')) {
+      return
+    }
+
+    await Server.plugin(
+      import('@fastify/swagger'),
+      Config.get('http.swagger.configurations'),
+    )
+    await Server.plugin(
+      import('@fastify/swagger-ui'),
+      Config.get('http.swagger.ui'),
+    )
+  }
+
+  /**
+   * Register the @fastify/rate-limit plugin in the Http server.
+   */
+  public async registerRateLimit(): Promise<void> {
+    if (!Config.exists('http.rateLimit')) {
+      return
+    }
+
+    await Server.plugin(
+      import('@fastify/rate-limit'),
+      Config.get('http.rateLimit'),
+    )
+  }
+
+  /**
+   * Register the cls-rtracer plugin in the Http server.
+   */
+  public async registerRTracer(): Promise<void> {
+    if (!Config.exists('http.rTracer')) {
+      return
+    }
+
+    const rTracer = await import('cls-rtracer')
+
+    Server.middleware(async ctx => (ctx.data.traceId = rTracer.id()))
+
+    await Server.plugin(rTracer.fastifyPlugin, Config.get('http.rTracer'))
+  }
+
+  /**
+   * Register the global log terminator in the Http server.
+   */
+  public async registerLoggerTerminator(): Promise<void> {
+    if (!Config.exists('http.logger') || Config.is('http.logger', false)) {
+      return
+    }
+
+    Server.terminate(ctx => Log.channelOrVanilla('request').info(ctx))
+  }
+
+  /**
    * Register all the controllers found inside "rc.controllers" config
    * inside the service provider.
    */
-  public async registerControllers() {
+  public async registerControllers(): Promise<void> {
     const controllers = Config.get<string[]>('rc.controllers', [])
 
     const promises = controllers.map(path =>
@@ -44,7 +125,7 @@ export class HttpKernel {
    * inside the service provider. Also register if "rc.namedMiddlewares"
    * and "rc.globalMiddlewares" exists.
    */
-  public async registerMiddlewares() {
+  public async registerMiddlewares(): Promise<void> {
     await this.registerNamedMiddlewares()
     await this.registerGlobalMiddlewares()
 
@@ -59,7 +140,7 @@ export class HttpKernel {
    * Register all the named middlewares found inside "rc.namedMiddlewares"
    * property.
    */
-  public async registerNamedMiddlewares() {
+  public async registerNamedMiddlewares(): Promise<void> {
     const namedMiddlewares = Config.get<Record<string, string>>(
       'rc.namedMiddlewares',
     )
@@ -91,7 +172,7 @@ export class HttpKernel {
    * Register all the named middlewares found inside "rc.globalMiddlewares"
    * property.
    */
-  public async registerGlobalMiddlewares() {
+  public async registerGlobalMiddlewares(): Promise<void> {
     const globalMiddlewares = Config.get<string[]>('rc.globalMiddlewares')
 
     if (Is.Empty(globalMiddlewares)) {
@@ -116,6 +197,8 @@ export class HttpKernel {
 
     await Promise.all(promises)
   }
+
+  public async registerExceptionHandler(): Promise<void> {}
 
   /**
    * Fabricate the named middlewares aliases.
