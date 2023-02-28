@@ -1,52 +1,24 @@
-export class {{ namePascal }} {
-    /**
-    * Resolve any dependency of the service container
-    * inside the constructor.
-    */
-    constructor() {}
+import { Context, Controller } from '@athenna/http'
 
-    /**
-    * Index method
-    *
-    * @param {import('@athenna/http').ContextContract} ctx
-    */
-    async index({ response }) {
+@Controller()
+export class {{ namePascal }} {
+    public async index({ response }: Context): Promise<void> {
       return response.status(200).send([{}])
     }
 
-    /**
-    * Store method
-    *
-    * @param {import('@athenna/http').ContextContract} ctx
-    */
-    async store({ response }) {
+    public async store({ response }: Context): Promise<void> {
       return response.status(201).send({})
     }
 
-    /**
-    * Show method
-    *
-    * @param {import('@athenna/http').ContextContract} ctx
-    */
-    async show({ response }) {
+    public async show({ response }: Context): Promise<void> {
       return response.status(200).send({})
     }
 
-    /**
-    * Update method
-    *
-    * @param {import('@athenna/http').ContextContract} ctx
-    */
-    async update({ response, params }) {
+    public async update({ response, params }: Context): Promise<void> {
       return response.status(200).send({ id: params.id })
     }
 
-    /**
-    * Delete method
-    *
-    * @param {import('@athenna/http').ContextContract} ctx
-    */
-    async delete({ response }) {
+    public async delete({ response }: Context): Promise<void> {
       return response.status(204)
     }
 }
