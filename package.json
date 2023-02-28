@@ -24,7 +24,7 @@
     "esm"
   ],
   "scripts": {
-    "node": "NODE_OPTIONS=\"--experimental-import-meta-resolve\" ts-node",
+    "node": "cross-env NODE_OPTIONS=\"--experimental-import-meta-resolve\" ts-node",
     "build": "npm run node --silent -- bin/build.ts",
     "artisan": "npm run node --silent -- bin/artisan.ts",
     "lint:fix": "eslint \"{src,tests}/**/*.ts\" --fix",
