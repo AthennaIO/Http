@@ -7,8 +7,9 @@
  * file that was distributed with this source code.
  */
 
+import { fake } from 'sinon'
 import { test } from '@japa/runner'
-import { LoggerProvider } from '@athenna/logger'
+import { Log, LoggerProvider } from '@athenna/logger'
 import { HttpKernel, HttpServerProvider, Server } from '#src'
 
 test.group('HttpKernelTest', group => {
@@ -18,6 +19,10 @@ test.group('HttpKernelTest', group => {
     await Config.loadAll(Path.stubs('config'))
     new HttpServerProvider().register()
     new LoggerProvider().register()
+  })
+
+  group.each.teardown(async () => {
+    Log.restoreAllMethods()
   })
 
   test('should be able to register the @fastify/cors plugin in the http server', async ({ assert }) => {
@@ -91,12 +96,15 @@ test.group('HttpKernelTest', group => {
   })
 
   test('should be able to register the logger terminator in the http server', async ({ assert }) => {
+    const logInfoFake = fake()
     const kernel = new HttpKernel()
     await kernel.registerLoggerTerminator()
+    Log.fakeMethod('channelOrVanilla', logInfoFake)
     Server.get({ url: '/hello', handler: ctx => ctx.response.send({ hello: true }) })
 
     const response = await Server.request().get('hello')
 
+    assert.isTrue(logInfoFake.called)
     assert.deepEqual(response.json(), { hello: true })
   })
 
@@ -270,5 +278,49 @@ test.group('HttpKernelTest', group => {
     const response = await Server.request().get('hello')
 
     assert.deepEqual(response.json(), { handled: true, intercepted: true })
+  })
+
+  test('should be able to register the default exception handler for the server request handlers', async ({
+    assert,
+  }) => {
+    const kernel = new HttpKernel()
+    await kernel.registerExceptionHandler()
+    Server.get({
+      url: '/hello',
+      handler: () => {
+        throw new Error('hey')
+      },
+    })
+
+    const response = await Server.request().get('hello')
+
+    assert.isDefined(response.json().stack)
+    assert.containsSubset(response.json(), {
+      statusCode: 500,
+      code: 'ERROR',
+      name: 'Error',
+      message: 'hey',
+    })
+  })
+
+  test('should be able to register a custom exception handler for the server request handlers', async ({ assert }) => {
+    const kernel = new HttpKernel()
+    await kernel.registerExceptionHandler('#tests/Stubs/handlers/Handler')
+    Server.get({
+      url: '/hello',
+      handler: () => {
+        throw new Error('hey')
+      },
+    })
+
+    const response = await Server.request().get('hello')
+
+    assert.isDefined(response.json().stack)
+    assert.containsSubset(response.json(), {
+      statusCode: 500,
+      code: 'ERROR',
+      name: 'Error',
+      message: 'hey',
+    })
   })
 })

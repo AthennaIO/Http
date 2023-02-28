@@ -1,5 +1,7 @@
 {
   "preloads": [],
+  "services": [],
+  "providers": [],
   "commands": [
     "#src/Commands/MakeControllerCommand",
     "#src/Commands/MakeInterceptorCommand",
@@ -7,8 +9,6 @@
     "#src/Commands/MakeTerminatorCommand",
     "#src/Commands/RouteListCommand"
   ],
-  "services": [],
-  "providers": [],
   "controllers": [
     "#tests/Stubs/controllers/HelloController",
     "#tests/Stubs/controllers/DecoratedController"

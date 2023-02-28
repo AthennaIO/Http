@@ -15,6 +15,7 @@ import { Log } from '@athenna/logger'
 import { pathToFileURL } from 'node:url'
 import { Config } from '@athenna/config'
 import { Is, Module } from '@athenna/common'
+import { HttpExceptionHandler } from '#src/Handlers/HttpExceptionHandler'
 
 export class HttpKernel {
   /**
@@ -198,7 +199,23 @@ export class HttpKernel {
     await Promise.all(promises)
   }
 
-  public async registerExceptionHandler(): Promise<void> {}
+  /**
+   * Register the exception handler for all request handlers.
+   */
+  public async registerExceptionHandler(path?: string): Promise<void> {
+    if (!path) {
+      const handler = new HttpExceptionHandler()
+
+      Server.setErrorHandler(handler.handle.bind(handler))
+
+      return
+    }
+
+    const Handler = await this.resolvePathAndImport(path)
+    const handler = new Handler()
+
+    Server.setErrorHandler(handler.handle.bind(handler))
+  }
 
   /**
    * Fabricate the named middlewares aliases.
