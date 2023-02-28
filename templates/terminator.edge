@@ -1,0 +1,6 @@
+import { Terminator, TerminateContext, TerminatorContract } from '@athenna/http'
+
+@Terminator()
+export class {{ namePascal }} implements TerminatorContract {
+    public async terminate(ctx: TerminateContext): Promise<void> {}
+}
