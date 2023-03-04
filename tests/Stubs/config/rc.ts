@@ -10,8 +10,7 @@
 import { Config } from '@athenna/config'
 import { Path, File } from '@athenna/common'
 
-const buffer = new File(Path.pwd('package.json')).getContentSync()
-const athennaRc = JSON.parse(buffer.toString()).athenna
+const athennaRc = new File(Path.pwd('package.json')).getContentAsJsonSync().athenna
 
 athennaRc.isInPackageJson = true
 athennaRc.meta = Config.get('meta')

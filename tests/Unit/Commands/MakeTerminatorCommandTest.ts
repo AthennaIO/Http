@@ -16,7 +16,7 @@ import { ExitFaker } from '#tests/Helpers/ExitFaker'
 import { Artisan, ConsoleKernel, ArtisanProvider } from '@athenna/artisan'
 
 test.group('MakeTerminatorCommandTest', group => {
-  const originalPackageJson = new File(Path.pwd('package.json')).getContentSync().toString()
+  const originalPackageJson = new File(Path.pwd('package.json')).getContentAsStringSync()
 
   group.each.setup(async () => {
     ioc.reconstruct()
@@ -53,9 +53,7 @@ test.group('MakeTerminatorCommandTest', group => {
     assert.isTrue(await File.exists(path))
     assert.isTrue(ExitFaker.faker.calledWith(0))
 
-    const athennaRc = await new File(Path.pwd('package.json'))
-      .getContent()
-      .then(content => JSON.parse(content.toString()).athenna)
+    const athennaRc = await new File(Path.pwd('package.json')).getContentAsJson().then(json => json.athenna)
 
     assert.containsSubset(Config.get('rc.middlewares'), ['#app/Http/Terminators/TestTerminator'])
     assert.containsSubset(athennaRc.middlewares, ['#app/Http/Terminators/TestTerminator'])
