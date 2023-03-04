@@ -29,7 +29,7 @@ export class MakeInterceptorCommand extends BaseCommand {
 
     const file = await this.generator
       .path(Path.http(`Interceptors/${this.name}.${Path.ext()}`))
-      .template('artisan::interceptor')
+      .template('interceptor')
       .setNameProperties(true)
       .make()
 

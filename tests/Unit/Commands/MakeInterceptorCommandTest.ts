@@ -16,7 +16,7 @@ import { ExitFaker } from '#tests/Helpers/ExitFaker'
 import { Artisan, ConsoleKernel, ArtisanProvider } from '@athenna/artisan'
 
 test.group('MakeInterceptorCommandTest', group => {
-  const originalPackageJson = new File(Path.pwd('package.json')).getContentSync().toString()
+  const originalPackageJson = new File(Path.pwd('package.json')).getContentAsStringSync()
 
   group.each.setup(async () => {
     ioc.reconstruct()
@@ -42,13 +42,7 @@ test.group('MakeInterceptorCommandTest', group => {
 
     await Folder.safeRemove(Path.app())
 
-    const stream = new File(Path.pwd('package.json')).createWriteStream()
-
-    await new Promise((resolve, reject) => {
-      stream.write(originalPackageJson)
-      stream.end(resolve)
-      stream.on('error', reject)
-    })
+    await new File(Path.pwd('package.json')).setContent(originalPackageJson)
   })
 
   test('should be able to create a interceptor file', async ({ assert }) => {
@@ -59,9 +53,7 @@ test.group('MakeInterceptorCommandTest', group => {
     assert.isTrue(await File.exists(path))
     assert.isTrue(ExitFaker.faker.calledWith(0))
 
-    const athennaRc = await new File(Path.pwd('package.json'))
-      .getContent()
-      .then(content => JSON.parse(content.toString()).athenna)
+    const athennaRc = await new File(Path.pwd('package.json')).getContentAsJson().then(json => json.athenna)
 
     assert.containsSubset(Config.get('rc.middlewares'), ['#app/Http/Interceptors/TestInterceptor'])
     assert.containsSubset(athennaRc.middlewares, ['#app/Http/Interceptors/TestInterceptor'])

@@ -11,6 +11,7 @@ import { fake } from 'sinon'
 import { test } from '@japa/runner'
 import { Log, LoggerProvider } from '@athenna/logger'
 import { HttpKernel, HttpServerProvider, Server } from '#src'
+import { Module } from '@athenna/common'
 
 test.group('HttpKernelTest', group => {
   group.each.setup(async () => {
@@ -109,9 +110,12 @@ test.group('HttpKernelTest', group => {
   })
 
   test('should not register the @fastify/cors plugin if the configuration file does not exist', async ({ assert }) => {
-    Config.delete('http.cors')
+    const originalSafeImport = Module.safeImport
+    Module.safeImport = () => Promise.resolve(null)
+    const { HttpKernel } = await import(`../../../src/Kernels/HttpKernel.js?v=${Math.random()}`)
     const kernel = new HttpKernel()
     await kernel.registerCors()
+    Module.safeImport = originalSafeImport
 
     assert.isFalse(Server.fastify.hasPlugin('@fastify/cors'))
   })
@@ -119,9 +123,12 @@ test.group('HttpKernelTest', group => {
   test('should not register the @fastify/helmet plugin if the configuration file does not exist', async ({
     assert,
   }) => {
-    Config.delete('http.helmet')
+    const originalSafeImport = Module.safeImport
+    Module.safeImport = () => Promise.resolve(null)
+    const { HttpKernel } = await import(`../../../src/Kernels/HttpKernel.js?v=${Math.random()}`)
     const kernel = new HttpKernel()
     await kernel.registerHelmet()
+    Module.safeImport = originalSafeImport
 
     assert.isFalse(Server.fastify.hasPlugin('@fastify/helmet'))
   })
@@ -129,9 +136,12 @@ test.group('HttpKernelTest', group => {
   test('should not register the @fastify/swagger plugin if the configuration file does not exist', async ({
     assert,
   }) => {
-    Config.delete('http.swagger')
+    const originalSafeImport = Module.safeImport
+    Module.safeImport = () => Promise.resolve(null)
+    const { HttpKernel } = await import(`../../../src/Kernels/HttpKernel.js?v=${Math.random()}`)
     const kernel = new HttpKernel()
     await kernel.registerSwagger()
+    Module.safeImport = originalSafeImport
 
     assert.isFalse(Server.fastify.hasPlugin('@fastify/swagger'))
   })
@@ -139,17 +149,23 @@ test.group('HttpKernelTest', group => {
   test('should not register the @fastify/rate-limit plugin if the configuration file does not exist', async ({
     assert,
   }) => {
-    Config.delete('http.rateLimit')
+    const originalSafeImport = Module.safeImport
+    Module.safeImport = () => Promise.resolve(null)
+    const { HttpKernel } = await import(`../../../src/Kernels/HttpKernel.js?v=${Math.random()}`)
     const kernel = new HttpKernel()
     await kernel.registerRateLimit()
+    Module.safeImport = originalSafeImport
 
     assert.isFalse(Server.fastify.hasPlugin('@fastify/rate-limit'))
   })
 
   test('should not register the rTracer plugin if the configuration file does not exist', async ({ assert }) => {
-    Config.delete('http.rTracer')
+    const originalSafeImport = Module.safeImport
+    Module.safeImport = () => Promise.resolve(null)
+    const { HttpKernel } = await import(`../../../src/Kernels/HttpKernel.js?v=${Math.random()}`)
     const kernel = new HttpKernel()
     await kernel.registerRTracer()
+    Module.safeImport = originalSafeImport
 
     assert.isFalse(Server.fastify.hasPlugin('cls-rtracer'))
   })

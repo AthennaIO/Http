@@ -29,7 +29,7 @@ export class MakeMiddlewareCommand extends BaseCommand {
 
     const file = await this.generator
       .path(Path.http(`Middlewares/${this.name}.${Path.ext()}`))
-      .template('artisan::middleware')
+      .template('middleware')
       .setNameProperties(true)
       .make()
 
