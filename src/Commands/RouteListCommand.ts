@@ -7,8 +7,6 @@
  * file that was distributed with this source code.
  */
 
-import { resolve } from 'node:path'
-import { pathToFileURL } from 'node:url'
 import { Config } from '@athenna/config'
 import { Module } from '@athenna/common'
 import { BaseCommand } from '@athenna/artisan'
@@ -36,7 +34,7 @@ export class RouteListCommand extends BaseCommand {
     await kernel.registerControllers()
     await kernel.registerMiddlewares()
 
-    await this.resolveRoutePathAndImport()
+    await Module.resolve(this.routeFilePath, Config.get('rc.meta'))
 
     const routes = Route.list()
     const table = this.logger.table()
@@ -57,25 +55,5 @@ export class RouteListCommand extends BaseCommand {
     })
 
     table.render()
-  }
-
-  /**
-   * Resolve the import path by meta URL and import it.
-   */
-  private resolveRoutePathAndImport() {
-    if (
-      this.routeFilePath.includes('./') ||
-      this.routeFilePath.includes('../')
-    ) {
-      this.routeFilePath = resolve(this.routeFilePath)
-    }
-
-    if (!this.routeFilePath.startsWith('#')) {
-      this.routeFilePath = pathToFileURL(this.routeFilePath).href
-    }
-
-    return import.meta
-      .resolve(this.routeFilePath, Config.get('rc.meta'))
-      .then(meta => Module.get(import(meta)))
   }
 }
