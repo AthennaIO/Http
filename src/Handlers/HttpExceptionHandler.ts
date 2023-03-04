@@ -9,7 +9,7 @@
 
 import { ErrorContext } from '#src'
 import { Log } from '@athenna/logger'
-import { String } from '@athenna/common'
+import { Is, String } from '@athenna/common'
 
 export class HttpExceptionHandler {
   /**
@@ -42,7 +42,7 @@ export class HttpExceptionHandler {
       body.help = error.help
     }
 
-    const isInternalServerError = this.isInternalServerError(error)
+    const isInternalServerError = Is.Error(error) && !Is.Exception(error)
     const isDebugMode = Config.is('app.debug', true)
 
     if (isInternalServerError && !isDebugMode) {
@@ -59,13 +59,11 @@ export class HttpExceptionHandler {
       return
     }
 
-    if (!error.prettify) {
+    if (!Is.Exception(error)) {
       error = error.toAthennaException()
     }
 
-    Log.channelOrVanilla('exception').error(
-      (await error.prettify()).concat('\n'),
-    )
+    Log.channelOrVanilla('exception').error(await error.prettify())
   }
 
   /**
@@ -81,21 +79,5 @@ export class HttpExceptionHandler {
     }
 
     return true
-  }
-
-  /**
-   * Returns a boolean indicating if the error is an internal server error.
-   */
-  private isInternalServerError(error: any): boolean {
-    return [
-      'Error',
-      'URIError',
-      'TypeError',
-      'EvalError',
-      'RangeError',
-      'SyntaxError',
-      'InternalError',
-      'ReferenceError',
-    ].includes(error.name)
   }
 }

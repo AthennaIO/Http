@@ -29,7 +29,7 @@ export class MakeControllerCommand extends BaseCommand {
 
     const file = await this.generator
       .path(Path.http(`Controllers/${this.name}.${Path.ext()}`))
-      .template('artisan::controller')
+      .template('controller')
       .setNameProperties(true)
       .make()
 

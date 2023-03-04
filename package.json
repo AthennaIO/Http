@@ -1,6 +1,6 @@
 {
   "name": "@athenna/http",
-  "version": "3.1.0",
+  "version": "3.1.1",
   "description": "The Athenna Http server. Built on top of fastify.",
   "license": "MIT",
   "author": "João Lenon <lenon@athenna.io>",
@@ -213,6 +213,16 @@
     }
   },
   "athenna": {
+    "view": {
+      "disks": {},
+      "templates": {
+        "controller": "./templates/controller.edge",
+        "interceptor": "./templates/interceptor.edge",
+        "middleware": "./templates/middleware.edge",
+        "terminator": "./templates/terminator.edge",
+        "command": "@athenna/artisan/templates/command.edge"
+      }
+    },
     "preloads": [],
     "services": [],
     "providers": [],

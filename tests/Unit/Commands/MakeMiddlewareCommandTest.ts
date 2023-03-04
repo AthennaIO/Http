@@ -42,13 +42,7 @@ test.group('MakeMiddlewareCommandTest', group => {
 
     await Folder.safeRemove(Path.app())
 
-    const stream = new File(Path.pwd('package.json')).createWriteStream()
-
-    await new Promise((resolve, reject) => {
-      stream.write(originalPackageJson)
-      stream.end(resolve)
-      stream.on('error', reject)
-    })
+    await new File(Path.pwd('package.json')).setContent(originalPackageJson)
   })
 
   test('should be able to create a middleware file', async ({ assert }) => {

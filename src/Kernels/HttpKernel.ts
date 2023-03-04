@@ -10,81 +10,79 @@
 import 'reflect-metadata'
 
 import { Server } from '#src'
-import { resolve } from 'node:path'
 import { Log } from '@athenna/logger'
-import { pathToFileURL } from 'node:url'
 import { Config } from '@athenna/config'
-import { Is, Module } from '@athenna/common'
+import { Exec, Is, Module } from '@athenna/common'
 import { HttpExceptionHandler } from '#src/Handlers/HttpExceptionHandler'
+
+const corsPlugin = await Module.safeImport('@fastify/cors')
+const helmetPlugin = await Module.safeImport('@fastify/helmet')
+const swaggerPlugin = await Module.safeImport('@fastify/swagger')
+const swaggerUiPlugin = await Module.safeImport('@fastify/swagger-ui')
+const rateLimitPlugin = await Module.safeImport('@fastify/rate-limit')
+const rTracerPlugin = await Module.safeImport('cls-rtracer')
 
 export class HttpKernel {
   /**
    * Register the @fastify/cors plugin in the Http server.
    */
   public async registerCors(): Promise<void> {
-    if (!Config.exists('http.cors')) {
+    if (!corsPlugin) {
       return
     }
 
-    await Server.plugin(import('@fastify/cors'), Config.get('http.cors'))
+    await Server.plugin(corsPlugin, Config.get('http.cors'))
   }
 
   /**
    * Register the @fastify/helmet plugin in the Http server.
    */
   public async registerHelmet(): Promise<void> {
-    if (!Config.exists('http.helmet')) {
+    if (!helmetPlugin) {
       return
     }
 
-    await Server.plugin(import('@fastify/helmet'), Config.get('http.helmet'))
+    await Server.plugin(helmetPlugin, Config.get('http.helmet'))
   }
 
   /**
    * Register the @fastify/swagger plugin in the Http server.
    */
   public async registerSwagger(): Promise<void> {
-    if (!Config.exists('http.swagger')) {
-      return
+    if (swaggerPlugin) {
+      await Server.plugin(
+        swaggerPlugin,
+        Config.get('http.swagger.configurations'),
+      )
     }
 
-    await Server.plugin(
-      import('@fastify/swagger'),
-      Config.get('http.swagger.configurations'),
-    )
-    await Server.plugin(
-      import('@fastify/swagger-ui'),
-      Config.get('http.swagger.ui'),
-    )
+    if (swaggerUiPlugin) {
+      await Server.plugin(swaggerUiPlugin, Config.get('http.swagger.ui'))
+    }
   }
 
   /**
    * Register the @fastify/rate-limit plugin in the Http server.
    */
   public async registerRateLimit(): Promise<void> {
-    if (!Config.exists('http.rateLimit')) {
+    if (!rateLimitPlugin) {
       return
     }
 
-    await Server.plugin(
-      import('@fastify/rate-limit'),
-      Config.get('http.rateLimit'),
-    )
+    await Server.plugin(rateLimitPlugin, Config.get('http.rateLimit'))
   }
 
   /**
    * Register the cls-rtracer plugin in the Http server.
    */
   public async registerRTracer(): Promise<void> {
-    if (!Config.exists('http.rTracer')) {
+    if (!rTracerPlugin) {
       return
     }
 
-    const rTracer = await import('cls-rtracer')
+    Server.middleware(async ctx => (ctx.data.traceId = rTracerPlugin.id()))
 
-    Server.middleware(async ctx => (ctx.data.traceId = rTracer.id()))
-
-    await Server.plugin(rTracer.fastifyPlugin, Config.get('http.rTracer'))
+    await Server.plugin(rTracerPlugin.fastifyPlugin, Config.get('http.rTracer'))
   }
 
   /**
@@ -105,20 +103,18 @@ export class HttpKernel {
   public async registerControllers(): Promise<void> {
     const controllers = Config.get<string[]>('rc.controllers', [])
 
-    const promises = controllers.map(path =>
-      this.resolvePathAndImport(path).then(Controller => {
-        if (Reflect.hasMetadata('provider:registered', Controller)) {
-          return
-        }
+    await Exec.concurrently(controllers, async path => {
+      const Controller = await this.resolvePath(path)
 
-        const createCamelAlias = false
-        const alias = `App/Http/Controllers/${Controller.name}`
+      if (Reflect.hasMetadata('provider:registered', Controller)) {
+        return
+      }
 
-        ioc.bind(alias, Controller, createCamelAlias)
-      }),
-    )
+      const createCamelAlias = false
+      const alias = `App/Http/Controllers/${Controller.name}`
 
-    await Promise.all(promises)
+      ioc.bind(alias, Controller, createCamelAlias)
+    })
   }
 
   /**
@@ -131,9 +127,7 @@ export class HttpKernel {
     await this.registerGlobalMiddlewares()
 
     if (Config.exists('rc.middlewares')) {
-      await Promise.all(
-        Config.get<string[]>('rc.middlewares').map(this.resolvePathAndImport),
-      )
+      await Exec.concurrently(Config.get('rc.middlewares'), this.resolvePath)
     }
   }
 
@@ -150,23 +144,21 @@ export class HttpKernel {
       return
     }
 
-    const promises = Object.keys(namedMiddlewares).map(key =>
-      this.resolvePathAndImport(namedMiddlewares[key]).then(Middleware => {
-        if (Reflect.hasMetadata('provider:registered', Middleware)) {
-          return
-        }
+    await Exec.concurrently(Object.keys(namedMiddlewares), async key => {
+      const Middleware = await this.resolvePath(namedMiddlewares[key])
 
-        const createCamelAlias = false
-        const { alias, namedAlias } = this.getNamedMiddlewareAlias(
-          key,
-          Middleware,
-        )
+      if (Reflect.hasMetadata('provider:registered', Middleware)) {
+        return
+      }
 
-        ioc.bind(alias, Middleware, createCamelAlias).alias(namedAlias, alias)
-      }),
-    )
+      const createCamelAlias = false
+      const { alias, namedAlias } = this.getNamedMiddlewareAlias(
+        key,
+        Middleware,
+      )
 
-    await Promise.all(promises)
+      ioc.bind(alias, Middleware, createCamelAlias).alias(namedAlias, alias)
+    })
   }
 
   /**
@@ -180,23 +172,21 @@ export class HttpKernel {
       return
     }
 
-    const promises = globalMiddlewares.map(path =>
-      this.resolvePathAndImport(path).then(Middleware => {
-        if (Reflect.hasMetadata('provider:registered', Middleware)) {
-          return
-        }
+    await Exec.concurrently(globalMiddlewares, async path => {
+      const Middleware = await this.resolvePath(path)
 
-        const createCamelAlias = false
-        const { alias, handler, serverMethod } =
-          this.getGlobalMiddlewareAliasAndHandler(Middleware)
+      if (Reflect.hasMetadata('provider:registered', Middleware)) {
+        return
+      }
 
-        ioc.bind(alias, Middleware, createCamelAlias)
+      const createCamelAlias = false
+      const { alias, handler, serverMethod } =
+        this.getGlobalMiddlewareAliasAndHandler(Middleware)
 
-        Server[serverMethod](ioc.safeUse(alias)[handler])
-      }),
-    )
+      ioc.bind(alias, Middleware, createCamelAlias)
 
-    await Promise.all(promises)
+      Server[serverMethod](ioc.safeUse(alias)[handler])
+    })
   }
 
   /**
@@ -211,7 +201,7 @@ export class HttpKernel {
       return
     }
 
-    const Handler = await this.resolvePathAndImport(path)
+    const Handler = await this.resolvePath(path)
     const handler = new Handler()
 
     Server.setErrorHandler(handler.handle.bind(handler))
@@ -280,17 +270,10 @@ export class HttpKernel {
   /**
    * Resolve the import path by meta URL and import it.
    */
-  private resolvePathAndImport(path: string) {
-    if (path.includes('./') || path.includes('../')) {
-      path = resolve(path)
-    }
-
-    if (!path.startsWith('#')) {
-      path = pathToFileURL(path).href
-    }
-
-    return import.meta
-      .resolve(path, Config.get('rc.meta'))
-      .then(meta => Module.get(import(`${meta}?version=${Math.random()}`)))
+  private resolvePath(path: string) {
+    return Module.resolve(
+      `${path}?version=${Math.random()}`,
+      Config.get('rc.meta'),
+    )
   }
 }

@@ -29,7 +29,7 @@ export class MakeTerminatorCommand extends BaseCommand {
 
     const file = await this.generator
       .path(Path.http(`Terminators/${this.name}.${Path.ext()}`))
-      .template('artisan::terminator')
+      .template('terminator')
       .setNameProperties(true)
       .make()
 

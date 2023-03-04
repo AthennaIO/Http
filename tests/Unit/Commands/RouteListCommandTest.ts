@@ -16,7 +16,7 @@ import { ExitFaker } from '#tests/Helpers/ExitFaker'
 import { Artisan, ConsoleKernel, ArtisanProvider } from '@athenna/artisan'
 
 test.group('RouteListCommandTest', group => {
-  const artisan = Path.pwd('bin/artisan.js')
+  const artisan = Path.pwd('bin/artisan.ts')
 
   group.each.setup(async () => {
     ioc.reconstruct()
