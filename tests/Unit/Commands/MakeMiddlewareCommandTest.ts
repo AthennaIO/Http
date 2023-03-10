@@ -7,18 +7,19 @@
  * file that was distributed with this source code.
  */
 
-import { test } from '@japa/runner'
 import { Config } from '@athenna/config'
 import { ViewProvider } from '@athenna/view'
 import { File, Folder } from '@athenna/common'
 import { LoggerProvider } from '@athenna/logger'
 import { ExitFaker } from '#tests/Helpers/ExitFaker'
+import { Test, AfterEach, BeforeEach, TestContext } from '@athenna/test'
 import { Artisan, ConsoleKernel, ArtisanProvider } from '@athenna/artisan'
 
-test.group('MakeMiddlewareCommandTest', group => {
-  const originalPackageJson = new File(Path.pwd('package.json')).getContentAsStringSync()
+export default class MakeMiddlewareCommandTest {
+  private originalPackageJson = new File(Path.pwd('package.json')).getContentAsStringSync()
 
-  group.each.setup(async () => {
+  @BeforeEach()
+  public async beforeEach() {
     ioc.reconstruct()
 
     ExitFaker.fake()
@@ -35,17 +36,19 @@ test.group('MakeMiddlewareCommandTest', group => {
 
     await kernel.registerExceptionHandler()
     await kernel.registerCommands(['ts-node', 'artisan', 'make:middleware'])
-  })
+  }
 
-  group.each.teardown(async () => {
+  @AfterEach()
+  public async afterEach() {
     ExitFaker.release()
 
     await Folder.safeRemove(Path.app())
 
-    await new File(Path.pwd('package.json')).setContent(originalPackageJson)
-  })
+    await new File(Path.pwd('package.json')).setContent(this.originalPackageJson)
+  }
 
-  test('should be able to create a middleware file', async ({ assert }) => {
+  @Test()
+  public async shouldBeAbleToCreateAMiddlewareFile({ assert }: TestContext) {
     await Artisan.call('make:middleware TestMiddleware')
 
     const path = Path.http('Middlewares/TestMiddleware.ts')
@@ -57,12 +60,13 @@ test.group('MakeMiddlewareCommandTest', group => {
 
     assert.containsSubset(Config.get('rc.middlewares'), ['#app/Http/Middlewares/TestMiddleware'])
     assert.containsSubset(athennaRc.middlewares, ['#app/Http/Middlewares/TestMiddleware'])
-  })
+  }
 
-  test('should throw an exception when the file already exists', async ({ assert }) => {
+  @Test()
+  public async shouldThrowAnExceptionWhenTheFileAlreadyExists({ assert }: TestContext) {
     await Artisan.call('make:middleware TestMiddleware')
     await Artisan.call('make:middleware TestMiddleware')
 
     assert.isTrue(ExitFaker.faker.calledWith(1))
-  })
-})
+  }
+}

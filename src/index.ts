@@ -12,6 +12,10 @@ declare module 'fastify' {
     data: any
   }
 
+  interface FastifyReply {
+    body: any | any[]
+  }
+
   interface FastifySchema {
     hide?: boolean
     deprecated?: boolean

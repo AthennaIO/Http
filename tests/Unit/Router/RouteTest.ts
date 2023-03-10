@@ -7,13 +7,14 @@
  * file that was distributed with this source code.
  */
 
-import { test } from '@japa/runner'
 import { Middleware } from '#tests/Stubs/middlewares/Middleware'
+import { Test, AfterEach, BeforeEach, TestContext } from '@athenna/test'
 import { HelloController } from '#tests/Stubs/controllers/HelloController'
 import { Route, Server, HttpRouteProvider, HttpServerProvider } from '#src'
 
-test.group('RouteTest', group => {
-  group.each.setup(async () => {
+export default class RouteTest {
+  @BeforeEach()
+  public async beforeEach() {
     ioc.reconstruct()
 
     new HttpServerProvider().register()
@@ -30,13 +31,15 @@ test.group('RouteTest', group => {
         },
       },
     })
-  })
+  }
 
-  group.each.teardown(async () => {
+  @AfterEach()
+  public async afterEach() {
     await new HttpServerProvider().shutdown()
-  })
+  }
 
-  test('should be able to set vanilla fastify options in route', async ({ assert }) => {
+  @Test()
+  public async shouldBeAbleToSetVanillaFastifyOptionsInRoute({ assert }: TestContext) {
     let errorHappened = false
     ioc.bind('App/Http/Controllers/HelloController', HelloController)
 
@@ -50,9 +53,10 @@ test.group('RouteTest', group => {
     await Server.request({ path: '/test', method: 'get' })
 
     assert.isTrue(errorHappened)
-  })
+  }
 
-  test('should be able to set fastify schema options in route', async ({ assert }) => {
+  @Test()
+  public async shouldBeAbleToSetFastifySchemaOptionsInRoute({ assert }: TestContext) {
     Route.get('test', new HelloController().index)
       .middleware(new Middleware())
       .schema({
@@ -71,9 +75,10 @@ test.group('RouteTest', group => {
      * The "handled" property of the middleware will not exist.
      */
     assert.deepEqual(response.json(), { hello: 'world' })
-  })
+  }
 
-  test('should be able to hide a route from the swagger documentation', async ({ assert }) => {
+  @Test()
+  public async shouldBeAbleToHideARouteFromTheSwaggerDocumentation({ assert }: TestContext) {
     Route.get('test', new HelloController().index)
     Route.post('test', new HelloController().store).hide()
 
@@ -88,9 +93,10 @@ test.group('RouteTest', group => {
         },
       },
     })
-  })
+  }
 
-  test('should be able to deprecate a route in the swagger documentation', async ({ assert }) => {
+  @Test()
+  public async shouldBeAbleToDeprecatedARouteInSwaggerDocumentation({ assert }: TestContext) {
     Route.get('test', new HelloController().index).deprecated()
 
     Route.register()
@@ -105,9 +111,10 @@ test.group('RouteTest', group => {
         },
       },
     })
-  })
+  }
 
-  test('should be able to set a summary in the route for swagger documentation', async ({ assert }) => {
+  @Test()
+  public async shouldBeAbleToSetASummaryInTheRouteForSwaggerDocumentation({ assert }: TestContext) {
     Route.get('test', new HelloController().index).summary('Summary')
 
     Route.register()
@@ -122,9 +129,10 @@ test.group('RouteTest', group => {
         },
       },
     })
-  })
+  }
 
-  test('should be able to set a description in the route for swagger documentation', async ({ assert }) => {
+  @Test()
+  public async shouldBeAbleToSetADescriptionInTheRouteForSwaggerDocumentation({ assert }: TestContext) {
     Route.get('test', new HelloController().index).description('Description')
 
     Route.register()
@@ -139,9 +147,10 @@ test.group('RouteTest', group => {
         },
       },
     })
-  })
+  }
 
-  test('should be able to set tags in the route for swagger documentation', async ({ assert }) => {
+  @Test()
+  public async shouldBeAbleToSetTagsInTheRouteForSwaggerDocumentation({ assert }: TestContext) {
     Route.get('test', new HelloController().index).tags(['test'])
 
     Route.register()
@@ -156,9 +165,10 @@ test.group('RouteTest', group => {
         },
       },
     })
-  })
+  }
 
-  test('should be able to set body param in the route for swagger documentation', async ({ assert }) => {
+  @Test()
+  public async shouldBeAbleToSetBodyParamInTheRouteForSwaggerDocumentation({ assert }: TestContext) {
     Route.post('test', new HelloController().index).body('hello', { description: 'hello prop' })
 
     Route.register()
@@ -182,9 +192,10 @@ test.group('RouteTest', group => {
         ],
       },
     })
-  })
+  }
 
-  test('should be able to set query param in the route for swagger documentation', async ({ assert }) => {
+  @Test()
+  public async shouldBeAbleToSetQueryParamInTheRouteForSwaggerDocumentation({ assert }: TestContext) {
     Route.post('test', new HelloController().index).queryString('hello', { description: 'hello prop' })
 
     Route.register()
@@ -204,9 +215,10 @@ test.group('RouteTest', group => {
         ],
       },
     })
-  })
+  }
 
-  test('should be able to set response code in the route for swagger documentation', async ({ assert }) => {
+  @Test()
+  public async shouldBeAbleToSetResponseCodeInTheRouteForSwaggerDocumentation({ assert }: TestContext) {
     Route.post('test', new HelloController().index)
       .response(200, { description: 'Default Response' })
       .response(404, { description: 'not found test' })
@@ -220,9 +232,10 @@ test.group('RouteTest', group => {
         responses: { '200': { description: 'Default Response' }, '404': { description: 'not found test' } },
       },
     })
-  })
+  }
 
-  test('should be able to set security keys in the route for swagger documentation', async ({ assert }) => {
+  @Test()
+  public async shouldBeAbleToSetSecurityKeysInTheRouteForSwaggerDocumentation({ assert }: TestContext) {
     Route.post('test', new HelloController().index).security('apiKey', ['123', '321'])
 
     Route.register()
@@ -235,9 +248,10 @@ test.group('RouteTest', group => {
         responses: { '200': { description: 'Default Response' } },
       },
     })
-  })
+  }
 
-  test('should be able to set external docs url in the route for swagger documentation', async ({ assert }) => {
+  @Test()
+  public async shouldBeAbleToSetExternalDocsUrlInTheRouteForSwaggerDocumentation({ assert }: TestContext) {
     Route.post('test', new HelloController().index).externalDocs('https://athenna.io', 'Athenna documentation')
 
     Route.register()
@@ -250,9 +264,10 @@ test.group('RouteTest', group => {
         externalDocs: { url: 'https://athenna.io', description: 'Athenna documentation' },
       },
     })
-  })
+  }
 
-  test('should be able to set type of content consumed by the route for swagger documentation', async ({ assert }) => {
+  @Test()
+  public async shouldBeAbleToSetTypeOfContentConsumedByTheRouteForSwaggerDocumentation({ assert }: TestContext) {
     Route.post('test', new HelloController().index).consumes(['json', 'yaml'])
 
     Route.register()
@@ -265,9 +280,10 @@ test.group('RouteTest', group => {
         responses: { '200': { description: 'Default Response' } },
       },
     })
-  })
+  }
 
-  test('should be able to set type of content produced by the route for swagger documentation', async ({ assert }) => {
+  @Test()
+  public async shouldBeAbleToSetTypeOfContentProducedByTheRouteForSwaggerDocumentation({ assert }: TestContext) {
     Route.post('test', new HelloController().index).produces(['json', 'yaml'])
 
     Route.register()
@@ -280,5 +296,5 @@ test.group('RouteTest', group => {
         responses: { '200': { description: 'Default Response' } },
       },
     })
-  })
-})
+  }
+}

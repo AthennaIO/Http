@@ -7,18 +7,19 @@
  * file that was distributed with this source code.
  */
 
-import { test } from '@japa/runner'
 import { Color } from '@athenna/common'
 import { Config } from '@athenna/config'
 import { ViewProvider } from '@athenna/view'
 import { LoggerProvider } from '@athenna/logger'
 import { ExitFaker } from '#tests/Helpers/ExitFaker'
+import { Test, AfterEach, BeforeEach, TestContext } from '@athenna/test'
 import { Artisan, ConsoleKernel, ArtisanProvider } from '@athenna/artisan'
 
-test.group('RouteListCommandTest', group => {
-  const artisan = Path.pwd('bin/artisan.ts')
+export default class RouteListCommandTest {
+  private artisan = Path.pwd('bin/artisan.ts')
 
-  group.each.setup(async () => {
+  @BeforeEach()
+  public async beforeEach() {
     ioc.reconstruct()
 
     ExitFaker.fake()
@@ -35,14 +36,16 @@ test.group('RouteListCommandTest', group => {
 
     await kernel.registerExceptionHandler()
     await kernel.registerCommands(['ts-node', 'artisan', 'route:list'])
-  })
+  }
 
-  group.each.teardown(async () => {
+  @AfterEach()
+  public async afterEach() {
     ExitFaker.release()
-  })
+  }
 
-  test('should be able to list all routes registered in the http server', async ({ assert }) => {
-    const { stdout } = await Artisan.callInChild('route:list', artisan)
+  @Test()
+  public async shouldBeAbleToListAllRoutesRegisteredInTheHttpServer({ assert }: TestContext) {
+    const { stdout } = await Artisan.callInChild('route:list', this.artisan)
 
     assert.deepEqual(
       Color.removeColors(stdout),
@@ -66,13 +69,14 @@ test.group('RouteListCommandTest', group => {
         '│ DELETE    │ /test/:id │ HelloController.delete │ delete  │\n' +
         '└───────────┴───────────┴────────────────────────┴─────────┘\n',
     )
-  })
+  }
 
-  test('should be able to change the route path using the HTTP_ROUTE_FILE_PATH env variable', async ({ assert }) => {
+  @Test()
+  public async shouldBeAbleToChangeTheRoutePathUsingTheHttpRouteFilePathEnvVariable({ assert }: TestContext) {
     process.env.HTTP_ROUTE_FILE_PATH = 'not-found'
 
-    const { stdout } = await Artisan.callInChild('route:list', artisan)
+    const { stdout } = await Artisan.callInChild('route:list', this.artisan)
 
     assert.deepEqual(Color.removeColors(stdout), '[ LISTING ROUTES ]\n\n')
-  })
-})
+  }
+}

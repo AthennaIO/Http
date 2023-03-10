@@ -7,18 +7,19 @@
  * file that was distributed with this source code.
  */
 
-import { test } from '@japa/runner'
 import { Config } from '@athenna/config'
 import { ViewProvider } from '@athenna/view'
 import { File, Folder } from '@athenna/common'
 import { LoggerProvider } from '@athenna/logger'
 import { ExitFaker } from '#tests/Helpers/ExitFaker'
+import { Test, AfterEach, BeforeEach, TestContext } from '@athenna/test'
 import { Artisan, ConsoleKernel, ArtisanProvider } from '@athenna/artisan'
 
-test.group('MakeControllerCommandTest', group => {
-  const originalPackageJson = new File(Path.pwd('package.json')).getContentAsStringSync()
+export default class MakeControllerCommandTest {
+  private originalPackageJson = new File(Path.pwd('package.json')).getContentAsStringSync()
 
-  group.each.setup(async () => {
+  @BeforeEach()
+  public async beforeEach() {
     ioc.reconstruct()
 
     ExitFaker.fake()
@@ -35,17 +36,19 @@ test.group('MakeControllerCommandTest', group => {
 
     await kernel.registerExceptionHandler()
     await kernel.registerCommands(['ts-node', 'artisan', 'make:controller'])
-  })
+  }
 
-  group.each.teardown(async () => {
+  @AfterEach()
+  public async afterEach() {
     ExitFaker.release()
 
     await Folder.safeRemove(Path.app())
 
-    await new File(Path.pwd('package.json')).setContent(originalPackageJson)
-  })
+    await new File(Path.pwd('package.json')).setContent(this.originalPackageJson)
+  }
 
-  test('should be able to create a controller file', async ({ assert }) => {
+  @Test()
+  public async shouldBeAbleToCreateAControllerFile({ assert }: TestContext) {
     await Artisan.call('make:controller TestController')
 
     const path = Path.http('Controllers/TestController.ts')
@@ -57,12 +60,13 @@ test.group('MakeControllerCommandTest', group => {
 
     assert.containsSubset(Config.get('rc.controllers'), ['#app/Http/Controllers/TestController'])
     assert.containsSubset(athennaRc.controllers, ['#app/Http/Controllers/TestController'])
-  })
+  }
 
-  test('should throw an exception when the file already exists', async ({ assert }) => {
+  @Test()
+  public async shouldThrowAnExceptionWhenTheFileAlreadyExists({ assert }: TestContext) {
     await Artisan.call('make:controller TestController')
     await Artisan.call('make:controller TestController')
 
     assert.isTrue(ExitFaker.faker.calledWith(1))
-  })
-})
+  }
+}

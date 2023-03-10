@@ -7,18 +7,19 @@
  * file that was distributed with this source code.
  */
 
-import { test } from '@japa/runner'
 import { Config } from '@athenna/config'
 import { ViewProvider } from '@athenna/view'
 import { File, Folder } from '@athenna/common'
 import { LoggerProvider } from '@athenna/logger'
 import { ExitFaker } from '#tests/Helpers/ExitFaker'
+import { Test, AfterEach, BeforeEach, TestContext } from '@athenna/test'
 import { Artisan, ConsoleKernel, ArtisanProvider } from '@athenna/artisan'
 
-test.group('MakeTerminatorCommandTest', group => {
-  const originalPackageJson = new File(Path.pwd('package.json')).getContentAsStringSync()
+export default class MakeTerminatorCommandTest {
+  private originalPackageJson = new File(Path.pwd('package.json')).getContentAsStringSync()
 
-  group.each.setup(async () => {
+  @BeforeEach()
+  public async beforeEach() {
     ioc.reconstruct()
 
     ExitFaker.fake()
@@ -35,17 +36,19 @@ test.group('MakeTerminatorCommandTest', group => {
 
     await kernel.registerExceptionHandler()
     await kernel.registerCommands(['ts-node', 'artisan', 'make:terminator'])
-  })
+  }
 
-  group.each.teardown(async () => {
+  @AfterEach()
+  public async afterEach() {
     ExitFaker.release()
 
     await Folder.safeRemove(Path.app())
 
-    await new File(Path.pwd('package.json')).setContent(originalPackageJson)
-  })
+    await new File(Path.pwd('package.json')).setContent(this.originalPackageJson)
+  }
 
-  test('should be able to create a terminator file', async ({ assert }) => {
+  @Test()
+  public async shouldBeAbleToCreateATerminatorFile({ assert }: TestContext) {
     await Artisan.call('make:terminator TestTerminator')
 
     const path = Path.http('Terminators/TestTerminator.ts')
@@ -57,12 +60,13 @@ test.group('MakeTerminatorCommandTest', group => {
 
     assert.containsSubset(Config.get('rc.middlewares'), ['#app/Http/Terminators/TestTerminator'])
     assert.containsSubset(athennaRc.middlewares, ['#app/Http/Terminators/TestTerminator'])
-  })
+  }
 
-  test('should throw an exception when the file already exists', async ({ assert }) => {
+  @Test()
+  public async shouldThrowAnExceptionWhenTheFileAlreadyExists({ assert }: TestContext) {
     await Artisan.call('make:terminator TestTerminator')
     await Artisan.call('make:terminator TestTerminator')
 
     assert.isTrue(ExitFaker.faker.calledWith(1))
-  })
-})
+  }
+}

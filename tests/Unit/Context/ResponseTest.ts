@@ -8,11 +8,12 @@
  */
 
 import { fastify } from 'fastify'
-import { test } from '@japa/runner'
 import { Response } from '#src/Context/Response'
+import { Test, TestContext } from '@athenna/test'
 
-test.group('ResponseTest', () => {
-  test('should be able to set headers in response', async ({ assert }) => {
+export default class ResponseTest {
+  @Test()
+  public async shouldBeAbleToSetHeadersInResponse({ assert }: TestContext) {
     const server = fastify()
 
     server.get('/test/:id', async (_, res) => {
@@ -29,9 +30,10 @@ test.group('ResponseTest', () => {
     })
 
     await server.inject().get('/test/1')
-  })
+  }
 
-  test('should be able to set verify if the response has been sent or not', async ({ assert }) => {
+  @Test()
+  public async shouldBeAbleToSetVerifyIfTheResponseHasBeenSentOrNot({ assert }: TestContext) {
     const server = fastify()
 
     server.get('/test/:id', async (_, res) => {
@@ -45,9 +47,10 @@ test.group('ResponseTest', () => {
     })
 
     await server.inject().get('/test/1')
-  })
+  }
 
-  test('should be able to get the headers after the response is sent', async ({ assert }) => {
+  @Test()
+  public async shouldBeAbleToGetTheHeadersAfterTheResponseIsSent({ assert }: TestContext) {
     const server = fastify()
 
     server.get('/test/:id', async (_, res) => {
@@ -61,9 +64,10 @@ test.group('ResponseTest', () => {
     })
 
     await server.inject().get('/test/1')
-  })
+  }
 
-  test('should be able to get the status code after the response is sent', async ({ assert }) => {
+  @Test()
+  public async shouldBeAbleToGetTheStatusCodeAfterTheResponseIsSent({ assert }: TestContext) {
     const server = fastify()
 
     server.get('/test/:id', async (_, res) => {
@@ -75,9 +79,26 @@ test.group('ResponseTest', () => {
     })
 
     await server.inject().get('/test/1')
-  })
+  }
 
-  test('should be able to get the response time after the response is sent', async ({ assert }) => {
+  @Test()
+  public async shouldBeAbleToGetTheResponseBodyAfterTheResponseIsSent({ assert }: TestContext) {
+    const server = fastify()
+
+    server.get('/test/:id', async (_, res) => {
+      const response = new Response(res)
+
+      await response.status(200).send({ hello: 'world' })
+
+      assert.equal(response.status, 200)
+      assert.equal(response.body, { hello: 'world' })
+    })
+
+    await server.inject().get('/test/1')
+  }
+
+  @Test()
+  public async shouldBeAbleToGetTheResponseTimeAfterTheResponseIsSent({ assert }: TestContext) {
     const server = fastify()
 
     server.get('/test/:id', async (_, res) => {
@@ -89,9 +110,10 @@ test.group('ResponseTest', () => {
     })
 
     await server.inject().get('/test/1')
-  })
+  }
 
-  test('should be able to verify that the header exists in the response', async ({ assert }) => {
+  @Test()
+  public async shouldBeAbleToVerifyThatTheHeaderExistsInTheResponse({ assert }: TestContext) {
     const server = fastify()
 
     server.get('/test/:id', async (_, res) => {
@@ -106,9 +128,10 @@ test.group('ResponseTest', () => {
     })
 
     await server.inject().get('/test/1')
-  })
+  }
 
-  test('should be able to redirect the request to other url', async ({ assert }) => {
+  @Test()
+  public async shouldBeAbleToRedirectTheRequestToOtherUrl({ assert }: TestContext) {
     const server = fastify()
 
     server
@@ -125,9 +148,10 @@ test.group('ResponseTest', () => {
 
     assert.equal(response.statusCode, 302)
     assert.equal(response.headers.location, '/home')
-  })
+  }
 
-  test('should be able to redirect the request to other url and set a different status code', async ({ assert }) => {
+  @Test()
+  public async shouldBeAbleToRedirectTheRequestToOtherUrlAndSetADifferentStatusCode({ assert }: TestContext) {
     const server = fastify()
 
     server
@@ -144,9 +168,10 @@ test.group('ResponseTest', () => {
 
     assert.equal(response.statusCode, 303)
     assert.equal(response.headers.location, '/home')
-  })
+  }
 
-  test('should be able to apply helmet options in response', async ({ assert }) => {
+  @Test()
+  public async shouldBeAbleToApplyHelmetOptionsInResponse({ assert }: TestContext) {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     const server = fastify().register(import('@fastify/helmet'), { global: false })
@@ -169,5 +194,5 @@ test.group('ResponseTest', () => {
       response.headers['content-security-policy'],
       "default-src 'self';base-uri 'self';font-src 'self' https: data:;form-action 'self';frame-ancestors 'self';img-src 'self' data:;object-src 'none';script-src 'self';script-src-attr 'none';style-src 'self' https: 'unsafe-inline';upgrade-insecure-requests",
     )
-  })
-})
+  }
+}

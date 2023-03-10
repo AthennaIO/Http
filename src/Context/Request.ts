@@ -156,10 +156,10 @@ export class Request {
   }
 
   /**
-   * Get the server version.
+   * Get the http version.
    */
   public get version(): string {
-    return this.request.server.version
+    return this.request.raw.httpVersion
   }
 
   /**

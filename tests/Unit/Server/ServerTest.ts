@@ -7,118 +7,134 @@
  * file that was distributed with this source code.
  */
 
-import { test } from '@japa/runner'
 import { Server, HttpServerProvider } from '#src'
+import { Test, AfterEach, BeforeEach, TestContext } from '@athenna/test'
 
-test.group('ServerTest', group => {
-  group.each.setup(async () => {
+export default class ServerTest {
+  @BeforeEach()
+  public async beforeEach() {
     ioc.reconstruct()
 
     new HttpServerProvider().register()
-  })
+  }
 
-  group.each.teardown(async () => {
+  @AfterEach()
+  public async afterEach() {
     await new HttpServerProvider().shutdown()
-  })
+  }
 
-  test('should be able to list the routes registered in the http server', async ({ assert }) => {
+  @Test()
+  public async shouldBeAbleToListTheRoutesRegisteredInTheHttpServer({ assert }: TestContext) {
     Server.get({ url: '/test', handler: ctx => ctx.response.send({ hello: 'world' }) })
 
     const routes = Server.getRoutes()
 
     assert.equal(routes, '└── /test (GET)\n')
-  })
+  }
 
-  test('should be able to get the port where the http server is running', async ({ assert }) => {
+  @Test()
+  public async shouldBeAbleToGetThePortWhereTheHttpServerIsRunning({ assert }: TestContext) {
     await Server.listen({ port: 9999 })
 
     assert.equal(Server.getPort(), 9999)
 
     await Server.close()
-  })
+  }
 
-  test('should be able to get the port where the http server is running', async ({ assert }) => {
+  @Test()
+  public async shouldBeAbleToGetTheHostWhereTheHttpServerIsRunning({ assert }: TestContext) {
     await Server.listen({ host: '0.0.0.0', port: 9999 })
 
     assert.equal(Server.getHost(), '0.0.0.0')
 
     await Server.close()
-  })
+  }
 
-  test('should return normaly if the http server is not running on close method', async ({ assert }) => {
+  @Test()
+  public async shouldReturnNormalyIfTheHttpServerIsNotRunningOnCloseMethod({ assert }: TestContext) {
     assert.isUndefined(await Server.close())
-  })
+  }
 
-  test('should be able to get the fastify version from the http server', async ({ assert }) => {
+  @Test()
+  public async shouldBeAbleToGetTheFastifyVersionFromTheHttpServer({ assert }: TestContext) {
     assert.equal(Server.getFastifyVersion(), '4.13.0')
-  })
+  }
 
-  test('should be able to register fastify plugins in the http server', async ({ assert }) => {
+  @Test()
+  public async shouldBeAbleToRegisterFastifyPluginsInTheHttpServer({ assert }: TestContext) {
     await Server.plugin(import('@fastify/cors'))
     Server.get({ url: '/test', handler: ctx => ctx.response.send({ hello: 'world' }) })
 
     const response = await Server.request({ path: '/test', method: 'GET' })
 
     assert.equal(response.headers['access-control-allow-origin'], '*')
-  })
+  }
 
-  test('should be able to register get route in the http server', async ({ assert }) => {
+  @Test()
+  public async shouldBeAbleToRegisterGetRouteInTheHttpServer({ assert }: TestContext) {
     Server.get({ url: '/test', handler: ctx => ctx.response.send({ hello: 'world' }) })
 
     const response = await Server.request({ path: '/test', method: 'GET' })
 
     assert.deepEqual(response.json(), { hello: 'world' })
-  })
+  }
 
-  test('should be able to register head route in the http server', async ({ assert }) => {
+  @Test()
+  public async shouldBeAbleToRegisterHeadRouteInTheHttpServer({ assert }: TestContext) {
     Server.head({ url: '/test', handler: ctx => ctx.response.send({ hello: 'world' }) })
 
     const response = await Server.request().head('/test')
 
     assert.deepEqual(response.json(), { hello: 'world' })
-  })
+  }
 
-  test('should be able to register post route in the http server', async ({ assert }) => {
+  @Test()
+  public async shouldBeAbleToRegisterPostRouteInTheHttpServer({ assert }: TestContext) {
     Server.post({ url: '/test', handler: ctx => ctx.response.send({ hello: 'world' }) })
 
     const response = await Server.request().post('/test')
 
     assert.deepEqual(response.json(), { hello: 'world' })
-  })
+  }
 
-  test('should be able to register put route in the http server', async ({ assert }) => {
+  @Test()
+  public async shouldBeAbleToRegisterPutRouteInTheHttpServer({ assert }: TestContext) {
     Server.put({ url: '/test', handler: ctx => ctx.response.send({ hello: 'world' }) })
 
     const response = await Server.request().put('/test')
 
     assert.deepEqual(response.json(), { hello: 'world' })
-  })
+  }
 
-  test('should be able to register patch route in the http server', async ({ assert }) => {
+  @Test()
+  public async shouldBeAbleToRegisterPatchRouteInTheHttpServer({ assert }: TestContext) {
     Server.patch({ url: '/test', handler: ctx => ctx.response.send({ hello: 'world' }) })
 
     const response = await Server.request().patch('/test')
 
     assert.deepEqual(response.json(), { hello: 'world' })
-  })
+  }
 
-  test('should be able to register delete route in the http server', async ({ assert }) => {
+  @Test()
+  public async shouldBeAbleToRegisterDeleteRouteInTheHttpServer({ assert }: TestContext) {
     Server.delete({ url: '/test', handler: ctx => ctx.response.send({ hello: 'world' }) })
 
     const response = await Server.request().delete('/test')
 
     assert.deepEqual(response.json(), { hello: 'world' })
-  })
+  }
 
-  test('should be able to register options route in the http server', async ({ assert }) => {
+  @Test()
+  public async shouldBeAbleToRegisterOptionsRouteInTheHttpServer({ assert }: TestContext) {
     Server.options({ url: '/test', handler: ctx => ctx.response.send({ hello: 'world' }) })
 
     const response = await Server.request().options('/test')
 
     assert.deepEqual(response.json(), { hello: 'world' })
-  })
+  }
 
-  test('should be able to register exception handler and throw error in requests', async ({ assert }) => {
+  @Test()
+  public async shouldBeAbleToRegisterExceptionHandlerInTheHttpServer({ assert }: TestContext) {
     Server.setErrorHandler(async ctx => {
       ctx.response.send({ status: ctx.error.status || 500, message: ctx.error.message })
     }).get({
@@ -131,9 +147,10 @@ test.group('ServerTest', group => {
     const response = await Server.request().get('/test')
 
     assert.deepEqual(response.json(), { status: 500, message: 'Something is wrong' })
-  })
+  }
 
-  test('should be able to execute a middleware before going to the route handler', async ({ assert }) => {
+  @Test()
+  public async shouldBeAbleToExecuteAMiddlewareBeforeGoingToTheRouteHandler({ assert }: TestContext) {
     Server.middleware(async ctx => (ctx.data.handled = true)).get({
       url: '/test',
       handler: async ctx => ctx.response.send({ handled: ctx.data.handled }),
@@ -142,9 +159,10 @@ test.group('ServerTest', group => {
     const response = await Server.request().get('/test')
 
     assert.deepEqual(response.json(), { handled: true })
-  })
+  }
 
-  test('should be able to execute a intercept middleware before returning the request', async ({ assert }) => {
+  @Test()
+  public async shouldBeAbleToExecuteAnInterceptMiddlewareBeforeReturningTheRequest({ assert }: TestContext) {
     Server.intercept(ctx => {
       ctx.body.intercepted = true
 
@@ -157,9 +175,10 @@ test.group('ServerTest', group => {
     const response = await Server.request().get('/test')
 
     assert.deepEqual(response.json(), { hello: 'world', intercepted: true })
-  })
+  }
 
-  test('should be able to execute a terminate middleware after returning the request', async ({ assert }) => {
+  @Test()
+  public async shouldBeAbleToExecuteATerminateMiddlewareAfterReturningTheRequest({ assert }: TestContext) {
     let terminated = false
 
     Server.terminate(() => {
@@ -173,5 +192,5 @@ test.group('ServerTest', group => {
 
     assert.isTrue(terminated)
     assert.deepEqual(response.json(), { hello: 'world' })
-  })
-})
+  }
+}

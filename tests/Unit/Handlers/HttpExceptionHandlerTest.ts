@@ -8,25 +8,28 @@
  */
 
 import { fake } from 'sinon'
-import { test } from '@japa/runner'
 import { Exception } from '@athenna/common'
 import { Log, LoggerProvider } from '@athenna/logger'
 import { HttpKernel, HttpServerProvider, Server } from '#src'
+import { Test, AfterEach, BeforeEach, TestContext } from '@athenna/test'
 
-test.group('HttpExceptionHandlerTest', group => {
-  group.each.setup(async () => {
+export default class HttpExceptionHandlerTest {
+  @BeforeEach()
+  public async beforeEach() {
     ioc.reconstruct()
 
     await Config.loadAll(Path.stubs('config'))
     new HttpServerProvider().register()
     new LoggerProvider().register()
-  })
+  }
 
-  group.each.teardown(async () => {
+  @AfterEach()
+  public async afterEach() {
     Log.restoreAllMethods()
-  })
+  }
 
-  test('should be able to throw customized Athenna exceptions in the default exception handler', async ({ assert }) => {
+  @Test()
+  public async shouldBeAbleToThrowCustomizedAthennaExceptionsInTheDefaultExceptionHandler({ assert }: TestContext) {
     const kernel = new HttpKernel()
     await kernel.registerExceptionHandler()
     Server.get({
@@ -45,11 +48,12 @@ test.group('HttpExceptionHandlerTest', group => {
       name: 'Exception',
       message: 'hey',
     })
-  })
+  }
 
-  test('should not set the error name, error message and error stack when debug mode is not activated in default exception handler', async ({
+  @Test()
+  public async shouldNotSetTheErrorNameErrorMessageAndErrorStackWhenDebugModeIsNotActivatedInDefaultExceptionHandler({
     assert,
-  }) => {
+  }: TestContext) {
     Config.set('app.debug', false)
     const kernel = new HttpKernel()
     await kernel.registerExceptionHandler()
@@ -69,9 +73,10 @@ test.group('HttpExceptionHandlerTest', group => {
       name: 'InternalServerException',
       message: 'An internal server exception has occurred.',
     })
-  })
+  }
 
-  test('should ignore the exception from being logged when the code is set inside ignoreCodes', async ({ assert }) => {
+  @Test()
+  public async shouldIgnoreTheExceptionFromBeingLoggedWhenTheCodeIsSetInsideIgnoreCodes({ assert }: TestContext) {
     const logErrorFake = fake()
     const kernel = new HttpKernel()
     await kernel.registerExceptionHandler('#tests/Stubs/handlers/Handler')
@@ -87,11 +92,10 @@ test.group('HttpExceptionHandlerTest', group => {
     await Server.request().get('hello')
 
     assert.isFalse(logErrorFake.called)
-  })
+  }
 
-  test('should ignore the exception from being logged when the status is set inside ignoreStatuses', async ({
-    assert,
-  }) => {
+  @Test()
+  public async shouldIgnoreTheExceptionFromBeingLoggedWhenTheStatusIsSetInsideIgnoreStatuses({ assert }: TestContext) {
     const logErrorFake = fake()
     const kernel = new HttpKernel()
     await kernel.registerExceptionHandler('#tests/Stubs/handlers/Handler')
@@ -107,5 +111,5 @@ test.group('HttpExceptionHandlerTest', group => {
     await Server.request().get('hello')
 
     assert.isFalse(logErrorFake.called)
-  })
-})
+  }
+}

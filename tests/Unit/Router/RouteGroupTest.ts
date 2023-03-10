@@ -7,25 +7,28 @@
  * file that was distributed with this source code.
  */
 
-import { test } from '@japa/runner'
 import { Middleware } from '#tests/Stubs/middlewares/Middleware'
 import { Terminator } from '#tests/Stubs/middlewares/Terminator'
 import { Interceptor } from '#tests/Stubs/middlewares/Interceptor'
+import { Test, AfterEach, BeforeEach, TestContext } from '@athenna/test'
 import { Route, Server, HttpRouteProvider, HttpServerProvider } from '#src'
 
-test.group('RouteGroupTest', group => {
-  group.each.setup(async () => {
+export default class RouteGroupTest {
+  @BeforeEach()
+  public async beforeEach() {
     ioc.reconstruct()
 
     new HttpServerProvider().register()
     new HttpRouteProvider().register()
-  })
+  }
 
-  group.each.teardown(async () => {
+  @AfterEach()
+  public async afterEach() {
     await new HttpServerProvider().shutdown()
-  })
+  }
 
-  test('should be able to create a route group using route class', async ({ assert }) => {
+  @Test()
+  public async shouldBeAbleToCreateARouteGroupUsingRouteClass({ assert }: TestContext) {
     Route.group(() => {
       Route.get('/test', ctx => ctx.response.send({ hello: 'world' }))
     }).prefix('/v1')
@@ -35,9 +38,10 @@ test.group('RouteGroupTest', group => {
     const response = await Server.request({ path: '/v1/test', method: 'get' })
 
     assert.deepEqual(response.json(), { hello: 'world' })
-  })
+  }
 
-  test('should be able to create a route group inside other route group using route class', async ({ assert }) => {
+  @Test()
+  public async shouldBeAbleToCreateARouteGroupInsideOtherRouteGroupUsingRouteClass({ assert }: TestContext) {
     Route.group(() => {
       Route.group(() => {
         Route.get('/test', ctx => ctx.response.send({ hello: 'world' }))
@@ -49,9 +53,10 @@ test.group('RouteGroupTest', group => {
     const response = await Server.request({ path: '/api/v1/test', method: 'get' })
 
     assert.deepEqual(response.json(), { hello: 'world' })
-  })
+  }
 
-  test('should be able to create a route group that adds helmet options using route class', async ({ assert }) => {
+  @Test()
+  public async shouldBeAbleTocreateARouteGroupThatAddsHelmetOptionsUsingRouteClass({ assert }: TestContext) {
     await Server.plugin(import('@fastify/helmet'), { global: false })
 
     Route.group(() => {
@@ -71,9 +76,10 @@ test.group('RouteGroupTest', group => {
       response.headers['content-security-policy'],
       "default-src 'self';base-uri 'self';font-src 'self' https: data:;form-action 'self';frame-ancestors 'self';img-src 'self' data:;object-src 'none';script-src 'self';script-src-attr 'none';style-src 'self' https: 'unsafe-inline';upgrade-insecure-requests",
     )
-  })
+  }
 
-  test('should be able to create a route group that adds rate limit options using route class', async ({ assert }) => {
+  @Test()
+  public async shouldBeAbleToCreateARouteGroupThatAddsRateLimitOptionsUsingRouteClass({ assert }: TestContext) {
     await Server.plugin(import('@fastify/rate-limit'))
 
     Route.group(() => {
@@ -93,9 +99,10 @@ test.group('RouteGroupTest', group => {
     assert.deepEqual(response.headers['x-ratelimit-limit'], 100)
     assert.deepEqual(response.headers['x-ratelimit-remaining'], 99)
     assert.deepEqual(response.headers['x-ratelimit-reset'], 60)
-  })
+  }
 
-  test('should be able to register a middleware closure in route group using router', async ({ assert }) => {
+  @Test()
+  public async shouldBeAbleToRegisterAMiddlewareClosureInRouteGroupUsingRouteClass({ assert }: TestContext) {
     Route.group(() => {
       Route.get('test', ctx => {
         ctx.response.send({ hello: 'world', handled: ctx.data.handled })
@@ -105,9 +112,10 @@ test.group('RouteGroupTest', group => {
     Route.register()
 
     assert.deepEqual((await Server.request({ path: '/test', method: 'get' })).json(), { hello: 'world', handled: true })
-  })
+  }
 
-  test('should be able to register an intercept middleware closure in route group using router', async ({ assert }) => {
+  @Test()
+  public async shouldBeAbleToRegisterAnInterceptMiddlewareClosureInRouteGroupUsingRouter({ assert }: TestContext) {
     Route.group(() => {
       Route.get('test', ctx => {
         ctx.response.send({ hello: 'world', handled: ctx.data.handled })
@@ -124,9 +132,10 @@ test.group('RouteGroupTest', group => {
       hello: 'world',
       intercepted: true,
     })
-  })
+  }
 
-  test('should be able to register a terminate middleware closure in route group using router', async ({ assert }) => {
+  @Test()
+  public async shouldBeAbleToRegisterATerminateMiddlewareClosureInRouteGroupUsingRouter({ assert }: TestContext) {
     let terminated = false
 
     Route.group(() => {
@@ -143,9 +152,10 @@ test.group('RouteGroupTest', group => {
       hello: 'world',
     })
     assert.isTrue(terminated)
-  })
+  }
 
-  test('should be able to register a middleware class in route group using router', async ({ assert }) => {
+  @Test()
+  public async shouldBeAbleToRegisterAMiddlewareClassInRouteGroupUsingRouter({ assert }: TestContext) {
     Route.group(() => {
       Route.get('test', ctx => {
         ctx.response.send({ hello: 'world', handled: ctx.data.handled })
@@ -155,9 +165,10 @@ test.group('RouteGroupTest', group => {
     Route.register()
 
     assert.deepEqual((await Server.request({ path: '/test', method: 'get' })).json(), { hello: 'world', handled: true })
-  })
+  }
 
-  test('should be able to register an intercept middleware class in route group using router', async ({ assert }) => {
+  @Test()
+  public async shouldBeAbleToRegisterAnInterceptMiddlewareClassInRouteGroupUsingRouter({ assert }: TestContext) {
     Route.group(() => {
       Route.get('test', ctx => {
         ctx.response.send({ hello: 'world', handled: ctx.data.handled })
@@ -170,9 +181,10 @@ test.group('RouteGroupTest', group => {
       hello: 'world',
       intercepted: true,
     })
-  })
+  }
 
-  test('should be able to register a terminate middleware class in route group using router', async ({ assert }) => {
+  @Test()
+  public async shouldBeAbleToRegisterATerminateMiddlewareClassInRouteGroupUsingRouter({ assert }: TestContext) {
     Route.group(() => {
       Route.get('test', ctx => {
         ctx.response.send({ hello: 'world', handled: ctx.data.handled })
@@ -184,9 +196,10 @@ test.group('RouteGroupTest', group => {
     assert.deepEqual((await Server.request({ path: '/test', method: 'get' })).json(), {
       hello: 'world',
     })
-  })
+  }
 
-  test('should be able to register a middleware dependency in route group using router', async ({ assert }) => {
+  @Test()
+  public async shouldBeAbleToRegisterAMiddlewareDependencyInRouteGroupUsingRouter({ assert }: TestContext) {
     ioc.bind('App/Http/Middlewares/Middleware', Middleware)
 
     Route.group(() => {
@@ -198,11 +211,10 @@ test.group('RouteGroupTest', group => {
     Route.register()
 
     assert.deepEqual((await Server.request({ path: '/test', method: 'get' })).json(), { hello: 'world', handled: true })
-  })
+  }
 
-  test('should be able to register an intercept middleware depedency in route group using router', async ({
-    assert,
-  }) => {
+  @Test()
+  public async shouldBeAbleToRegisterAnInterceptMiddlewareDepedencyInRouteGroupUsingRouter({ assert }: TestContext) {
     ioc.bind('App/Http/Interceptors/Interceptor', Interceptor)
 
     Route.group(() => {
@@ -217,11 +229,10 @@ test.group('RouteGroupTest', group => {
       hello: 'world',
       intercepted: true,
     })
-  })
+  }
 
-  test('should be able to register a terminate middleware dependency in route group using router', async ({
-    assert,
-  }) => {
+  @Test()
+  public async shouldBeAbleToRegisterATerminateMiddlewareDependencyInRouteGroupUsingRouter({ assert }: TestContext) {
     ioc.bind('App/Http/Terminators/Terminator', Terminator)
 
     Route.group(() => {
@@ -235,9 +246,10 @@ test.group('RouteGroupTest', group => {
     assert.deepEqual((await Server.request({ path: '/test', method: 'get' })).json(), {
       hello: 'world',
     })
-  })
+  }
 
-  test('should be able to register a named middleware in route group using router', async ({ assert }) => {
+  @Test()
+  public async shouldBeAbleToRegisterANamedMiddlewareInRouteGroupUsingRouter({ assert }: TestContext) {
     ioc.bind('App/Http/Middlewares/Names/middleware', Middleware)
 
     Route.group(() => {
@@ -249,9 +261,10 @@ test.group('RouteGroupTest', group => {
     Route.register()
 
     assert.deepEqual((await Server.request({ path: '/test', method: 'get' })).json(), { hello: 'world', handled: true })
-  })
+  }
 
-  test('should be able to register an intercept named middleware in route group using router', async ({ assert }) => {
+  @Test()
+  public async shouldBeAbleToRegisterAnInterceptNamedMiddlewareInRouteGroupUsingRouter({ assert }: TestContext) {
     ioc.bind('App/Http/Interceptors/Names/interceptor', Interceptor)
 
     Route.group(() => {
@@ -266,9 +279,10 @@ test.group('RouteGroupTest', group => {
       hello: 'world',
       intercepted: true,
     })
-  })
+  }
 
-  test('should be able to register a terminate named middleware in route group using router', async ({ assert }) => {
+  @Test()
+  public async shouldBeAbleToRegisterATerminateNamedMiddlewareInRouteGroupUsingRouter({ assert }: TestContext) {
     ioc.bind('App/Http/Terminators/Names/terminator', Terminator)
 
     Route.group(() => {
@@ -282,21 +296,20 @@ test.group('RouteGroupTest', group => {
     assert.deepEqual((await Server.request({ path: '/test', method: 'get' })).json(), {
       hello: 'world',
     })
-  })
+  }
 
-  test('should throw an exception when middleware name and dependency does not exist', async ({ assert }) => {
+  @Test()
+  public async shouldThrowAnExceptionWhenMiddlewareNameAndDependencyDoesNotExists({ assert }: TestContext) {
     assert.throws(() => Route.group(() => Route.get('test', () => {})).middleware('not-found'))
-  })
+  }
 
-  test('should throw an exception when interceptor middleware name and dependency does not exist', async ({
-    assert,
-  }) => {
+  @Test()
+  public async shouldThrowAnExceptionWhenInterceptorMiddlewareNameAndDependencyDoesNotExists({ assert }: TestContext) {
     assert.throws(() => Route.group(() => Route.get('test', () => {})).interceptor('not-found'))
-  })
+  }
 
-  test('should throw an exception when terminator middleware name and dependency does not exist', async ({
-    assert,
-  }) => {
+  @Test()
+  public async shouldThrowAnExceptionWhenTerminatorMiddlewareNameAndDependencyDoesNotExists({ assert }: TestContext) {
     assert.throws(() => Route.group(() => Route.get('test', () => {})).terminator('not-found'))
-  })
-})
+  }
+}
