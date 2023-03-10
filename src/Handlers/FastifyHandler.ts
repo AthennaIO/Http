@@ -79,6 +79,8 @@ export class FastifyHandler {
         payload = JSON.stringify(payload)
       }
 
+      res.body = payload
+
       return payload
     }
   }
@@ -99,7 +101,7 @@ export class FastifyHandler {
         params: req.params,
         queries: req.query,
         data: req.data,
-        body: req.body,
+        body: res.body || req.body,
         headers: res.getHeaders(),
         status: res.statusCode,
         responseTime: res.getResponseTime(),
@@ -121,7 +123,7 @@ export class FastifyHandler {
         request,
         response,
         data: req.data,
-        body: req.body,
+        body: res.body || req.body,
         params: req.params,
         queries: req.query,
         headers: req.headers,

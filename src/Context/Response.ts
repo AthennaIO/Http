@@ -28,6 +28,13 @@ export class Response {
   }
 
   /**
+   * Get the response body sent in response.
+   */
+  public get body(): any | any[] {
+    return this.response.body
+  }
+
+  /**
    * Get the status code sent in response.
    */
   public get statusCode(): number {
@@ -53,6 +60,8 @@ export class Response {
    */
   public async send(data?: any): Promise<Response> {
     await this.response.send(data)
+
+    this.response.body = data
 
     return this
   }

@@ -7,40 +7,45 @@
  * file that was distributed with this source code.
  */
 
-import { test } from '@japa/runner'
 import { Middleware } from '#src'
+import { Test, BeforeEach, TestContext } from '@athenna/test'
 
-test.group('MiddlewareDecoratorTest', group => {
-  group.each.setup(() => {
+export default class MiddlewareDecoratorTest {
+  @BeforeEach()
+  public async beforeEach() {
     ioc.reconstruct()
-  })
+  }
 
-  test('should be able to register middlewares in the service provider using decorators', async ({ assert }) => {
+  @Test()
+  public async shouldBeAbleToRegisterMiddlewareInTheServiceProviderUsingDecorators({ assert }: TestContext) {
     @Middleware()
     class _MyMiddleware {}
 
     assert.isTrue(ioc.hasDependency('App/Http/Middlewares/_MyMiddleware'))
-  })
+  }
 
-  test('should be able to register middlewares in the service provider with different aliases using decorators', async ({
+  @Test()
+  public async shouldBeAbleToRegisterMiddlewareInTheServiceProviderWithDifferentAliasesUsingDecorators({
     assert,
-  }) => {
+  }: TestContext) {
     @Middleware({ alias: 'App/Services/MyMiddleware' })
     class _MyMiddleware {}
 
     assert.isTrue(ioc.hasDependency('App/Services/MyMiddleware'))
-  })
+  }
 
-  test('should be able to register middlewares in the service provider with different registration type using decorators', async ({
+  @Test()
+  public async shouldBeAbleToRegisterMiddlewareInTheServiceProviderWithDifferentRegistrationTypeUsingDecorators({
     assert,
-  }) => {
+  }: TestContext) {
     @Middleware({ alias: 'myMiddleware', type: 'singleton' })
     class _MyMiddleware {}
 
     assert.equal(ioc.getRegistration('myMiddleware').lifetime, 'SINGLETON')
-  })
+  }
 
-  test('should not register the dependency again if the dependency is already registered', async ({ assert }) => {
+  @Test()
+  public async shouldNotRegisterTheDependencyAgainIfTheDependencyIsAlreadyRegistered({ assert }: TestContext) {
     @Middleware({ alias: 'myMiddleware', type: 'singleton' })
     class _MyMiddleware {}
 
@@ -48,5 +53,5 @@ test.group('MiddlewareDecoratorTest', group => {
     class __MyMiddleware {}
 
     assert.equal(ioc.getRegistration('myMiddleware').lifetime, 'SINGLETON')
-  })
-})
+  }
+}

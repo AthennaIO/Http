@@ -8,25 +8,28 @@
  */
 
 import { fake } from 'sinon'
-import { test } from '@japa/runner'
+import { Module } from '@athenna/common'
 import { Log, LoggerProvider } from '@athenna/logger'
 import { HttpKernel, HttpServerProvider, Server } from '#src'
-import { Module } from '@athenna/common'
+import { Test, AfterEach, BeforeEach, TestContext } from '@athenna/test'
 
-test.group('HttpKernelTest', group => {
-  group.each.setup(async () => {
+export default class HttpKernelTest {
+  @BeforeEach()
+  public async beforeEach() {
     ioc.reconstruct()
 
     await Config.loadAll(Path.stubs('config'))
     new HttpServerProvider().register()
     new LoggerProvider().register()
-  })
+  }
 
-  group.each.teardown(async () => {
+  @AfterEach()
+  public async afterEach() {
     Log.restoreAllMethods()
-  })
+  }
 
-  test('should be able to register the @fastify/cors plugin in the http server', async ({ assert }) => {
+  @Test()
+  public async shouldBeAbleToRegisterTheFastifyCorsPluginInTheHttpServer({ assert }: TestContext) {
     const kernel = new HttpKernel()
     await kernel.registerCors()
     Server.get({ url: '/hello', handler: ctx => ctx.response.send({ hello: true }) })
@@ -39,9 +42,10 @@ test.group('HttpKernelTest', group => {
       'access-control-expose-headers': '*',
     })
     assert.isTrue(Server.fastify.hasPlugin('@fastify/cors'))
-  })
+  }
 
-  test('should be able to register the @fastify/helmet plugin in the http server', async ({ assert }) => {
+  @Test()
+  public async shouldBeAbleToRegisterTheFastifyHelmetPluginInTheHttpServer({ assert }: TestContext) {
     const kernel = new HttpKernel()
     await kernel.registerHelmet()
     Server.get({ url: '/hello', handler: ctx => ctx.response.send({ hello: true }) })
@@ -58,9 +62,10 @@ test.group('HttpKernelTest', group => {
       'strict-transport-security': 'max-age=15552000; includeSubDomains',
     })
     assert.isTrue(Server.fastify.hasPlugin('@fastify/helmet'))
-  })
+  }
 
-  test('should be able to register the @fastify/swagger plugin in the http server', async ({ assert }) => {
+  @Test()
+  public async shouldBeAbleToRegisterTheFastifySwaggerPluginInTheHttpServer({ assert }: TestContext) {
     const kernel = new HttpKernel()
     await kernel.registerSwagger()
 
@@ -68,9 +73,10 @@ test.group('HttpKernelTest', group => {
 
     assert.equal(response.statusCode, 302)
     assert.isTrue(Server.fastify.hasPlugin('@fastify/swagger'))
-  })
+  }
 
-  test('should be able to register the @fastify/rate-limit plugin in the http server', async ({ assert }) => {
+  @Test()
+  public async shouldBeAbleToRegisterTheFastifyRateLimitPluginInTheHttpServer({ assert }: TestContext) {
     const kernel = new HttpKernel()
     await kernel.registerRateLimit()
     Server.get({ url: '/hello', handler: ctx => ctx.response.send({ hello: true }) })
@@ -83,9 +89,10 @@ test.group('HttpKernelTest', group => {
       'x-ratelimit-reset': 60,
     })
     assert.isTrue(Server.fastify.hasPlugin('@fastify/rate-limit'))
-  })
+  }
 
-  test('should be able to register the rTracer library in the http server', async ({ assert }) => {
+  @Test()
+  public async shouldBeAbleToRegisterTheFastifyRTTracerPluginInTheHttpServer({ assert }: TestContext) {
     const kernel = new HttpKernel()
     await kernel.registerRTracer()
     Server.get({ url: '/hello', handler: ctx => ctx.response.send({ traceId: ctx.data.traceId }) })
@@ -94,9 +101,10 @@ test.group('HttpKernelTest', group => {
 
     assert.isDefined(response.json().traceId)
     assert.isTrue(Server.fastify.hasPlugin('cls-rtracer'))
-  })
+  }
 
-  test('should be able to register the logger terminator in the http server', async ({ assert }) => {
+  @Test()
+  public async shouldBeAbleToRegisterTheLoggerTerminatorInTheHttpServer({ assert }: TestContext) {
     const logInfoFake = fake()
     const kernel = new HttpKernel()
     await kernel.registerLoggerTerminator()
@@ -107,9 +115,10 @@ test.group('HttpKernelTest', group => {
 
     assert.isTrue(logInfoFake.called)
     assert.deepEqual(response.json(), { hello: true })
-  })
+  }
 
-  test('should not register the @fastify/cors plugin if the configuration file does not exist', async ({ assert }) => {
+  @Test()
+  public async shouldBeAbleToRegisterTheFastifyCorsPluginIfTheConfigurationFileDoesNotExist({ assert }: TestContext) {
     const originalSafeImport = Module.safeImport
     Module.safeImport = () => Promise.resolve(null)
     const { HttpKernel } = await import(`../../../src/Kernels/HttpKernel.js?v=${Math.random()}`)
@@ -118,11 +127,10 @@ test.group('HttpKernelTest', group => {
     Module.safeImport = originalSafeImport
 
     assert.isFalse(Server.fastify.hasPlugin('@fastify/cors'))
-  })
+  }
 
-  test('should not register the @fastify/helmet plugin if the configuration file does not exist', async ({
-    assert,
-  }) => {
+  @Test()
+  public async shouldNotRegisterTheFastifyHelmetPluginIfTheConfigurationFileDoesNotExist({ assert }: TestContext) {
     const originalSafeImport = Module.safeImport
     Module.safeImport = () => Promise.resolve(null)
     const { HttpKernel } = await import(`../../../src/Kernels/HttpKernel.js?v=${Math.random()}`)
@@ -131,11 +139,10 @@ test.group('HttpKernelTest', group => {
     Module.safeImport = originalSafeImport
 
     assert.isFalse(Server.fastify.hasPlugin('@fastify/helmet'))
-  })
+  }
 
-  test('should not register the @fastify/swagger plugin if the configuration file does not exist', async ({
-    assert,
-  }) => {
+  @Test()
+  public async shouldNotRegisterTheFastifySwaggerPluginIfTheConfigurationFileDoesNotExist({ assert }: TestContext) {
     const originalSafeImport = Module.safeImport
     Module.safeImport = () => Promise.resolve(null)
     const { HttpKernel } = await import(`../../../src/Kernels/HttpKernel.js?v=${Math.random()}`)
@@ -144,22 +151,26 @@ test.group('HttpKernelTest', group => {
     Module.safeImport = originalSafeImport
 
     assert.isFalse(Server.fastify.hasPlugin('@fastify/swagger'))
-  })
+  }
 
-  test('should not register the @fastify/rate-limit plugin if the configuration file does not exist', async ({
-    assert,
-  }) => {
+  @Test()
+  public async shouldNotRegisterTheFastifyRateLimitPluginIfTheConfigurationFileDoesNotExist({ assert }: TestContext) {
     const originalSafeImport = Module.safeImport
     Module.safeImport = () => Promise.resolve(null)
     const { HttpKernel } = await import(`../../../src/Kernels/HttpKernel.js?v=${Math.random()}`)
     const kernel = new HttpKernel()
     await kernel.registerRateLimit()
-    Module.safeImport = originalSafeImport
+    Server.get({ url: '/hello', handler: ctx => ctx.response.send({ hello: true }) })
 
+    const response = await Server.request().get('hello')
+
+    assert.deepEqual(response.json(), { hello: true })
     assert.isFalse(Server.fastify.hasPlugin('@fastify/rate-limit'))
-  })
+    Module.safeImport = originalSafeImport
+  }
 
-  test('should not register the rTracer plugin if the configuration file does not exist', async ({ assert }) => {
+  @Test()
+  public async shouldNotRegisterTheFastifyRTracerPluginIfTheConfigurationFileDoesNotExist({ assert }: TestContext) {
     const originalSafeImport = Module.safeImport
     Module.safeImport = () => Promise.resolve(null)
     const { HttpKernel } = await import(`../../../src/Kernels/HttpKernel.js?v=${Math.random()}`)
@@ -168,9 +179,10 @@ test.group('HttpKernelTest', group => {
     Module.safeImport = originalSafeImport
 
     assert.isFalse(Server.fastify.hasPlugin('cls-rtracer'))
-  })
+  }
 
-  test('should be able to register controllers of the rc file with and without decorators', async ({ assert }) => {
+  @Test()
+  public async shouldBeAbleToRegisterControllersOfTheRcFileWithAndWithoutDecorators({ assert }: TestContext) {
     const kernel = new HttpKernel()
     await kernel.registerControllers()
 
@@ -181,11 +193,10 @@ test.group('HttpKernelTest', group => {
     assert.isTrue(ioc.hasDependency('decoratedController'))
     assert.isFalse(ioc.hasDependency('App/Http/Controllers/DecoratedController'))
     assert.equal(ioc.getRegistration('decoratedController').lifetime, 'SINGLETON')
-  })
+  }
 
-  test('should be able to register named middlewares of the rc file with and without decorators', async ({
-    assert,
-  }) => {
+  @Test()
+  public async shouldBeAbleToRegisterNamedMiddlewaresOfTheRcFileWithAndWithoutDecorators({ assert }: TestContext) {
     const kernel = new HttpKernel()
     await kernel.registerNamedMiddlewares()
 
@@ -212,11 +223,10 @@ test.group('HttpKernelTest', group => {
     assert.isFalse(ioc.hasDependency('App/Http/Terminators/Names/not-found-terminator'))
     assert.isFalse(ioc.hasDependency('App/Http/Terminators/DecoratedTerminator'))
     assert.equal(ioc.getRegistration('decoratedTerminator').lifetime, 'SINGLETON')
-  })
+  }
 
-  test('should be able to register global middlewares of the rc file with and without decorators', async ({
-    assert,
-  }) => {
+  @Test()
+  public async shouldBeAbleToRegisterGlobalMiddlewaresOfTheRcFileWithAndWithoutDecorators({ assert }: TestContext) {
     const kernel = new HttpKernel()
     await kernel.registerGlobalMiddlewares()
 
@@ -237,9 +247,10 @@ test.group('HttpKernelTest', group => {
     assert.isTrue(ioc.hasDependency('decoratedGlobalTerminator'))
     assert.isFalse(ioc.hasDependency('App/Http/Terminators/DecoratedTerminator'))
     assert.equal(ioc.getRegistration('decoratedGlobalTerminator').lifetime, 'SINGLETON')
-  })
+  }
 
-  test('should be able to register all middlewares with just one kernel method call', async ({ assert }) => {
+  @Test()
+  public async shouldBeAbleToRegisterAllMiddlewaresWithJustOneKernelMethodCall({ assert }: TestContext) {
     const kernel = new HttpKernel()
     await kernel.registerMiddlewares()
 
@@ -284,9 +295,12 @@ test.group('HttpKernelTest', group => {
     // By imports
     assert.isTrue(ioc.hasDependency('importedMiddleware'))
     assert.isTrue(ioc.hasDependency('App/Http/Middlewares/Names/importedMiddleware'))
-  })
+  }
 
-  test('should be able to execute http requests that will be intercepted by global middlewares', async ({ assert }) => {
+  @Test()
+  public async shouldBeAbleToExecuteHttpRequestsThatWillBeInterceptedByGlobalMiddlewaresAndNamedMiddlewares({
+    assert,
+  }: TestContext) {
     const kernel = new HttpKernel()
     await kernel.registerGlobalMiddlewares()
     Server.get({ url: '/hello', handler: ctx => ctx.response.send(ctx.data) })
@@ -294,11 +308,10 @@ test.group('HttpKernelTest', group => {
     const response = await Server.request().get('hello')
 
     assert.deepEqual(response.json(), { handled: true, intercepted: true })
-  })
+  }
 
-  test('should be able to register the default exception handler for the server request handlers', async ({
-    assert,
-  }) => {
+  @Test()
+  public async shouldBeAbleToRegisterTheDefaultExceptionHandlerForTheServerRequestHandlers({ assert }: TestContext) {
     const kernel = new HttpKernel()
     await kernel.registerExceptionHandler()
     Server.get({
@@ -317,9 +330,10 @@ test.group('HttpKernelTest', group => {
       name: 'Error',
       message: 'hey',
     })
-  })
+  }
 
-  test('should be able to register a custom exception handler for the server request handlers', async ({ assert }) => {
+  @Test()
+  public async shouldBeAbleToRegisterACustomExceptionHandlerForTheServerRequestHandlers({ assert }: TestContext) {
     const kernel = new HttpKernel()
     await kernel.registerExceptionHandler('#tests/Stubs/handlers/Handler')
     Server.get({
@@ -338,5 +352,5 @@ test.group('HttpKernelTest', group => {
       name: 'Error',
       message: 'hey',
     })
-  })
-})
+  }
+}

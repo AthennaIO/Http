@@ -7,40 +7,45 @@
  * file that was distributed with this source code.
  */
 
-import { test } from '@japa/runner'
 import { Terminator } from '#src'
+import { Test, BeforeEach, TestContext } from '@athenna/test'
 
-test.group('TerminatorDecoratorTest', group => {
-  group.each.setup(() => {
+export default class TerminatorDecoratorTest {
+  @BeforeEach()
+  public async beforeEach() {
     ioc.reconstruct()
-  })
+  }
 
-  test('should be able to register interceptor in the service provider using decorators', async ({ assert }) => {
+  @Test()
+  public async shouldBeAbleToRegisterTerminatorInTheServiceProviderUsingDecorators({ assert }: TestContext) {
     @Terminator()
     class _MyTerminator {}
 
     assert.isTrue(ioc.hasDependency('App/Http/Terminators/_MyTerminator'))
-  })
+  }
 
-  test('should be able to register interceptor in the service provider with different aliases using decorators', async ({
+  @Test()
+  public async shouldBeAbleToRegisterTerminatorInTheServiceProviderWithDifferentAliasesUsingDecorators({
     assert,
-  }) => {
+  }: TestContext) {
     @Terminator({ alias: 'App/Services/MyTerminator' })
     class _MyTerminator {}
 
     assert.isTrue(ioc.hasDependency('App/Services/MyTerminator'))
-  })
+  }
 
-  test('should be able to register interceptor in the service provider with different registration type using decorators', async ({
+  @Test()
+  public async shouldBeAbleToRegisterTerminatorInTheServiceProviderWithDifferentRegistrationTypeUsingDecorators({
     assert,
-  }) => {
+  }: TestContext) {
     @Terminator({ alias: 'myTerminator', type: 'singleton' })
     class _MyTerminator {}
 
     assert.equal(ioc.getRegistration('myTerminator').lifetime, 'SINGLETON')
-  })
+  }
 
-  test('should not register the dependency again if the dependency is already registered', async ({ assert }) => {
+  @Test()
+  public async shouldNotRegisterTheDependencyAgainIfTheDependencyIsAlreadyRegistered({ assert }: TestContext) {
     @Terminator({ alias: 'myTerminator', type: 'singleton' })
     class _MyTerminator {}
 
@@ -48,5 +53,5 @@ test.group('TerminatorDecoratorTest', group => {
     class __MyTerminator {}
 
     assert.equal(ioc.getRegistration('myTerminator').lifetime, 'SINGLETON')
-  })
-})
+  }
+}

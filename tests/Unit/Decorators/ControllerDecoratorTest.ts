@@ -7,40 +7,45 @@
  * file that was distributed with this source code.
  */
 
-import { test } from '@japa/runner'
 import { Controller } from '#src'
+import { Test, BeforeEach, TestContext } from '@athenna/test'
 
-test.group('ControllerDecoratorTest', group => {
-  group.each.setup(() => {
+export default class ControllerDecoratorTest {
+  @BeforeEach()
+  public async beforeEach() {
     ioc.reconstruct()
-  })
+  }
 
-  test('should be able to register controllers in the service provider using decorators', async ({ assert }) => {
+  @Test()
+  public async shouldBeAbleToRegisterControllersInTheServiceProviderUsingDecorators({ assert }: TestContext) {
     @Controller()
     class _MyController {}
 
     assert.isTrue(ioc.hasDependency('App/Http/Controllers/_MyController'))
-  })
+  }
 
-  test('should be able to register controllers in the service provider with different aliases using decorators', async ({
+  @Test()
+  public async shouldBeAbleToRegisterControllersInTheServiceProviderWithDifferentAliasesUsingDecorators({
     assert,
-  }) => {
+  }: TestContext) {
     @Controller({ alias: 'App/Services/MyController' })
     class _MyController {}
 
     assert.isTrue(ioc.hasDependency('App/Services/MyController'))
-  })
+  }
 
-  test('should be able to register controllers in the service provider with different registration type using decorators', async ({
+  @Test()
+  public async shouldBeAbleToRegisterControllersInTheServiceProviderWithDifferentRegistrationTypeUsingDecorators({
     assert,
-  }) => {
+  }: TestContext) {
     @Controller({ alias: 'myController', type: 'singleton' })
     class _MyController {}
 
     assert.equal(ioc.getRegistration('myController').lifetime, 'SINGLETON')
-  })
+  }
 
-  test('should not register the dependency again if the dependency is already registered', async ({ assert }) => {
+  @Test()
+  public async shouldNotRegisterTheDependencyAgainIfTheDependencyIsAlreadyRegistered({ assert }: TestContext) {
     @Controller({ alias: 'myController', type: 'singleton' })
     class _MyController {}
 
@@ -48,5 +53,5 @@ test.group('ControllerDecoratorTest', group => {
     class __MyController {}
 
     assert.equal(ioc.getRegistration('myController').lifetime, 'SINGLETON')
-  })
-})
+  }
+}

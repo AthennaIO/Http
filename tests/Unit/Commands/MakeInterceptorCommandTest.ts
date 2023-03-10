@@ -7,18 +7,19 @@
  * file that was distributed with this source code.
  */
 
-import { test } from '@japa/runner'
 import { Config } from '@athenna/config'
 import { ViewProvider } from '@athenna/view'
 import { File, Folder } from '@athenna/common'
 import { LoggerProvider } from '@athenna/logger'
 import { ExitFaker } from '#tests/Helpers/ExitFaker'
+import { Test, AfterEach, BeforeEach, TestContext } from '@athenna/test'
 import { Artisan, ConsoleKernel, ArtisanProvider } from '@athenna/artisan'
 
-test.group('MakeInterceptorCommandTest', group => {
-  const originalPackageJson = new File(Path.pwd('package.json')).getContentAsStringSync()
+export default class MakeInterceptorCommandTest {
+  private originalPackageJson = new File(Path.pwd('package.json')).getContentAsStringSync()
 
-  group.each.setup(async () => {
+  @BeforeEach()
+  public async beforeEach() {
     ioc.reconstruct()
 
     ExitFaker.fake()
@@ -35,17 +36,19 @@ test.group('MakeInterceptorCommandTest', group => {
 
     await kernel.registerExceptionHandler()
     await kernel.registerCommands(['ts-node', 'artisan', 'make:interceptor'])
-  })
+  }
 
-  group.each.teardown(async () => {
+  @AfterEach()
+  public async afterEach() {
     ExitFaker.release()
 
     await Folder.safeRemove(Path.app())
 
-    await new File(Path.pwd('package.json')).setContent(originalPackageJson)
-  })
+    await new File(Path.pwd('package.json')).setContent(this.originalPackageJson)
+  }
 
-  test('should be able to create a interceptor file', async ({ assert }) => {
+  @Test()
+  public async shouldBeAbleToCreateAInterceptorFile({ assert }: TestContext) {
     await Artisan.call('make:interceptor TestInterceptor')
 
     const path = Path.http('Interceptors/TestInterceptor.ts')
@@ -57,12 +60,13 @@ test.group('MakeInterceptorCommandTest', group => {
 
     assert.containsSubset(Config.get('rc.middlewares'), ['#app/Http/Interceptors/TestInterceptor'])
     assert.containsSubset(athennaRc.middlewares, ['#app/Http/Interceptors/TestInterceptor'])
-  })
+  }
 
-  test('should throw an exception when the file already exists', async ({ assert }) => {
+  @Test()
+  public async shouldThrowAnExceptionWhenTheFileAlreadyExists({ assert }: TestContext) {
     await Artisan.call('make:interceptor TestInterceptor')
     await Artisan.call('make:interceptor TestInterceptor')
 
     assert.isTrue(ExitFaker.faker.calledWith(1))
-  })
-})
+  }
+}

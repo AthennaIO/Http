@@ -7,27 +7,30 @@
  * file that was distributed with this source code.
  */
 
-import { test } from '@japa/runner'
 import { Middleware } from '#tests/Stubs/middlewares/Middleware'
 import { Terminator } from '#tests/Stubs/middlewares/Terminator'
 import { Interceptor } from '#tests/Stubs/middlewares/Interceptor'
+import { Test, AfterEach, BeforeEach, TestContext } from '@athenna/test'
 import { HelloController } from '#tests/Stubs/controllers/HelloController'
 import { Route, Server, HttpRouteProvider, HttpServerProvider } from '#src'
 import { UndefinedMethodException } from '#src/Exceptions/UndefinedMethodException'
 
-test.group('RouterTest', group => {
-  group.each.setup(async () => {
+export default class RouterTest {
+  @BeforeEach()
+  public async beforeEach() {
     ioc.reconstruct()
 
     new HttpServerProvider().register()
     new HttpRouteProvider().register()
-  })
+  }
 
-  group.each.teardown(async () => {
+  @AfterEach()
+  public async afterEach() {
     await new HttpServerProvider().shutdown()
-  })
+  }
 
-  test('should be able to list the route registered in the route class', async ({ assert }) => {
+  @Test()
+  public async shouldBeAbleToListTheRouteRegisteredInTheRouteClass({ assert }: TestContext) {
     Route.get('/test', ctx => ctx.response.send({ hello: 'world' }))
 
     const [route] = Route.list()
@@ -40,80 +43,89 @@ test.group('RouterTest', group => {
       interceptors: [],
     })
     assert.deepEqual(route.fastify, { schema: {} })
-  })
+  }
 
-  test('should be able to register vanilla fastify routes using route class', async ({ assert }) => {
+  @Test()
+  public async shouldBeAbleToRegisterVanillaFastifyRoutesUsingRouteClass({ assert }: TestContext) {
     Route.vanillaRoute({ url: '/test', handler: (_, res) => res.send({ hello: 'world' }), method: ['GET'] })
 
     const response = await Server.request({ path: '/test', method: 'get' })
 
     assert.deepEqual(response.json(), { hello: 'world' })
-  })
+  }
 
-  test('should be able to register a get route in the http server using route', async ({ assert }) => {
+  @Test()
+  public async shouldBeAbleToRegisterAGetRouteInTheHttpServerUsingRouteClass({ assert }: TestContext) {
     Route.get('/test', ctx => ctx.response.send({ hello: 'world' }))
     Route.register()
 
     const response = await Server.request({ path: '/test', method: 'get' })
 
     assert.deepEqual(response.json(), { hello: 'world' })
-  })
+  }
 
-  test('should be able to register a head route in the http server using route', async ({ assert }) => {
+  @Test()
+  public async shouldBeAbleToRegisterAHeadRouteInTheHttpServerUsingRouteClass({ assert }: TestContext) {
     Route.head('/test', ctx => ctx.response.send({ hello: 'world' }))
     Route.register()
 
     const response = await Server.request({ path: '/test', method: 'head' })
 
     assert.deepEqual(response.json(), { hello: 'world' })
-  })
+  }
 
-  test('should be able to register a post route in the http server using route', async ({ assert }) => {
+  @Test()
+  public async shouldBeAbleToRegisterAPostRouteInTheHttpServerUsingRouteClass({ assert }: TestContext) {
     Route.post('/test', ctx => ctx.response.send({ hello: 'world' }))
     Route.register()
 
     const response = await Server.request({ path: '/test', method: 'post' })
 
     assert.deepEqual(response.json(), { hello: 'world' })
-  })
+  }
 
-  test('should be able to register a put route in the http server using route', async ({ assert }) => {
+  @Test()
+  public async shouldBeAbleToRegisterAPutRouteInTheHttpServerUsingRouteClass({ assert }: TestContext) {
     Route.put('/test', ctx => ctx.response.send({ hello: 'world' }))
     Route.register()
 
     const response = await Server.request({ path: '/test', method: 'put' })
 
     assert.deepEqual(response.json(), { hello: 'world' })
-  })
+  }
 
-  test('should be able to register a patch route in the http server using route', async ({ assert }) => {
+  @Test()
+  public async shouldBeAbleToRegisterAPatchRouteInTheHttpServerUsingRouteClass({ assert }: TestContext) {
     Route.patch('/test', ctx => ctx.response.send({ hello: 'world' }))
     Route.register()
 
     const response = await Server.request({ path: '/test', method: 'patch' })
 
     assert.deepEqual(response.json(), { hello: 'world' })
-  })
+  }
 
-  test('should be able to register a delete route in the http server using route', async ({ assert }) => {
+  @Test()
+  public async shouldBeAbleToRegisterADeleteRouteInTheHttpServerUsingRouteClass({ assert }: TestContext) {
     Route.delete('/test', ctx => ctx.response.send({ hello: 'world' }))
     Route.register()
 
     const response = await Server.request({ path: '/test', method: 'delete' })
 
     assert.deepEqual(response.json(), { hello: 'world' })
-  })
+  }
 
-  test('should be able to register a options route in the http server using route', async ({ assert }) => {
+  @Test()
+  public async shouldBeAbleToDeleteAOptionsRouteInTheHttpServerUsingRouteClass({ assert }: TestContext) {
     Route.options('/test', ctx => ctx.response.send({ hello: 'world' }))
     Route.register()
 
     const response = await Server.request({ path: '/test', method: 'options' })
 
     assert.deepEqual(response.json(), { hello: 'world' })
-  })
+  }
 
-  test('should be able to register a any route in the http server using route', async ({ assert }) => {
+  @Test()
+  public async shouldBeAbleToRegisterAAnyRouteInTheHttpServerUsingRouteClass({ assert }: TestContext) {
     Route.any('/test', ctx => ctx.response.send({ hello: 'world' }))
     Route.register()
 
@@ -124,50 +136,57 @@ test.group('RouterTest', group => {
     assert.deepEqual((await Server.request({ path: '/test', method: 'put' })).json(), { hello: 'world' })
     assert.deepEqual((await Server.request({ path: '/test', method: 'delete' })).json(), { hello: 'world' })
     assert.deepEqual((await Server.request({ path: '/test', method: 'options' })).json(), { hello: 'world' })
-  })
+  }
 
-  test('should be able to register a controller class in the router to use in routes', async ({ assert }) => {
+  @Test()
+  public async shouldBeAbleToRegisterAControllerClassInTheHttpServerUsingRouteClass({ assert }: TestContext) {
     Route.controller(new HelloController()).get('/test', 'index')
     Route.register()
 
     assert.deepEqual((await Server.request({ path: '/test', method: 'get' })).json(), { hello: 'world' })
-  })
+  }
 
-  test('should be able to register a controller class as string in the router to use in routes', async ({ assert }) => {
+  @Test()
+  public async shouldBeAbleToRegisterAControllerClassAsStringInTheRouterToUseInRoutes({ assert }: TestContext) {
     ioc.bind('App/Http/Controllers/HelloController', HelloController)
 
     Route.controller('HelloController').get('/test', 'index')
     Route.register()
 
     assert.deepEqual((await Server.request({ path: '/test', method: 'get' })).json(), { hello: 'world' })
-  })
+  }
 
-  test('should throw an error when the controller dependency does not exist', async ({ assert }) => {
+  @Test()
+  public async shouldThrowAnErrorWhenTheControllerDependencyDoesNotExist({ assert }: TestContext) {
     assert.throws(() => Route.controller('NotFoundController').get('/test', 'index'))
-  })
+  }
 
-  test('should throw an error when the controller method does not exist', async ({ assert }) => {
+  @Test()
+  public async shouldThrowAnErrorWhenTheControllerMethodDoesNotExist({ assert }: TestContext) {
     ioc.bind('App/Http/Controllers/HelloController', HelloController)
 
     assert.throws(() => Route.controller('HelloController').get('/test', 'not-found'), UndefinedMethodException)
-  })
+  }
 
-  test('should be able to register controllers dependency methods as string in routes', async ({ assert }) => {
+  @Test()
+  public async shouldBeAbleToRegisterControllersDependencyMethodsAsStringInRoutes({ assert }: TestContext) {
     ioc.bind('App/Http/Controllers/HelloController', HelloController)
 
     Route.get('/test', 'HelloController.index')
     Route.register()
 
     assert.deepEqual((await Server.request({ path: '/test', method: 'get' })).json(), { hello: 'world' })
-  })
+  }
 
-  test('should throw an error when the controller method does not exist', async ({ assert }) => {
+  @Test()
+  public async shouldThrowAnErrorWhenTheControllerMethodStringDoesNotExist({ assert }: TestContext) {
     ioc.bind('App/Http/Controllers/HelloController', HelloController)
 
     assert.throws(() => Route.get('/test', 'HelloController.not-found'), UndefinedMethodException)
-  })
+  }
 
-  test('should be able to register a middleware closure in route using router', async ({ assert }) => {
+  @Test()
+  public async shouldBeAbleToRegisterAMiddlewareClosureInRouteUsingRouteClass({ assert }: TestContext) {
     Route.get('test', ctx => {
       ctx.response.send({ hello: 'world', handled: ctx.data.handled })
     }).middleware(ctx => {
@@ -177,9 +196,10 @@ test.group('RouterTest', group => {
     Route.register()
 
     assert.deepEqual((await Server.request({ path: '/test', method: 'get' })).json(), { hello: 'world', handled: true })
-  })
+  }
 
-  test('should be able to register an intercept middleware closure in route using router', async ({ assert }) => {
+  @Test()
+  public async shouldBeAbleToRegisterAnInterceptMiddlewareClosureInRouteUsingRouteClass({ assert }: TestContext) {
     Route.get('test', ctx => {
       ctx.response.send({ hello: 'world', handled: ctx.data.handled })
     }).interceptor(ctx => {
@@ -194,9 +214,10 @@ test.group('RouterTest', group => {
       hello: 'world',
       intercepted: true,
     })
-  })
+  }
 
-  test('should be able to register a terminate middleware closure in route using router', async ({ assert }) => {
+  @Test()
+  public async shouldBeAbleToRegisterATerminateMiddlewareClosureInRouteUsingRouteClass({ assert }: TestContext) {
     let terminated = false
 
     Route.get('test', ctx => {
@@ -211,9 +232,10 @@ test.group('RouterTest', group => {
       hello: 'world',
     })
     assert.isTrue(terminated)
-  })
+  }
 
-  test('should be able to register a middleware class in route using router', async ({ assert }) => {
+  @Test()
+  public async shouldBeAbleToRegisterAMiddlewareClassInRouteUsingRouter({ assert }: TestContext) {
     Route.get('test', ctx => {
       ctx.response.send({ hello: 'world', handled: ctx.data.handled })
     }).middleware(new Middleware())
@@ -221,9 +243,10 @@ test.group('RouterTest', group => {
     Route.register()
 
     assert.deepEqual((await Server.request({ path: '/test', method: 'get' })).json(), { hello: 'world', handled: true })
-  })
+  }
 
-  test('should be able to register an intercept middleware class in route using router', async ({ assert }) => {
+  @Test()
+  public async shouldBeAbleToRegisterAnInterceptMiddlewareClassInRouteUsingRouter({ assert }: TestContext) {
     Route.get('test', ctx => {
       ctx.response.send({ hello: 'world', handled: ctx.data.handled })
     }).interceptor(new Interceptor())
@@ -234,9 +257,10 @@ test.group('RouterTest', group => {
       hello: 'world',
       intercepted: true,
     })
-  })
+  }
 
-  test('should be able to register a terminate middleware class in route using router', async ({ assert }) => {
+  @Test()
+  public async shouldBeAbleToRegisterATerminateMiddlewareClassInRouteUsingRouter({ assert }: TestContext) {
     Route.get('test', ctx => {
       ctx.response.send({ hello: 'world' })
     }).terminator(new Terminator())
@@ -246,9 +270,10 @@ test.group('RouterTest', group => {
     assert.deepEqual((await Server.request({ path: '/test', method: 'get' })).json(), {
       hello: 'world',
     })
-  })
+  }
 
-  test('should be able to register a middleware dependency in route using router', async ({ assert }) => {
+  @Test()
+  public async shouldBeAbleToRegisterAMiddlewareDependencyInRouteUsingRouter({ assert }: TestContext) {
     ioc.bind('App/Http/Middlewares/Middleware', Middleware)
 
     Route.get('test', ctx => {
@@ -258,9 +283,10 @@ test.group('RouterTest', group => {
     Route.register()
 
     assert.deepEqual((await Server.request({ path: '/test', method: 'get' })).json(), { hello: 'world', handled: true })
-  })
+  }
 
-  test('should be able to register an intercept middleware dependency in route using router', async ({ assert }) => {
+  @Test()
+  public async shouldBeAbleToRegisterAnInterceptMiddlewareDependencyInRouteUsingRouter({ assert }: TestContext) {
     ioc.bind('App/Http/Interceptors/Interceptor', Interceptor)
 
     Route.get('test', ctx => {
@@ -273,9 +299,10 @@ test.group('RouterTest', group => {
       hello: 'world',
       intercepted: true,
     })
-  })
+  }
 
-  test('should be able to register a terminate middleware dependency in route using router', async ({ assert }) => {
+  @Test()
+  public async shouldBeAbleToRegisterATerminateMiddlewareDependencyInRouteUsingRouter({ assert }: TestContext) {
     ioc.bind('App/Http/Terminators/Terminator', Terminator)
 
     Route.get('test', ctx => {
@@ -287,9 +314,10 @@ test.group('RouterTest', group => {
     assert.deepEqual((await Server.request({ path: '/test', method: 'get' })).json(), {
       hello: 'world',
     })
-  })
+  }
 
-  test('should be able to register a middleware dependency in route using router', async ({ assert }) => {
+  @Test()
+  public async shouldBeAbleToRegisterANamedMiddlewareDependencyInRouteUsingRouter({ assert }: TestContext) {
     ioc.bind('App/Http/Middlewares/Names/middleware', Middleware)
 
     Route.get('test', ctx => {
@@ -299,9 +327,10 @@ test.group('RouterTest', group => {
     Route.register()
 
     assert.deepEqual((await Server.request({ path: '/test', method: 'get' })).json(), { hello: 'world', handled: true })
-  })
+  }
 
-  test('should be able to register an intercept middleware dependency in route using router', async ({ assert }) => {
+  @Test()
+  public async shouldBeAbleToRegisterANamedInterceptMiddlewareDependencyInRouteUsingRouter({ assert }: TestContext) {
     ioc.bind('App/Http/Interceptors/Names/interceptor', Interceptor)
 
     Route.get('test', ctx => {
@@ -314,9 +343,10 @@ test.group('RouterTest', group => {
       hello: 'world',
       intercepted: true,
     })
-  })
+  }
 
-  test('should be able to register a named terminate middleware in route using router', async ({ assert }) => {
+  @Test()
+  public async shouldBeAbleToRegisterANamedTerminateMiddlewareDependencyInRouteUsingRouter({ assert }: TestContext) {
     ioc.bind('App/Http/Terminators/Names/terminator', Terminator)
 
     Route.get('test', ctx => {
@@ -328,25 +358,29 @@ test.group('RouterTest', group => {
     assert.deepEqual((await Server.request({ path: '/test', method: 'get' })).json(), {
       hello: 'world',
     })
-  })
+  }
 
-  test('should throw an exception when trying to register a middleware that does not exist', async ({ assert }) => {
+  @Test()
+  public async shouldThrowAnExceptionWhenTryingToRegisterAMiddlewareThatDoesNotExist({ assert }: TestContext) {
     assert.throws(() => Route.get('test', () => {}).middleware('not-found'))
-  })
+  }
 
-  test('should throw an exception when trying to register a interceptor middleware that does not exist', async ({
+  @Test()
+  public async shouldThrowAnExceptionWhenTryingToRegisterAnInterceptMiddlewareThatDoesNotExist({
     assert,
-  }) => {
+  }: TestContext) {
     assert.throws(() => Route.get('test', () => {}).interceptor('not-found'))
-  })
+  }
 
-  test('should throw an exception when trying to register a terminator middleware that does not exist', async ({
+  @Test()
+  public async shouldThrowAnExceptionWhenTryingToRegisterATerminatorMiddlewareThatDoesNotExist({
     assert,
-  }) => {
+  }: TestContext) {
     assert.throws(() => Route.get('test', () => {}).terminator('not-found'))
-  })
+  }
 
-  test('should be able to set vanilla fastify options in route', async ({ assert }) => {
+  @Test()
+  public async shouldBeAbleToSetVanillaFastifyOptionsInRoute({ assert }: TestContext) {
     let errorHappened = false
     ioc.bind('App/Http/Controllers/HelloController', HelloController)
 
@@ -360,5 +394,5 @@ test.group('RouterTest', group => {
     await Server.request({ path: '/test', method: 'get' })
 
     assert.isTrue(errorHappened)
-  })
-})
+  }
+}
