@@ -29,8 +29,6 @@ export class FastifyHandler {
       const request = new Request(req)
       const response = new Response(res)
 
-      this.setData(req)
-
       await handler({
         request,
         response,
@@ -58,28 +56,28 @@ export class FastifyHandler {
       const request = new Request(req)
       const response = new Response(res)
 
-      this.setData(req)
-
       if (Is.Json(payload)) {
         payload = JSON.parse(payload)
       }
+
+      res.body = payload
 
       payload = await handler({
         request,
         response,
         status: response.statusCode,
         data: req.data,
-        body: payload,
+        body: res.body,
         params: req.params,
         queries: req.query,
         headers: req.headers,
       })
 
+      res.body = payload
+
       if (Is.Object(payload)) {
         payload = JSON.stringify(payload)
       }
-
-      res.body = payload
 
       return payload
     }
@@ -92,8 +90,6 @@ export class FastifyHandler {
     return async (req: FastifyRequest, res: FastifyReply) => {
       const request = new Request(req)
       const response = new Response(res)
-
-      this.setData(req)
 
       await handler({
         request,
@@ -117,8 +113,6 @@ export class FastifyHandler {
       const request = new Request(req)
       const response = new Response(res)
 
-      this.setData(req)
-
       await handler({
         request,
         response,
@@ -130,16 +124,5 @@ export class FastifyHandler {
         error,
       })
     }
-  }
-
-  /**
-   * Set the data object in th
-   */
-  private static setData(request: FastifyRequest) {
-    if (request.data) {
-      return
-    }
-
-    request.data = {}
   }
 }
