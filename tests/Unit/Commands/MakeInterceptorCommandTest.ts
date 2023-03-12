@@ -11,9 +11,8 @@ import { Config } from '@athenna/config'
 import { ViewProvider } from '@athenna/view'
 import { File, Folder } from '@athenna/common'
 import { LoggerProvider } from '@athenna/logger'
-import { ExitFaker } from '#tests/Helpers/ExitFaker'
-import { Test, AfterEach, BeforeEach, TestContext } from '@athenna/test'
 import { Artisan, ConsoleKernel, ArtisanProvider } from '@athenna/artisan'
+import { Test, ExitFaker, AfterEach, BeforeEach, TestContext } from '@athenna/test'
 
 export default class MakeInterceptorCommandTest {
   private originalPackageJson = new File(Path.pwd('package.json')).getContentAsStringSync()
