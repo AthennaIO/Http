@@ -43,8 +43,9 @@ export class ServerImpl {
   public constructor(options?: FastifyServerOptions) {
     this.fastify = fastify.fastify(options)
     this.isListening = false
+
     this.fastify.decorateReply('body', null)
-    this.fastify.decorateRequest('data', {})
+    this.fastify.decorateRequest('data', null)
   }
 
   /**
