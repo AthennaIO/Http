@@ -29,6 +29,10 @@ export class FastifyHandler {
       const request = new Request(req)
       const response = new Response(res)
 
+      if (!req.data) {
+        req.data = {}
+      }
+
       await handler({
         request,
         response,
