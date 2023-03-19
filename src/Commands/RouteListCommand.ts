@@ -13,8 +13,6 @@ import { BaseCommand } from '@athenna/artisan'
 import { Route, HttpKernel, HttpRouteProvider, HttpServerProvider } from '#src'
 
 export class RouteListCommand extends BaseCommand {
-  public routeFilePath = Env('HTTP_ROUTE_FILE_PATH', Path.routes('http.js'))
-
   public static signature(): string {
     return 'route:list'
   }
@@ -29,12 +27,12 @@ export class RouteListCommand extends BaseCommand {
     new HttpServerProvider().register()
     new HttpRouteProvider().register()
 
-    const kernel = new HttpKernel()
+    const kernel = new (await this.getHttpKernel())()
 
     await kernel.registerControllers()
     await kernel.registerMiddlewares()
 
-    await Module.resolve(this.routeFilePath, Config.get('rc.meta'))
+    await this.resolveRoute()
 
     const routes = Route.list()
     const table = this.logger.table()
@@ -55,5 +53,29 @@ export class RouteListCommand extends BaseCommand {
     })
 
     table.render()
+  }
+
+  /**
+   * Resolve the http routes file.
+   */
+  private async resolveRoute() {
+    await Module.resolve(
+      Config.get('rc.commandsManifest.route:list.route', '#routes/http'),
+      Config.get('rc.meta'),
+    )
+  }
+
+  /**
+   * Get the http kernel module from RC file or resolve the default one.
+   */
+  private async getHttpKernel() {
+    if (!Config.exists('rc.commandsManifest.route:list.kernel')) {
+      return HttpKernel
+    }
+
+    return Module.resolve(
+      Config.get('rc.commandsManifest.route:list.kernel'),
+      Config.get('rc.meta'),
+    )
   }
 }

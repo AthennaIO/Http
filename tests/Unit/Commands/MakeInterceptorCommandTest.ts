@@ -42,6 +42,7 @@ export default class MakeInterceptorCommandTest {
     ExitFaker.release()
 
     await Folder.safeRemove(Path.app())
+    await Folder.safeRemove(Path.stubs('storage'))
 
     await new File(Path.pwd('package.json')).setContent(this.originalPackageJson)
   }
@@ -59,6 +60,24 @@ export default class MakeInterceptorCommandTest {
 
     assert.containsSubset(Config.get('rc.middlewares'), ['#app/Http/Interceptors/TestInterceptor'])
     assert.containsSubset(athennaRc.middlewares, ['#app/Http/Interceptors/TestInterceptor'])
+  }
+
+  @Test()
+  public async shouldBeAbleToCreateAInterceptorFileWithDifferentDestPath({ assert }: TestContext) {
+    Config.set('rc.commandsManifest.make:interceptor.path', Config.get('rc.commandsManifest.make:interceptor'))
+    Config.set('rc.commandsManifest.make:interceptor.destination', Path.stubs('storage/interceptors'))
+
+    await Artisan.call('make:interceptor TestInterceptor')
+
+    const path = Path.stubs('storage/interceptors/TestInterceptor.ts')
+
+    assert.isTrue(await File.exists(path))
+    assert.isTrue(ExitFaker.faker.calledWith(0))
+
+    const athennaRc = await new File(Path.pwd('package.json')).getContentAsJson().then(json => json.athenna)
+
+    assert.containsSubset(Config.get('rc.middlewares'), ['#tests/Stubs/storage/interceptors/TestInterceptor'])
+    assert.containsSubset(athennaRc.middlewares, ['#tests/Stubs/storage/interceptors/TestInterceptor'])
   }
 
   @Test()

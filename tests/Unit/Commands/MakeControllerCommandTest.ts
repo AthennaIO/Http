@@ -42,6 +42,7 @@ export default class MakeControllerCommandTest {
     ExitFaker.release()
 
     await Folder.safeRemove(Path.app())
+    await Folder.safeRemove(Path.stubs('storage'))
 
     await new File(Path.pwd('package.json')).setContent(this.originalPackageJson)
   }
@@ -59,6 +60,24 @@ export default class MakeControllerCommandTest {
 
     assert.containsSubset(Config.get('rc.controllers'), ['#app/Http/Controllers/TestController'])
     assert.containsSubset(athennaRc.controllers, ['#app/Http/Controllers/TestController'])
+  }
+
+  @Test()
+  public async shouldBeAbleToCreateAControllerFileWithDifferentDestPath({ assert }: TestContext) {
+    Config.set('rc.commandsManifest.make:controller.path', Config.get('rc.commandsManifest.make:controller'))
+    Config.set('rc.commandsManifest.make:controller.destination', Path.stubs('storage/controllers'))
+
+    await Artisan.call('make:controller TestController')
+
+    const path = Path.stubs('storage/controllers/TestController.ts')
+
+    assert.isTrue(await File.exists(path))
+    assert.isTrue(ExitFaker.faker.calledWith(0))
+
+    const athennaRc = await new File(Path.pwd('package.json')).getContentAsJson().then(json => json.athenna)
+
+    assert.containsSubset(Config.get('rc.controllers'), ['#tests/Stubs/storage/controllers/TestController'])
+    assert.containsSubset(athennaRc.controllers, ['#tests/Stubs/storage/controllers/TestController'])
   }
 
   @Test()
