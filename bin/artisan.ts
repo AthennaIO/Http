@@ -26,9 +26,6 @@ process.env.IS_TS = 'true'
 
 await Config.loadAll(Path.stubs('config'))
 
-process.env.HTTP_ROUTE_FILE_PATH =
-  process.env.HTTP_ROUTE_FILE_PATH || Path.stubs('routes/http.js')
-
 Config.set('rc.meta', import.meta.url)
 Config.set('logging.channels.console.driver', 'console')
 Config.set('logging.channels.exception.driver', 'console')

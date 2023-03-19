@@ -44,8 +44,9 @@ export default class RouteListCommandTest {
 
   @Test()
   public async shouldBeAbleToListAllRoutesRegisteredInTheHttpServer({ assert }: TestContext) {
-    const { stdout } = await Artisan.callInChild('route:list', this.artisan)
+    const { stderr, stdout } = await Artisan.callInChild('route:list', this.artisan)
 
+    assert.deepEqual(stderr, '')
     assert.deepEqual(
       Color.removeColors(stdout),
       '[ LISTING ROUTES ]\n' +
@@ -68,14 +69,5 @@ export default class RouteListCommandTest {
         '│ DELETE    │ /test/:id │ HelloController.delete │ delete  │\n' +
         '└───────────┴───────────┴────────────────────────┴─────────┘\n',
     )
-  }
-
-  @Test()
-  public async shouldBeAbleToChangeTheRoutePathUsingTheHttpRouteFilePathEnvVariable({ assert }: TestContext) {
-    process.env.HTTP_ROUTE_FILE_PATH = 'not-found'
-
-    const { stdout } = await Artisan.callInChild('route:list', this.artisan)
-
-    assert.deepEqual(Color.removeColors(stdout), '[ LISTING ROUTES ]\n\n')
   }
 }

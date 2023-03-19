@@ -42,6 +42,7 @@ export default class MakeMiddlewareCommandTest {
     ExitFaker.release()
 
     await Folder.safeRemove(Path.app())
+    await Folder.safeRemove(Path.stubs('storage'))
 
     await new File(Path.pwd('package.json')).setContent(this.originalPackageJson)
   }
@@ -59,6 +60,24 @@ export default class MakeMiddlewareCommandTest {
 
     assert.containsSubset(Config.get('rc.middlewares'), ['#app/Http/Middlewares/TestMiddleware'])
     assert.containsSubset(athennaRc.middlewares, ['#app/Http/Middlewares/TestMiddleware'])
+  }
+
+  @Test()
+  public async shouldBeAbleToCreateAMiddlewareFileWithDifferentDestPath({ assert }: TestContext) {
+    Config.set('rc.commandsManifest.make:middleware.path', Config.get('rc.commandsManifest.make:middleware'))
+    Config.set('rc.commandsManifest.make:middleware.destination', Path.stubs('storage/middlewares'))
+
+    await Artisan.call('make:middleware TestMiddleware')
+
+    const path = Path.stubs('storage/middlewares/TestMiddleware.ts')
+
+    assert.isTrue(await File.exists(path))
+    assert.isTrue(ExitFaker.faker.calledWith(0))
+
+    const athennaRc = await new File(Path.pwd('package.json')).getContentAsJson().then(json => json.athenna)
+
+    assert.containsSubset(Config.get('rc.middlewares'), ['#tests/Stubs/storage/middlewares/TestMiddleware'])
+    assert.containsSubset(athennaRc.middlewares, ['#tests/Stubs/storage/middlewares/TestMiddleware'])
   }
 
   @Test()

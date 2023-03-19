@@ -42,6 +42,7 @@ export default class MakeTerminatorCommandTest {
     ExitFaker.release()
 
     await Folder.safeRemove(Path.app())
+    await Folder.safeRemove(Path.stubs('storage'))
 
     await new File(Path.pwd('package.json')).setContent(this.originalPackageJson)
   }
@@ -59,6 +60,24 @@ export default class MakeTerminatorCommandTest {
 
     assert.containsSubset(Config.get('rc.middlewares'), ['#app/Http/Terminators/TestTerminator'])
     assert.containsSubset(athennaRc.middlewares, ['#app/Http/Terminators/TestTerminator'])
+  }
+
+  @Test()
+  public async shouldBeAbleToCreateATerminatorFileWithDifferentDestPath({ assert }: TestContext) {
+    Config.set('rc.commandsManifest.make:terminator.path', Config.get('rc.commandsManifest.make:terminator'))
+    Config.set('rc.commandsManifest.make:terminator.destination', Path.stubs('storage/terminators'))
+
+    await Artisan.call('make:terminator TestTerminator')
+
+    const path = Path.stubs('storage/terminators/TestTerminator.ts')
+
+    assert.isTrue(await File.exists(path))
+    assert.isTrue(ExitFaker.faker.calledWith(0))
+
+    const athennaRc = await new File(Path.pwd('package.json')).getContentAsJson().then(json => json.athenna)
+
+    assert.containsSubset(Config.get('rc.middlewares'), ['#tests/Stubs/storage/terminators/TestTerminator'])
+    assert.containsSubset(athennaRc.middlewares, ['#tests/Stubs/storage/terminators/TestTerminator'])
   }
 
   @Test()
