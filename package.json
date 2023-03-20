@@ -1,6 +1,6 @@
 {
   "name": "@athenna/http",
-  "version": "3.4.0",
+  "version": "3.4.1",
   "description": "The Athenna Http server. Built on top of fastify.",
   "license": "MIT",
   "author": "João Lenon <lenon@athenna.io>",

@@ -10,7 +10,7 @@
 import { fake } from 'sinon'
 import { Module } from '@athenna/common'
 import { Log, LoggerProvider } from '@athenna/logger'
-import { HttpKernel, HttpServerProvider, Server } from '#src'
+import { HttpKernel, HttpServerProvider, HttpRouteProvider, Server, Route } from '#src'
 import { Test, AfterEach, BeforeEach, TestContext } from '@athenna/test'
 
 export default class HttpKernelTest {
@@ -20,6 +20,7 @@ export default class HttpKernelTest {
 
     await Config.loadAll(Path.stubs('config'))
     new HttpServerProvider().register()
+    new HttpRouteProvider().register()
     new LoggerProvider().register()
   }
 
@@ -352,5 +353,17 @@ export default class HttpKernelTest {
       name: 'Error',
       message: 'hey',
     })
+  }
+
+  @Test()
+  public async shouldBeAbleToRegisterACustomRouteFile({ assert }: TestContext) {
+    const kernel = new HttpKernel()
+    await kernel.registerRoutes('#tests/Stubs/routes/http')
+
+    Route.register()
+
+    const response = await Server.request().get('/hello')
+
+    assert.deepEqual(response.json(), {})
   }
 }

@@ -12,7 +12,8 @@ import 'reflect-metadata'
 import { Server } from '#src'
 import { Log } from '@athenna/logger'
 import { Config } from '@athenna/config'
-import { Exec, Is, Module } from '@athenna/common'
+import { isAbsolute, resolve } from 'node:path'
+import { File, Exec, Is, Module } from '@athenna/common'
 import { HttpExceptionHandler } from '#src/Handlers/HttpExceptionHandler'
 
 const corsPlugin = await Module.safeImport('@fastify/cors')
@@ -205,6 +206,27 @@ export class HttpKernel {
     const handler = new Handler()
 
     Server.setErrorHandler(handler.handle.bind(handler))
+  }
+
+  /**
+   * Register the route file by importing the file.
+   */
+  public async registerRoutes(path: string) {
+    if (path.startsWith('#')) {
+      await this.resolvePath(path)
+
+      return
+    }
+
+    if (!isAbsolute(path)) {
+      path = resolve(path)
+    }
+
+    if (!(await File.exists(path))) {
+      return
+    }
+
+    await this.resolvePath(path)
   }
 
   /**
