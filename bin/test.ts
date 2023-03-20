@@ -11,6 +11,7 @@ import { assert } from '@japa/assert'
 import { Config } from '@athenna/config'
 import { Importer } from '@athenna/test'
 import { specReporter } from '@japa/spec-reporter'
+import { request } from '#src/Testing/Plugins/index'
 import { configure, processCliArgs, run } from '@japa/runner'
 
 /*
@@ -43,8 +44,8 @@ Config.set('meta', import.meta.url)
 configure({
   ...processCliArgs(process.argv.slice(2)),
   ...{
-    files: ['tests/**/*Test.ts'],
-    plugins: [assert()],
+    files: ['tests/Unit/**/*Test.ts'],
+    plugins: [assert(), request()],
     reporters: [specReporter()],
     importer: Importer.import,
     timeout: 10000,

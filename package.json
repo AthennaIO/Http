@@ -1,6 +1,6 @@
 {
   "name": "@athenna/http",
-  "version": "3.3.0",
+  "version": "3.4.0",
   "description": "The Athenna Http server. Built on top of fastify.",
   "license": "MIT",
   "author": "João Lenon <lenon@athenna.io>",
@@ -45,6 +45,7 @@
   "types": "./build/index.d.ts",
   "exports": {
     ".": "./build/index.js",
+    "./testing/plugins": "./build/Testing/Plugins/index.js",
     "./providers/HttpRouteProvider": "./build/Providers/HttpRouteProvider.js",
     "./providers/HttpServerProvider": "./build/Providers/HttpServerProvider.js",
     "./commands/RouteListCommand": "./build/Commands/RouteListCommand.js",
