@@ -1,6 +1,6 @@
 {
   "name": "@athenna/http",
-  "version": "3.4.3",
+  "version": "3.4.4",
   "description": "The Athenna Http server. Built on top of fastify.",
   "license": "MIT",
   "author": "João Lenon <lenon@athenna.io>",
@@ -42,6 +42,8 @@
   "exports": {
     ".": "./src/index.js",
     "./testing/plugins": "./src/Testing/Plugins/index.js",
+    "./kernels/HttpKernel": "./src/Kernels/HttpKernel.js",
+    "./handlers/HttpExceptionHandler": "./src/Handlers/HttpExceptionHandler.js",
     "./providers/HttpRouteProvider": "./src/Providers/HttpRouteProvider.js",
     "./providers/HttpServerProvider": "./src/Providers/HttpServerProvider.js",
     "./commands/RouteListCommand": "./src/Commands/RouteListCommand.js",
@@ -62,13 +64,13 @@
     "fastify": "^4.13.0"
   },
   "devDependencies": {
-    "@athenna/artisan": "^3.3.6",
-    "@athenna/common": "^3.4.4",
-    "@athenna/config": "^3.2.3",
+    "@athenna/artisan": "^3.3.8",
+    "@athenna/common": "^3.4.6",
+    "@athenna/config": "^3.2.5",
     "@athenna/ioc": "^3.1.8",
     "@athenna/logger": "^3.1.7",
     "@athenna/test": "^3.2.3",
-    "@athenna/view": "^3.0.6",
+    "@athenna/view": "^3.0.7",
     "@fastify/cors": "^8.1.1",
     "@fastify/helmet": "^10.0.2",
     "@fastify/rate-limit": "^7.5.0",
@@ -214,15 +216,12 @@
     }
   },
   "athenna": {
-    "view": {
-      "disks": {},
-      "templates": {
-        "controller": "./templates/controller.edge",
-        "interceptor": "./templates/interceptor.edge",
-        "middleware": "./templates/middleware.edge",
-        "terminator": "./templates/terminator.edge",
-        "command": "@athenna/artisan/templates/command.edge"
-      }
+    "templates": {
+      "controller": "./templates/controller.edge",
+      "interceptor": "./templates/interceptor.edge",
+      "middleware": "./templates/middleware.edge",
+      "terminator": "./templates/terminator.edge",
+      "command": "@athenna/artisan/templates/command.edge"
     },
     "preloads": [],
     "services": [],
