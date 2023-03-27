@@ -49,7 +49,7 @@ export default class MakeTerminatorCommandTest {
 
   @Test()
   public async shouldBeAbleToCreateATerminatorFile({ assert }: TestContext) {
-    await Artisan.call('make:terminator TestTerminator')
+    await Artisan.call('make:terminator TestTerminator', false)
 
     const path = Path.http('Terminators/TestTerminator.ts')
 
@@ -67,7 +67,7 @@ export default class MakeTerminatorCommandTest {
     Config.set('rc.commands.make:terminator.path', Config.get('rc.commands.make:terminator'))
     Config.set('rc.commands.make:terminator.destination', Path.stubs('storage/terminators'))
 
-    await Artisan.call('make:terminator TestTerminator')
+    await Artisan.call('make:terminator TestTerminator', false)
 
     const path = Path.stubs('storage/terminators/TestTerminator.ts')
 
@@ -82,8 +82,8 @@ export default class MakeTerminatorCommandTest {
 
   @Test()
   public async shouldThrowAnExceptionWhenTheFileAlreadyExists({ assert }: TestContext) {
-    await Artisan.call('make:terminator TestTerminator')
-    await Artisan.call('make:terminator TestTerminator')
+    await Artisan.call('make:terminator TestTerminator', false)
+    await Artisan.call('make:terminator TestTerminator', false)
 
     assert.isTrue(ExitFaker.faker.calledWith(1))
   }
