@@ -64,8 +64,8 @@ export default class MakeTerminatorCommandTest {
 
   @Test()
   public async shouldBeAbleToCreateATerminatorFileWithDifferentDestPath({ assert }: TestContext) {
-    Config.set('rc.commandsManifest.make:terminator.path', Config.get('rc.commandsManifest.make:terminator'))
-    Config.set('rc.commandsManifest.make:terminator.destination', Path.stubs('storage/terminators'))
+    Config.set('rc.commands.make:terminator.path', Config.get('rc.commands.make:terminator'))
+    Config.set('rc.commands.make:terminator.destination', Path.stubs('storage/terminators'))
 
     await Artisan.call('make:terminator TestTerminator')
 

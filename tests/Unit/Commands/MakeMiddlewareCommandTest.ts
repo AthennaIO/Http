@@ -64,8 +64,8 @@ export default class MakeMiddlewareCommandTest {
 
   @Test()
   public async shouldBeAbleToCreateAMiddlewareFileWithDifferentDestPath({ assert }: TestContext) {
-    Config.set('rc.commandsManifest.make:middleware.path', Config.get('rc.commandsManifest.make:middleware'))
-    Config.set('rc.commandsManifest.make:middleware.destination', Path.stubs('storage/middlewares'))
+    Config.set('rc.commands.make:middleware.path', Config.get('rc.commands.make:middleware'))
+    Config.set('rc.commands.make:middleware.destination', Path.stubs('storage/middlewares'))
 
     await Artisan.call('make:middleware TestMiddleware')
 

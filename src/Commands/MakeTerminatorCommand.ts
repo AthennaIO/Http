@@ -59,7 +59,7 @@ export class MakeTerminatorCommand extends BaseCommand {
    */
   private getDestinationPath(): string {
     let destination = Config.get(
-      'rc.commandsManifest.make:terminator.destination',
+      'rc.commands.make:terminator.destination',
       Path.http('Terminators'),
     )
 
