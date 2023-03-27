@@ -64,8 +64,8 @@ export default class MakeControllerCommandTest {
 
   @Test()
   public async shouldBeAbleToCreateAControllerFileWithDifferentDestPath({ assert }: TestContext) {
-    Config.set('rc.commandsManifest.make:controller.path', Config.get('rc.commandsManifest.make:controller'))
-    Config.set('rc.commandsManifest.make:controller.destination', Path.stubs('storage/controllers'))
+    Config.set('rc.commands.make:controller.path', Config.get('rc.commands.make:controller'))
+    Config.set('rc.commands.make:controller.destination', Path.stubs('storage/controllers'))
 
     await Artisan.call('make:controller TestController')
 

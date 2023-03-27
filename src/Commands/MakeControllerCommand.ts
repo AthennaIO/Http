@@ -59,7 +59,7 @@ export class MakeControllerCommand extends BaseCommand {
    */
   private getDestinationPath(): string {
     let destination = Config.get(
-      'rc.commandsManifest.make:controller.destination',
+      'rc.commands.make:controller.destination',
       Path.http('Controllers'),
     )
 

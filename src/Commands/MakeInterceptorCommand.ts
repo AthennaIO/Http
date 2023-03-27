@@ -59,7 +59,7 @@ export class MakeInterceptorCommand extends BaseCommand {
    */
   private getDestinationPath(): string {
     let destination = Config.get(
-      'rc.commandsManifest.make:interceptor.destination',
+      'rc.commands.make:interceptor.destination',
       Path.http('Interceptors'),
     )
 

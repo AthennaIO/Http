@@ -64,8 +64,8 @@ export default class MakeInterceptorCommandTest {
 
   @Test()
   public async shouldBeAbleToCreateAInterceptorFileWithDifferentDestPath({ assert }: TestContext) {
-    Config.set('rc.commandsManifest.make:interceptor.path', Config.get('rc.commandsManifest.make:interceptor'))
-    Config.set('rc.commandsManifest.make:interceptor.destination', Path.stubs('storage/interceptors'))
+    Config.set('rc.commands.make:interceptor.path', Config.get('rc.commands.make:interceptor'))
+    Config.set('rc.commands.make:interceptor.destination', Path.stubs('storage/interceptors'))
 
     await Artisan.call('make:interceptor TestInterceptor')
 
