@@ -49,7 +49,7 @@ export default class MakeInterceptorCommandTest {
 
   @Test()
   public async shouldBeAbleToCreateAInterceptorFile({ assert }: TestContext) {
-    await Artisan.call('make:interceptor TestInterceptor')
+    await Artisan.call('make:interceptor TestInterceptor', false)
 
     const path = Path.http('Interceptors/TestInterceptor.ts')
 
@@ -67,7 +67,7 @@ export default class MakeInterceptorCommandTest {
     Config.set('rc.commands.make:interceptor.path', Config.get('rc.commands.make:interceptor'))
     Config.set('rc.commands.make:interceptor.destination', Path.stubs('storage/interceptors'))
 
-    await Artisan.call('make:interceptor TestInterceptor')
+    await Artisan.call('make:interceptor TestInterceptor', false)
 
     const path = Path.stubs('storage/interceptors/TestInterceptor.ts')
 
@@ -82,8 +82,8 @@ export default class MakeInterceptorCommandTest {
 
   @Test()
   public async shouldThrowAnExceptionWhenTheFileAlreadyExists({ assert }: TestContext) {
-    await Artisan.call('make:interceptor TestInterceptor')
-    await Artisan.call('make:interceptor TestInterceptor')
+    await Artisan.call('make:interceptor TestInterceptor', false)
+    await Artisan.call('make:interceptor TestInterceptor', false)
 
     assert.isTrue(ExitFaker.faker.calledWith(1))
   }

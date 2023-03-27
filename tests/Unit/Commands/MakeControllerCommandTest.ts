@@ -49,7 +49,7 @@ export default class MakeControllerCommandTest {
 
   @Test()
   public async shouldBeAbleToCreateAControllerFile({ assert }: TestContext) {
-    await Artisan.call('make:controller TestController')
+    await Artisan.call('make:controller TestController', false)
 
     const path = Path.http('Controllers/TestController.ts')
 
@@ -67,7 +67,7 @@ export default class MakeControllerCommandTest {
     Config.set('rc.commands.make:controller.path', Config.get('rc.commands.make:controller'))
     Config.set('rc.commands.make:controller.destination', Path.stubs('storage/controllers'))
 
-    await Artisan.call('make:controller TestController')
+    await Artisan.call('make:controller TestController', false)
 
     const path = Path.stubs('storage/controllers/TestController.ts')
 
@@ -82,8 +82,8 @@ export default class MakeControllerCommandTest {
 
   @Test()
   public async shouldThrowAnExceptionWhenTheFileAlreadyExists({ assert }: TestContext) {
-    await Artisan.call('make:controller TestController')
-    await Artisan.call('make:controller TestController')
+    await Artisan.call('make:controller TestController', false)
+    await Artisan.call('make:controller TestController', false)
 
     assert.isTrue(ExitFaker.faker.calledWith(1))
   }

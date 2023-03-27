@@ -49,7 +49,7 @@ export default class MakeMiddlewareCommandTest {
 
   @Test()
   public async shouldBeAbleToCreateAMiddlewareFile({ assert }: TestContext) {
-    await Artisan.call('make:middleware TestMiddleware')
+    await Artisan.call('make:middleware TestMiddleware', false)
 
     const path = Path.http('Middlewares/TestMiddleware.ts')
 
@@ -67,7 +67,7 @@ export default class MakeMiddlewareCommandTest {
     Config.set('rc.commands.make:middleware.path', Config.get('rc.commands.make:middleware'))
     Config.set('rc.commands.make:middleware.destination', Path.stubs('storage/middlewares'))
 
-    await Artisan.call('make:middleware TestMiddleware')
+    await Artisan.call('make:middleware TestMiddleware', false)
 
     const path = Path.stubs('storage/middlewares/TestMiddleware.ts')
 
@@ -82,8 +82,8 @@ export default class MakeMiddlewareCommandTest {
 
   @Test()
   public async shouldThrowAnExceptionWhenTheFileAlreadyExists({ assert }: TestContext) {
-    await Artisan.call('make:middleware TestMiddleware')
-    await Artisan.call('make:middleware TestMiddleware')
+    await Artisan.call('make:middleware TestMiddleware', false)
+    await Artisan.call('make:middleware TestMiddleware', false)
 
     assert.isTrue(ExitFaker.faker.calledWith(1))
   }
