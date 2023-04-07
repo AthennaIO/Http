@@ -7,46 +7,13 @@
  * file that was distributed with this source code.
  */
 
+import { File } from '@athenna/common'
 import { Config } from '@athenna/config'
-import { ViewProvider } from '@athenna/view'
-import { File, Folder } from '@athenna/common'
-import { LoggerProvider } from '@athenna/logger'
-import { Artisan, ConsoleKernel, ArtisanProvider } from '@athenna/artisan'
-import { Test, ExitFaker, AfterEach, BeforeEach, TestContext } from '@athenna/test'
+import { Artisan } from '@athenna/artisan'
+import { Test, ExitFaker, TestContext } from '@athenna/test'
+import { BaseCommandTest } from '#tests/Helpers/BaseCommandTest'
 
-export default class MakeControllerCommandTest {
-  private originalPackageJson = new File(Path.pwd('package.json')).getContentAsStringSync()
-
-  @BeforeEach()
-  public async beforeEach() {
-    ioc.reconstruct()
-
-    ExitFaker.fake()
-
-    process.env.IS_TS = 'true'
-
-    await Config.loadAll(Path.stubs('config'))
-
-    new ViewProvider().register()
-    new LoggerProvider().register()
-    new ArtisanProvider().register()
-
-    const kernel = new ConsoleKernel()
-
-    await kernel.registerExceptionHandler()
-    await kernel.registerCommands(['ts-node', 'artisan', 'make:controller'])
-  }
-
-  @AfterEach()
-  public async afterEach() {
-    ExitFaker.release()
-
-    await Folder.safeRemove(Path.app())
-    await Folder.safeRemove(Path.stubs('storage'))
-
-    await new File(Path.pwd('package.json')).setContent(this.originalPackageJson)
-  }
-
+export default class MakeControllerCommandTest extends BaseCommandTest {
   @Test()
   public async shouldBeAbleToCreateAControllerFile({ assert }: TestContext) {
     await Artisan.call('make:controller TestController', false)

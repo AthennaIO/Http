@@ -8,40 +8,11 @@
  */
 
 import { Color } from '@athenna/common'
-import { Config } from '@athenna/config'
-import { ViewProvider } from '@athenna/view'
-import { LoggerProvider } from '@athenna/logger'
-import { Artisan, ConsoleKernel, ArtisanProvider } from '@athenna/artisan'
-import { Test, ExitFaker, AfterEach, BeforeEach, TestContext } from '@athenna/test'
+import { Artisan } from '@athenna/artisan'
+import { Test, TestContext } from '@athenna/test'
+import { BaseCommandTest } from '#tests/Helpers/BaseCommandTest'
 
-export default class RouteListCommandTest {
-  private artisan = Path.pwd('bin/artisan.ts')
-
-  @BeforeEach()
-  public async beforeEach() {
-    ioc.reconstruct()
-
-    ExitFaker.fake()
-
-    process.env.IS_TS = 'true'
-
-    await Config.loadAll(Path.stubs('config'))
-
-    new ViewProvider().register()
-    new LoggerProvider().register()
-    new ArtisanProvider().register()
-
-    const kernel = new ConsoleKernel()
-
-    await kernel.registerExceptionHandler()
-    await kernel.registerCommands(['ts-node', 'artisan', 'route:list'])
-  }
-
-  @AfterEach()
-  public async afterEach() {
-    ExitFaker.release()
-  }
-
+export default class RouteListCommandTest extends BaseCommandTest {
   @Test()
   public async shouldBeAbleToListAllRoutesRegisteredInTheHttpServer({ assert }: TestContext) {
     const { stderr, stdout } = await Artisan.callInChild('route:list', this.artisan)
