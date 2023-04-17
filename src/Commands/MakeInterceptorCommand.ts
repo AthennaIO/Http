@@ -60,7 +60,7 @@ export class MakeInterceptorCommand extends BaseCommand {
   private getDestinationPath(): string {
     let destination = Config.get(
       'rc.commands.make:interceptor.destination',
-      Path.http('Interceptors'),
+      Path.interceptors(),
     )
 
     if (!isAbsolute(destination)) {

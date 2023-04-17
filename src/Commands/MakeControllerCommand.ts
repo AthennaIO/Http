@@ -60,7 +60,7 @@ export class MakeControllerCommand extends BaseCommand {
   private getDestinationPath(): string {
     let destination = Config.get(
       'rc.commands.make:controller.destination',
-      Path.http('Controllers'),
+      Path.controllers(),
     )
 
     if (!isAbsolute(destination)) {
