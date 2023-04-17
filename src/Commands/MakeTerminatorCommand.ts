@@ -60,7 +60,7 @@ export class MakeTerminatorCommand extends BaseCommand {
   private getDestinationPath(): string {
     let destination = Config.get(
       'rc.commands.make:terminator.destination',
-      Path.http('Terminators'),
+      Path.terminators(),
     )
 
     if (!isAbsolute(destination)) {

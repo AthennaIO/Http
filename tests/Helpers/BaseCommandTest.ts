@@ -32,7 +32,7 @@ export class BaseCommandTest {
     new LoggerProvider().register()
     new ArtisanProvider().register()
 
-    await Rc.setFile(Path.pwd('.athennarc.json'), true)
+    await Rc.setFile(Path.pwd('package.json'))
 
     const kernel = new ConsoleKernel()
 

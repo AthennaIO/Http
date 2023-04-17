@@ -76,7 +76,11 @@ export class HttpKernel {
   /**
    * Register the cls-rtracer plugin in the Http server.
    */
-  public async registerRTracer(): Promise<void> {
+  public async registerRTracer(trace?: boolean): Promise<void> {
+    if (trace === false) {
+      return
+    }
+
     if (!rTracerPlugin) {
       return
     }

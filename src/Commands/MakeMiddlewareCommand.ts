@@ -60,7 +60,7 @@ export class MakeMiddlewareCommand extends BaseCommand {
   private getDestinationPath(): string {
     let destination = Config.get(
       'rc.commands.make:middleware.destination',
-      Path.http('Middlewares'),
+      Path.middlewares(),
     )
 
     if (!isAbsolute(destination)) {
