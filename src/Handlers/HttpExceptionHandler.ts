@@ -16,14 +16,14 @@ export class HttpExceptionHandler {
    * Error codes that should be ignored from logging.
    */
   public get ignoreCodes(): string[] {
-    return []
+    return Config.get('http.logger.ignoreCodes', [])
   }
 
   /**
    * Error statuses that should be ignored from logging.
    */
   public get ignoreStatuses(): number[] {
-    return []
+    return Config.get('http.logger.ignoreStatuses', [])
   }
 
   /**

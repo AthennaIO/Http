@@ -8,7 +8,9 @@
  */
 
 export default {
-  logger: true,
+  logger: {
+    enabled: true,
+  },
   cors: {
     origin: ['*'],
     methods: ['*'],
