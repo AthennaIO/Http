@@ -94,7 +94,10 @@ export class HttpKernel {
    * Register the global log terminator in the Http server.
    */
   public async registerLoggerTerminator(): Promise<void> {
-    if (!Config.exists('http.logger') || Config.is('http.logger', false)) {
+    if (
+      !Config.exists('http.logger.enabled') ||
+      Config.is('http.logger.enabled', false)
+    ) {
       return
     }
 
