@@ -121,7 +121,7 @@ export default class HttpKernelTest {
   public async shouldBeAbleToRegisterTheFastifyCorsPluginIfTheConfigurationFileDoesNotExist({ assert }: Context) {
     const originalSafeImport = Module.safeImport
     Module.safeImport = () => Promise.resolve(null)
-    const { HttpKernel } = await import(`../../../src/Kernels/HttpKernel.js?v=${Math.random()}`)
+    const { HttpKernel } = await import(`../../../src/kernels/HttpKernel.js?v=${Math.random()}`)
     const kernel = new HttpKernel()
     await kernel.registerCors()
     Module.safeImport = originalSafeImport
@@ -133,7 +133,7 @@ export default class HttpKernelTest {
   public async shouldNotRegisterTheFastifyHelmetPluginIfTheConfigurationFileDoesNotExist({ assert }: Context) {
     const originalSafeImport = Module.safeImport
     Module.safeImport = () => Promise.resolve(null)
-    const { HttpKernel } = await import(`../../../src/Kernels/HttpKernel.js?v=${Math.random()}`)
+    const { HttpKernel } = await import(`../../../src/kernels/HttpKernel.js?v=${Math.random()}`)
     const kernel = new HttpKernel()
     await kernel.registerHelmet()
     Module.safeImport = originalSafeImport
@@ -145,7 +145,7 @@ export default class HttpKernelTest {
   public async shouldNotRegisterTheFastifySwaggerPluginIfTheConfigurationFileDoesNotExist({ assert }: Context) {
     const originalSafeImport = Module.safeImport
     Module.safeImport = () => Promise.resolve(null)
-    const { HttpKernel } = await import(`../../../src/Kernels/HttpKernel.js?v=${Math.random()}`)
+    const { HttpKernel } = await import(`../../../src/kernels/HttpKernel.js?v=${Math.random()}`)
     const kernel = new HttpKernel()
     await kernel.registerSwagger()
     Module.safeImport = originalSafeImport
@@ -157,7 +157,7 @@ export default class HttpKernelTest {
   public async shouldNotRegisterTheFastifyRateLimitPluginIfTheConfigurationFileDoesNotExist({ assert }: Context) {
     const originalSafeImport = Module.safeImport
     Module.safeImport = () => Promise.resolve(null)
-    const { HttpKernel } = await import(`../../../src/Kernels/HttpKernel.js?v=${Math.random()}`)
+    const { HttpKernel } = await import(`../../../src/kernels/HttpKernel.js?v=${Math.random()}`)
     const kernel = new HttpKernel()
     await kernel.registerRateLimit()
     Server.get({ url: '/hello', handler: ctx => ctx.response.send({ hello: true }) })
@@ -173,7 +173,7 @@ export default class HttpKernelTest {
   public async shouldNotRegisterTheFastifyRTracerPluginIfTheConfigurationFileDoesNotExist({ assert }: Context) {
     const originalSafeImport = Module.safeImport
     Module.safeImport = () => Promise.resolve(null)
-    const { HttpKernel } = await import(`../../../src/Kernels/HttpKernel.js?v=${Math.random()}`)
+    const { HttpKernel } = await import(`../../../src/kernels/HttpKernel.js?v=${Math.random()}`)
     const kernel = new HttpKernel()
     await kernel.registerRTracer()
     Module.safeImport = originalSafeImport
