@@ -9,7 +9,7 @@
 
 import { fastify } from 'fastify'
 import { Test } from '@athenna/test'
-import { Response } from '#src/Context/Response'
+import { Response } from '#src/context/Response'
 import type { Context } from '@athenna/test/types'
 
 export default class ResponseTest {
