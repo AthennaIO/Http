@@ -7,8 +7,8 @@
  * file that was distributed with this source code.
  */
 
-import { Request } from '#src/Context/Request'
-import { Response } from '#src/Context/Response'
+import { Request } from '#src/context/Request'
+import { Response } from '#src/context/Response'
 
 export type ErrorContext = {
   request: Request

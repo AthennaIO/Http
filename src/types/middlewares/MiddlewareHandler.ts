@@ -7,9 +7,9 @@
  * file that was distributed with this source code.
  */
 
-import { Context } from '#src/types/contexts/Context'
-import { InterceptContext } from '#src/types/contexts/InterceptContext'
-import { TerminateContext } from '#src/types/contexts/TerminateContext'
+import type { Context } from '#src/types/contexts/Context'
+import type { InterceptContext } from '#src/types/contexts/InterceptContext'
+import type { TerminateContext } from '#src/types/contexts/TerminateContext'
 
 export type HandleHandler = (ctx: Context) => any | Promise<any>
 export type InterceptHandler = (
