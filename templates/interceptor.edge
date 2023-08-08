@@ -1,4 +1,5 @@
-import { Interceptor, InterceptContext, InterceptorContract } from '@athenna/http'
+import { Interceptor } from '@athenna/http'
+import type { InterceptorContract, InterceptContext } from '@athenna/http'
 
 @Interceptor()
 export class {{ namePascal }} implements InterceptorContract {

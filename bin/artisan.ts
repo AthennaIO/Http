@@ -18,7 +18,7 @@ import { Artisan, ConsoleKernel, ArtisanProvider } from '@athenna/artisan'
 | Set IS_TS env.
 |--------------------------------------------------------------------------
 |
-| Set the IS_TS environement variable to true. Very useful when using the
+| Set the IS_TS environment variable to true. Very useful when using the
 | Path helper.
 */
 
