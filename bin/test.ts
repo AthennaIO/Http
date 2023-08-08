@@ -7,58 +7,17 @@
  * file that was distributed with this source code.
  */
 
-import { assert } from '@japa/assert'
 import { Config } from '@athenna/config'
-import { Importer } from '@athenna/test'
-import { specReporter } from '@japa/spec-reporter'
-import { request } from '#src/Testing/Plugins/index'
-import { configure, processCliArgs, run } from '@japa/runner'
-
-/*
-|--------------------------------------------------------------------------
-| Set IS_TS env.
-|--------------------------------------------------------------------------
-|
-| Set the IS_TS environement variable to true. Very useful when using the
-| Path helper.
-*/
-
-process.env.IS_TS = 'true'
+import { request } from '#src/testing/plugins/index'
+import { Runner, assert, specReporter } from '@athenna/test'
 
 Config.set('meta', import.meta.url)
 
-/*
-|--------------------------------------------------------------------------
-| Configure tests
-|--------------------------------------------------------------------------
-|
-| The configure method accepts the configuration to configure the Japa
-| tests runner.
-|
-| The first method call "processCliArgs" process the command line arguments
-| and turns them into a config object. Using this method is not mandatory.
-|
-| Please consult japa.dev/runner-config for the config docs.
-*/
-
-configure({
-  ...processCliArgs(process.argv.slice(2)),
-  ...{
-    files: ['tests/Unit/**/*Test.ts'],
-    plugins: [assert(), request()],
-    reporters: [specReporter()],
-    importer: Importer.import,
-    timeout: 10000,
-  },
-})
-
-/*
-|--------------------------------------------------------------------------
-| Run tests
-|--------------------------------------------------------------------------
-|
-| The following "run" method is required to execute all the tests.
-|
-*/
-
-run()
+await Runner.setTsEnv()
+  .addPlugin(assert())
+  .addPlugin(request())
+  .addReporter(specReporter())
+  .addPath('tests/unit/**/*.ts')
+  .setCliArgs(process.argv.slice(2))
+  .setGlobalTimeout(10000)
+  .run()
