@@ -8,8 +8,7 @@
  */
 
 import type { HTTPMethods, RouteOptions } from 'fastify'
-import type { RequestHandler } from '#src/types/contexts/Context'
-import type { MiddlewareRecord } from '#src/Types/Middlewares/MiddlewareHandler'
+import type { RequestHandler, MiddlewareRecord } from '#src/types'
 
 export type RouteJson = {
   url: string
