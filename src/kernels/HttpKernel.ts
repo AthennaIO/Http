@@ -139,7 +139,7 @@ export class HttpKernel {
     await Exec.concurrently(controllers, async path => {
       const Controller = await this.resolvePath(path)
 
-      if (Reflect.hasMetadata('provider:registered', Controller)) {
+      if (Reflect.hasMetadata('ioc:registered', Controller)) {
         debug(
           'Controller %s already registered by Controller annotation. Skipping registration via HttpKernel.',
           Controller.name,
@@ -185,7 +185,7 @@ export class HttpKernel {
     await Exec.concurrently(Object.keys(namedMiddlewares), async key => {
       const Middleware = await this.resolvePath(namedMiddlewares[key])
 
-      if (Reflect.hasMetadata('provider:registered', Middleware)) {
+      if (Reflect.hasMetadata('ioc:registered', Middleware)) {
         debug(
           'Named middleware %s already registered by Middleware annotation. Skipping registration via HttpKernel.',
           Middleware.name,
@@ -218,7 +218,7 @@ export class HttpKernel {
     await Exec.concurrently(globalMiddlewares, async path => {
       const Middleware = await this.resolvePath(path)
 
-      if (Reflect.hasMetadata('provider:registered', Middleware)) {
+      if (Reflect.hasMetadata('ioc:registered', Middleware)) {
         debug(
           'Global middleware %s already registered by Middleware annotation. Skipping registration via HttpKernel.',
           Middleware.name,

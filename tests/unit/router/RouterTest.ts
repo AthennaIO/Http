@@ -7,11 +7,10 @@
  * file that was distributed with this source code.
  */
 
-import type { Context } from '@athenna/test/types'
-import { Test, AfterEach, BeforeEach } from '@athenna/test'
 import { Middleware } from '#tests/stubs/middlewares/Middleware'
 import { Terminator } from '#tests/stubs/middlewares/Terminator'
 import { Interceptor } from '#tests/stubs/middlewares/Interceptor'
+import { Test, AfterEach, BeforeEach, type Context } from '@athenna/test'
 import { HelloController } from '#tests/stubs/controllers/HelloController'
 import { Route, Server, HttpRouteProvider, HttpServerProvider } from '#src'
 import { UndefinedMethodException } from '#src/exceptions/UndefinedMethodException'

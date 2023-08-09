@@ -35,11 +35,10 @@ declare module 'fastify' {
   }
 }
 
+export * from './types/index.js'
+
 export * from '#src/context/Request'
 export * from '#src/context/Response'
-export * from '#src/types/contracts/MiddlewareContract'
-export * from '#src/types/contracts/TerminatorContract'
-export * from '#src/types/contracts/InterceptorContract'
 export * from '#src/annotations/Controller'
 export * from '#src/annotations/Middleware'
 export * from '#src/annotations/Interceptor'

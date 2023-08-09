@@ -41,7 +41,7 @@ export function Middleware(options?: MiddlewareOptions): ClassDecorator {
 
     ioc[options.type](alias, target, createCamelAlias)
 
-    Reflect.defineMetadata('provider:registered', true, target)
+    Reflect.defineMetadata('ioc:registered', true, target)
 
     if (!options.isGlobal) {
       ioc.alias(`App/Http/Middlewares/Names/${options.name}`, alias)

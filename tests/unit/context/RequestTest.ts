@@ -8,8 +8,7 @@
  */
 
 import { Request } from '#src/context/Request'
-import { Test, BeforeEach } from '@athenna/test'
-import type { Context } from '@athenna/test/types'
+import { Test, BeforeEach, type Context } from '@athenna/test'
 import { fastify, type FastifyInstance, type FastifyRequest } from 'fastify'
 
 export default class RequestTest {

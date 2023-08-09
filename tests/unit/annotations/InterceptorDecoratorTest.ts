@@ -8,8 +8,7 @@
  */
 
 import { Interceptor } from '#src'
-import { Test, BeforeEach } from '@athenna/test'
-import type { Context } from '@athenna/test/types'
+import { Test, BeforeEach, type Context } from '@athenna/test'
 
 export default class InterceptorDecoratorTest {
   @BeforeEach()

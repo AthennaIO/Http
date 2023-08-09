@@ -8,8 +8,7 @@
  */
 
 import { Server, HttpServerProvider } from '#src'
-import type { Context } from '@athenna/test/types'
-import { AfterAll, BeforeAll, Test } from '@athenna/test'
+import { Test, AfterAll, BeforeAll, type Context } from '@athenna/test'
 
 export default class TestRequestTest {
   @BeforeAll()
