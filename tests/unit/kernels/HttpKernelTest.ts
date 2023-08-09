@@ -9,10 +9,9 @@
 
 import { fake } from 'sinon'
 import { Module } from '@athenna/common'
-import type { Context } from '@athenna/test/types'
 import { Log, LoggerProvider } from '@athenna/logger'
+import { Test, AfterEach, BeforeEach, type Context } from '@athenna/test'
 import { HttpKernel, HttpServerProvider, HttpRouteProvider, Server, Route } from '#src'
-import { Test, AfterEach, BeforeEach } from '@athenna/test'
 
 export default class HttpKernelTest {
   @BeforeEach()

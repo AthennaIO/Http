@@ -8,9 +8,8 @@
  */
 
 import { fastify } from 'fastify'
-import { Test } from '@athenna/test'
 import { Response } from '#src/context/Response'
-import type { Context } from '@athenna/test/types'
+import { Test, type Context } from '@athenna/test'
 
 export default class ResponseTest {
   @Test()
