@@ -7,6 +7,10 @@
  * file that was distributed with this source code.
  */
 
+import { type InjectOptions } from 'fastify'
+
+export { type InjectOptions }
+
 export * from '#src/types/contexts/Context'
 export * from '#src/types/contexts/ErrorContext'
 export * from '#src/types/contexts/InterceptContext'
