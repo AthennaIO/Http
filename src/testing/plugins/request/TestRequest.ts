@@ -9,7 +9,7 @@
 
 import { Server } from '#src'
 import { Assert } from '@japa/assert'
-import type { InjectOptions } from 'fastify'
+import type { InjectOptions } from '#src/types'
 import { TestResponse } from '#src/testing/plugins/request/TestResponse'
 
 export class TestRequest {
