@@ -20,7 +20,7 @@ export function Controller(options?: ControllerOptions): ClassDecorator {
   return (target: any) => {
     options = Options.create(options, {
       alias: `App/Http/Controllers/${target.name}`,
-      type: 'transient',
+      type: 'transient'
     })
 
     const alias = options.alias
@@ -29,7 +29,7 @@ export function Controller(options?: ControllerOptions): ClassDecorator {
     if (ioc.hasDependency(alias)) {
       debug(
         'Controller %s was already registered in the service container. Skipping registration via Controller annotation.',
-        alias,
+        alias
       )
 
       return

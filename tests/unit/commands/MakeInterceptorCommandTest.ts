@@ -32,19 +32,19 @@ export default class MakeInterceptorCommandTest extends BaseCommandTest {
   @Test()
   public async shouldBeAbleToCreateAInterceptorFileWithDifferentDestPath({ assert }: Context) {
     Config.set('rc.commands.make:interceptor.path', Config.get('rc.commands.make:interceptor'))
-    Config.set('rc.commands.make:interceptor.destination', Path.stubs('storage/interceptors'))
+    Config.set('rc.commands.make:interceptor.destination', Path.fixtures('storage/interceptors'))
 
     await Artisan.call('make:interceptor TestInterceptor', false)
 
-    const path = Path.stubs('storage/interceptors/TestInterceptor.ts')
+    const path = Path.fixtures('storage/interceptors/TestInterceptor.ts')
 
     assert.isTrue(await File.exists(path))
     assert.isTrue(ExitFaker.faker.calledWith(0))
 
     const athennaRc = await new File(Path.pwd('package.json')).getContentAsJson().then(json => json.athenna)
 
-    assert.containsSubset(Config.get('rc.middlewares'), ['#tests/stubs/storage/interceptors/TestInterceptor'])
-    assert.containsSubset(athennaRc.middlewares, ['#tests/stubs/storage/interceptors/TestInterceptor'])
+    assert.containsSubset(Config.get('rc.middlewares'), ['#tests/fixtures/storage/interceptors/TestInterceptor'])
+    assert.containsSubset(athennaRc.middlewares, ['#tests/fixtures/storage/interceptors/TestInterceptor'])
   }
 
   @Test()

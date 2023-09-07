@@ -9,7 +9,7 @@
 
 export default {
   logger: {
-    enabled: true,
+    enabled: true
   },
   cors: {
     origin: ['*'],
@@ -17,15 +17,15 @@ export default {
     allowedHeaders: ['*'],
     exposedHeaders: ['*'],
     maxAge: 0,
-    credentials: false,
+    credentials: false
   },
   helmet: {
-    global: true,
+    global: true
   },
   swagger: {
     ui: {
       staticCSP: true,
-      routePrefix: '/documentation',
+      routePrefix: '/documentation'
     },
     configurations: {
       mode: 'dynamic',
@@ -36,10 +36,10 @@ export default {
         description: 'Athenna http server documentation',
         externalDocs: {
           url: 'https://swagger.io',
-          description: 'Find more info about Swagger here',
-        },
-      },
-    },
+          description: 'Find more info about Swagger here'
+        }
+      }
+    }
   },
   rateLimit: {
     global: true,
@@ -49,12 +49,12 @@ export default {
     cache: 5000,
     allowList: [],
     continueExceeding: false,
-    enableDraftSpec: false,
+    enableDraftSpec: false
   },
   rTracer: {
     echoHeader: false,
     useHeader: false,
     headerName: 'X-Request-Id',
-    useFastifyRequestId: false,
-  },
+    useFastifyRequestId: false
+  }
 }

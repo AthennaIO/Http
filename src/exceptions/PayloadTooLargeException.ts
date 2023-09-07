@@ -20,7 +20,7 @@ export class PayloadTooLargeException extends HttpException {
    */
   public constructor(
     message = 'Payload to large error happened.',
-    help = null,
+    help = null
   ) {
     super({ help, message, status: 413, code: 'E_PAYLOAD_TOO_LARGE_ERROR' })
   }

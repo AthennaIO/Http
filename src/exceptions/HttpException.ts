@@ -23,7 +23,7 @@ export class HttpException extends Exception {
     options = Options.create(options, {
       status: 500,
       code: 'E_HTTP_ERROR',
-      message: 'An http exception has ocurred.',
+      message: 'An http exception has ocurred.'
     })
 
     super(options)

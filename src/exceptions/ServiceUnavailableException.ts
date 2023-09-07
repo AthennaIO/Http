@@ -20,7 +20,7 @@ export class ServiceUnavailableException extends HttpException {
    */
   public constructor(
     message = 'Service unavailable error happened.',
-    help = null,
+    help = null
   ) {
     super({ help, message, status: 503, code: 'E_SERVICE_UNAVAILABLE_ERROR' })
   }

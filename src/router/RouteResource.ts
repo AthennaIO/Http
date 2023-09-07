@@ -11,7 +11,7 @@ import type {
   RouteResourceTypes,
   TerminatorRouteType,
   MiddlewareRouteType,
-  InterceptorRouteType,
+  InterceptorRouteType
 } from '#src/types'
 
 import type { HTTPMethods } from 'fastify'
@@ -51,7 +51,7 @@ export class RouteResource {
    */
   public middleware(
     middleware: MiddlewareRouteType,
-    prepend?: boolean,
+    prepend?: boolean
   ): RouteResource {
     this.routes.forEach(route => route.middleware(middleware, prepend))
 
@@ -68,7 +68,7 @@ export class RouteResource {
    */
   public interceptor(
     interceptor: InterceptorRouteType,
-    prepend?: boolean,
+    prepend?: boolean
   ): RouteResource {
     this.routes.forEach(route => route.interceptor(interceptor, prepend))
 
@@ -85,7 +85,7 @@ export class RouteResource {
    */
   public terminator(
     terminator: TerminatorRouteType,
-    prepend?: boolean,
+    prepend?: boolean
   ): RouteResource {
     this.routes.forEach(route => route.terminator(terminator, prepend))
 
@@ -131,7 +131,7 @@ export class RouteResource {
    * ```
    */
   public helmet(
-    options: Omit<import('@fastify/helmet').FastifyHelmetOptions, 'global'>,
+    options: Omit<import('@fastify/helmet').FastifyHelmetOptions, 'global'>
   ): RouteResource {
     this.routes.forEach(route => route.helmet(options))
 
@@ -150,7 +150,7 @@ export class RouteResource {
    * ```
    */
   public rateLimit(
-    options: import('@fastify/rate-limit').RateLimitOptions,
+    options: import('@fastify/rate-limit').RateLimitOptions
   ): RouteResource {
     this.routes.forEach(route => route.rateLimit(options))
 
@@ -196,7 +196,7 @@ export class RouteResource {
     const fullUrl = `${resourceTokens
       .map(
         string =>
-          `${string}/:${String.toSnakeCase(String.singularize(string))}_id`,
+          `${string}/:${String.toSnakeCase(String.singularize(string))}_id`
       )
       .join('/')}/${mainResource}`
 

@@ -26,7 +26,7 @@ export default class MiddlewareDecoratorTest {
 
   @Test()
   public async shouldBeAbleToRegisterMiddlewareInTheServiceProviderWithDifferentAliasesUsingDecorators({
-    assert,
+    assert
   }: Context) {
     @Middleware({ alias: 'App/Services/MyMiddleware' })
     class _MyMiddleware {}
@@ -36,7 +36,7 @@ export default class MiddlewareDecoratorTest {
 
   @Test()
   public async shouldBeAbleToRegisterMiddlewareInTheServiceProviderWithDifferentRegistrationTypeUsingDecorators({
-    assert,
+    assert
   }: Context) {
     @Middleware({ alias: 'myMiddleware', type: 'singleton' })
     class _MyMiddleware {}

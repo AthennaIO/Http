@@ -7,11 +7,11 @@
  * file that was distributed with this source code.
  */
 
-import { Middleware } from '#tests/stubs/middlewares/Middleware'
-import { Terminator } from '#tests/stubs/middlewares/Terminator'
-import { Interceptor } from '#tests/stubs/middlewares/Interceptor'
+import { Middleware } from '#tests/fixtures/middlewares/Middleware'
+import { Terminator } from '#tests/fixtures/middlewares/Terminator'
+import { Interceptor } from '#tests/fixtures/middlewares/Interceptor'
 import { Test, AfterEach, BeforeEach, type Context } from '@athenna/test'
-import { HelloController } from '#tests/stubs/controllers/HelloController'
+import { HelloController } from '#tests/fixtures/controllers/HelloController'
 import { Route, Server, HttpRouteProvider, HttpServerProvider } from '#src'
 
 export default class RouteResourceTest {
@@ -50,27 +50,27 @@ export default class RouteResourceTest {
     assert.deepEqual((await Server.request({ path: '/test', method: 'post' })).json(), {
       error: 'Not Found',
       message: 'Route POST:/test not found',
-      statusCode: 404,
+      statusCode: 404
     })
     assert.deepEqual((await Server.request({ path: '/test/:id', method: 'get' })).json(), {
       error: 'Not Found',
       message: 'Route GET:/test/:id not found',
-      statusCode: 404,
+      statusCode: 404
     })
     assert.deepEqual((await Server.request({ path: '/test/:id', method: 'put' })).json(), {
       error: 'Not Found',
       message: 'Route PUT:/test/:id not found',
-      statusCode: 404,
+      statusCode: 404
     })
     assert.deepEqual((await Server.request({ path: '/test/:id', method: 'patch' })).json(), {
       error: 'Not Found',
       message: 'Route PATCH:/test/:id not found',
-      statusCode: 404,
+      statusCode: 404
     })
     assert.deepEqual((await Server.request({ path: '/test/:id', method: 'delete' })).json(), {
       error: 'Not Found',
       message: 'Route DELETE:/test/:id not found',
-      statusCode: 404,
+      statusCode: 404
     })
   }
 
@@ -87,7 +87,7 @@ export default class RouteResourceTest {
     assert.deepEqual((await Server.request({ path: '/test', method: 'get' })).json(), {
       error: 'Not Found',
       message: 'Route GET:/test not found',
-      statusCode: 404,
+      statusCode: 404
     })
   }
 
@@ -129,7 +129,7 @@ export default class RouteResourceTest {
     Route.resource('test', new HelloController())
       .only(['index'])
       .helmet({
-        dnsPrefetchControl: { allow: true },
+        dnsPrefetchControl: { allow: true }
       })
     Route.register()
 
@@ -138,7 +138,7 @@ export default class RouteResourceTest {
     assert.deepEqual(response.json(), { hello: 'world' })
     assert.deepEqual(
       response.headers['content-security-policy'],
-      "default-src 'self';base-uri 'self';font-src 'self' https: data:;form-action 'self';frame-ancestors 'self';img-src 'self' data:;object-src 'none';script-src 'self';script-src-attr 'none';style-src 'self' https: 'unsafe-inline';upgrade-insecure-requests",
+      "default-src 'self';base-uri 'self';font-src 'self' https: data:;form-action 'self';frame-ancestors 'self';img-src 'self' data:;object-src 'none';script-src 'self';script-src-attr 'none';style-src 'self' https: 'unsafe-inline';upgrade-insecure-requests"
     )
   }
 
@@ -148,7 +148,7 @@ export default class RouteResourceTest {
 
     Route.resource('test', new HelloController()).only(['index']).rateLimit({
       max: 100,
-      timeWindow: '1 minute',
+      timeWindow: '1 minute'
     })
     Route.register()
 
@@ -191,7 +191,7 @@ export default class RouteResourceTest {
 
     assert.deepEqual((await Server.request({ path: '/test', method: 'get' })).json(), {
       hello: 'world',
-      intercepted: true,
+      intercepted: true
     })
   }
 
@@ -210,7 +210,7 @@ export default class RouteResourceTest {
     Route.register()
 
     assert.deepEqual((await Server.request({ path: '/test', method: 'get' })).json(), {
-      hello: 'world',
+      hello: 'world'
     })
     assert.isTrue(terminated)
   }
@@ -236,7 +236,7 @@ export default class RouteResourceTest {
 
     assert.deepEqual((await Server.request({ path: '/test', method: 'get' })).json(), {
       hello: 'world',
-      intercepted: true,
+      intercepted: true
     })
   }
 
@@ -249,7 +249,7 @@ export default class RouteResourceTest {
     Route.register()
 
     assert.deepEqual((await Server.request({ path: '/test', method: 'get' })).json(), {
-      hello: 'world',
+      hello: 'world'
     })
   }
 
@@ -276,7 +276,7 @@ export default class RouteResourceTest {
 
     assert.deepEqual((await Server.request({ path: '/test', method: 'get' })).json(), {
       hello: 'world',
-      intercepted: true,
+      intercepted: true
     })
   }
 
@@ -290,7 +290,7 @@ export default class RouteResourceTest {
     Route.register()
 
     assert.deepEqual((await Server.request({ path: '/test', method: 'get' })).json(), {
-      hello: 'world',
+      hello: 'world'
     })
   }
 
@@ -308,7 +308,7 @@ export default class RouteResourceTest {
 
   @Test()
   public async shouldBeAbleToRegisterAnInterceptNamedMiddlewareDependencyInRouteResourceUsingRouter({
-    assert,
+    assert
   }: Context) {
     ioc.bind('App/Http/Controllers/HelloController', HelloController)
     ioc.bind('App/Http/Interceptors/Names/my-interceptor', Interceptor)
@@ -319,13 +319,13 @@ export default class RouteResourceTest {
 
     assert.deepEqual((await Server.request({ path: '/test', method: 'get' })).json(), {
       hello: 'world',
-      intercepted: true,
+      intercepted: true
     })
   }
 
   @Test()
   public async shouldBeAbleToRegisterATerminateNamedMiddlewareDependencyInRouteResourceUsingRouter({
-    assert,
+    assert
   }: Context) {
     ioc.bind('App/Http/Controllers/HelloController', HelloController)
     ioc.bind('App/Http/Terminators/Names/my-terminator', Terminator)
@@ -335,7 +335,7 @@ export default class RouteResourceTest {
     Route.register()
 
     assert.deepEqual((await Server.request({ path: '/test', method: 'get' })).json(), {
-      hello: 'world',
+      hello: 'world'
     })
   }
 

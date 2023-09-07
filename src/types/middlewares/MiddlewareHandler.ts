@@ -13,7 +13,7 @@ import type { TerminateContext } from '#src/types/contexts/TerminateContext'
 
 export type HandleHandler = (ctx: Context) => any | Promise<any>
 export type InterceptHandler = (
-  ctx: InterceptContext,
+  ctx: InterceptContext
 ) =>
   | string
   | Record<string, any>

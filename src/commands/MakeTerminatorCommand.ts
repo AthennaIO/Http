@@ -13,7 +13,7 @@ import { BaseCommand, Argument } from '@athenna/artisan'
 
 export class MakeTerminatorCommand extends BaseCommand {
   @Argument({
-    description: 'The terminator name.',
+    description: 'The terminator name.'
   })
   public name: string
 
@@ -35,7 +35,7 @@ export class MakeTerminatorCommand extends BaseCommand {
       .make()
 
     this.logger.success(
-      `Terminator ({yellow} "${file.name}") successfully created.`,
+      `Terminator ({yellow} "${file.name}") successfully created.`
     )
 
     const importPath = this.getImportPath(file.name)
@@ -43,7 +43,7 @@ export class MakeTerminatorCommand extends BaseCommand {
     await this.rc.pushTo('middlewares', importPath).save()
 
     this.logger.success(
-      `Athenna RC updated: ({dim,yellow} [ middlewares += "${importPath}" ])`,
+      `Athenna RC updated: ({dim,yellow} [ middlewares += "${importPath}" ])`
     )
   }
 
@@ -60,7 +60,7 @@ export class MakeTerminatorCommand extends BaseCommand {
   private getDestinationPath(): string {
     let destination = Config.get(
       'rc.commands.make:terminator.destination',
-      Path.terminators(),
+      Path.terminators()
     )
 
     if (!isAbsolute(destination)) {

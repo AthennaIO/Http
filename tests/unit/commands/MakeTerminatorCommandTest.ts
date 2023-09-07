@@ -32,19 +32,19 @@ export default class MakeTerminatorCommandTest extends BaseCommandTest {
   @Test()
   public async shouldBeAbleToCreateATerminatorFileWithDifferentDestPath({ assert }: Context) {
     Config.set('rc.commands.make:terminator.path', Config.get('rc.commands.make:terminator'))
-    Config.set('rc.commands.make:terminator.destination', Path.stubs('storage/terminators'))
+    Config.set('rc.commands.make:terminator.destination', Path.fixtures('storage/terminators'))
 
     await Artisan.call('make:terminator TestTerminator', false)
 
-    const path = Path.stubs('storage/terminators/TestTerminator.ts')
+    const path = Path.fixtures('storage/terminators/TestTerminator.ts')
 
     assert.isTrue(await File.exists(path))
     assert.isTrue(ExitFaker.faker.calledWith(0))
 
     const athennaRc = await new File(Path.pwd('package.json')).getContentAsJson().then(json => json.athenna)
 
-    assert.containsSubset(Config.get('rc.middlewares'), ['#tests/stubs/storage/terminators/TestTerminator'])
-    assert.containsSubset(athennaRc.middlewares, ['#tests/stubs/storage/terminators/TestTerminator'])
+    assert.containsSubset(Config.get('rc.middlewares'), ['#tests/fixtures/storage/terminators/TestTerminator'])
+    assert.containsSubset(athennaRc.middlewares, ['#tests/fixtures/storage/terminators/TestTerminator'])
   }
 
   @Test()

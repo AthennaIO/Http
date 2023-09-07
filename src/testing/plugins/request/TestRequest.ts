@@ -37,10 +37,10 @@ export class TestRequest {
    */
   public async get(
     url: string,
-    options: InjectOptions = {},
+    options: InjectOptions = {}
   ): Promise<TestResponse> {
     return Server.request({ url, method: 'GET', ...options }).then(res =>
-      this.createResponse(res),
+      this.createResponse(res)
     )
   }
 
@@ -56,10 +56,10 @@ export class TestRequest {
    */
   public async head(
     url: string,
-    options: InjectOptions = {},
+    options: InjectOptions = {}
   ): Promise<TestResponse> {
     return Server.request({ url, method: 'HEAD', ...options }).then(res =>
-      this.createResponse(res),
+      this.createResponse(res)
     )
   }
 
@@ -75,10 +75,10 @@ export class TestRequest {
    */
   public async options(
     url: string,
-    options: InjectOptions = {},
+    options: InjectOptions = {}
   ): Promise<TestResponse> {
     return Server.request({ url, method: 'OPTIONS', ...options }).then(res =>
-      this.createResponse(res),
+      this.createResponse(res)
     )
   }
 
@@ -94,10 +94,10 @@ export class TestRequest {
    */
   public async post(
     url: string,
-    options: InjectOptions = {},
+    options: InjectOptions = {}
   ): Promise<TestResponse> {
     return Server.request({ url, method: 'POST', ...options }).then(res =>
-      this.createResponse(res),
+      this.createResponse(res)
     )
   }
 
@@ -113,10 +113,10 @@ export class TestRequest {
    */
   public async put(
     url: string,
-    options: InjectOptions = {},
+    options: InjectOptions = {}
   ): Promise<TestResponse> {
     return Server.request({ url, method: 'PUT', ...options }).then(res =>
-      this.createResponse(res),
+      this.createResponse(res)
     )
   }
 
@@ -132,10 +132,10 @@ export class TestRequest {
    */
   public async patch(
     url: string,
-    options: InjectOptions = {},
+    options: InjectOptions = {}
   ): Promise<TestResponse> {
     return Server.request({ url, method: 'PATCH', ...options }).then(res =>
-      this.createResponse(res),
+      this.createResponse(res)
     )
   }
 
@@ -151,10 +151,10 @@ export class TestRequest {
    */
   public async delete(
     url: string,
-    options: InjectOptions = {},
+    options: InjectOptions = {}
   ): Promise<TestResponse> {
     return Server.request({ url, method: 'DELETE', ...options }).then(res =>
-      this.createResponse(res),
+      this.createResponse(res)
     )
   }
 }

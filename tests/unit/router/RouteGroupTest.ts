@@ -7,9 +7,9 @@
  * file that was distributed with this source code.
  */
 
-import { Middleware } from '#tests/stubs/middlewares/Middleware'
-import { Terminator } from '#tests/stubs/middlewares/Terminator'
-import { Interceptor } from '#tests/stubs/middlewares/Interceptor'
+import { Middleware } from '#tests/fixtures/middlewares/Middleware'
+import { Terminator } from '#tests/fixtures/middlewares/Terminator'
+import { Interceptor } from '#tests/fixtures/middlewares/Interceptor'
 import { Test, AfterEach, BeforeEach, type Context } from '@athenna/test'
 import { Route, Server, HttpRouteProvider, HttpServerProvider } from '#src'
 
@@ -64,7 +64,7 @@ export default class RouteGroupTest {
     })
       .prefix('/v1')
       .helmet({
-        dnsPrefetchControl: { allow: true },
+        dnsPrefetchControl: { allow: true }
       })
 
     Route.register()
@@ -74,7 +74,7 @@ export default class RouteGroupTest {
     assert.deepEqual(response.json(), { hello: 'world' })
     assert.deepEqual(
       response.headers['content-security-policy'],
-      "default-src 'self';base-uri 'self';font-src 'self' https: data:;form-action 'self';frame-ancestors 'self';img-src 'self' data:;object-src 'none';script-src 'self';script-src-attr 'none';style-src 'self' https: 'unsafe-inline';upgrade-insecure-requests",
+      "default-src 'self';base-uri 'self';font-src 'self' https: data:;form-action 'self';frame-ancestors 'self';img-src 'self' data:;object-src 'none';script-src 'self';script-src-attr 'none';style-src 'self' https: 'unsafe-inline';upgrade-insecure-requests"
     )
   }
 
@@ -88,7 +88,7 @@ export default class RouteGroupTest {
       .prefix('/v1')
       .rateLimit({
         max: 100,
-        timeWindow: '1 minute',
+        timeWindow: '1 minute'
       })
 
     Route.register()
@@ -130,7 +130,7 @@ export default class RouteGroupTest {
 
     assert.deepEqual((await Server.request({ path: '/test', method: 'get' })).json(), {
       hello: 'world',
-      intercepted: true,
+      intercepted: true
     })
   }
 
@@ -149,7 +149,7 @@ export default class RouteGroupTest {
     Route.register()
 
     assert.deepEqual((await Server.request({ path: '/test', method: 'get' })).json(), {
-      hello: 'world',
+      hello: 'world'
     })
     assert.isTrue(terminated)
   }
@@ -179,7 +179,7 @@ export default class RouteGroupTest {
 
     assert.deepEqual((await Server.request({ path: '/test', method: 'get' })).json(), {
       hello: 'world',
-      intercepted: true,
+      intercepted: true
     })
   }
 
@@ -194,7 +194,7 @@ export default class RouteGroupTest {
     Route.register()
 
     assert.deepEqual((await Server.request({ path: '/test', method: 'get' })).json(), {
-      hello: 'world',
+      hello: 'world'
     })
   }
 
@@ -227,7 +227,7 @@ export default class RouteGroupTest {
 
     assert.deepEqual((await Server.request({ path: '/test', method: 'get' })).json(), {
       hello: 'world',
-      intercepted: true,
+      intercepted: true
     })
   }
 
@@ -244,7 +244,7 @@ export default class RouteGroupTest {
     Route.register()
 
     assert.deepEqual((await Server.request({ path: '/test', method: 'get' })).json(), {
-      hello: 'world',
+      hello: 'world'
     })
   }
 
@@ -277,7 +277,7 @@ export default class RouteGroupTest {
 
     assert.deepEqual((await Server.request({ path: '/test', method: 'get' })).json(), {
       hello: 'world',
-      intercepted: true,
+      intercepted: true
     })
   }
 
@@ -294,7 +294,7 @@ export default class RouteGroupTest {
     Route.register()
 
     assert.deepEqual((await Server.request({ path: '/test', method: 'get' })).json(), {
-      hello: 'world',
+      hello: 'world'
     })
   }
 

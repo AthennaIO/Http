@@ -18,7 +18,7 @@ export default class HttpKernelTest {
   public async beforeEach() {
     ioc.reconstruct()
 
-    await Config.loadAll(Path.stubs('config'))
+    await Config.loadAll(Path.fixtures('config'))
     new HttpServerProvider().register()
     new HttpRouteProvider().register()
     new LoggerProvider().register()
@@ -40,7 +40,7 @@ export default class HttpKernelTest {
     assert.deepEqual(response.json(), { hello: true })
     assert.containsSubset(response.headers, {
       vary: 'Origin',
-      'access-control-expose-headers': '*',
+      'access-control-expose-headers': '*'
     })
     assert.isTrue(Server.fastify.hasPlugin('@fastify/cors'))
   }
@@ -60,7 +60,7 @@ export default class HttpKernelTest {
       'cross-origin-opener-policy': 'same-origin',
       'cross-origin-resource-policy': 'same-origin',
       'cross-origin-embedder-policy': 'require-corp',
-      'strict-transport-security': 'max-age=15552000; includeSubDomains',
+      'strict-transport-security': 'max-age=15552000; includeSubDomains'
     })
     assert.isTrue(Server.fastify.hasPlugin('@fastify/helmet'))
   }
@@ -298,7 +298,7 @@ export default class HttpKernelTest {
 
   @Test()
   public async shouldBeAbleToExecuteHttpRequestsThatWillBeInterceptedByGlobalMiddlewaresAndNamedMiddlewares({
-    assert,
+    assert
   }: Context) {
     const kernel = new HttpKernel()
     await kernel.registerGlobalMiddlewares()
@@ -317,7 +317,7 @@ export default class HttpKernelTest {
       url: '/hello',
       handler: () => {
         throw new Error('hey')
-      },
+      }
     })
 
     const response = await Server.request().get('hello')
@@ -327,19 +327,19 @@ export default class HttpKernelTest {
       statusCode: 500,
       code: 'ERROR',
       name: 'Error',
-      message: 'hey',
+      message: 'hey'
     })
   }
 
   @Test()
   public async shouldBeAbleToRegisterACustomExceptionHandlerForTheServerRequestHandlers({ assert }: Context) {
     const kernel = new HttpKernel()
-    await kernel.registerExceptionHandler('#tests/stubs/handlers/Handler')
+    await kernel.registerExceptionHandler('#tests/fixtures/handlers/Handler')
     Server.get({
       url: '/hello',
       handler: () => {
         throw new Error('hey')
-      },
+      }
     })
 
     const response = await Server.request().get('hello')
@@ -349,14 +349,14 @@ export default class HttpKernelTest {
       statusCode: 500,
       code: 'ERROR',
       name: 'Error',
-      message: 'hey',
+      message: 'hey'
     })
   }
 
   @Test()
   public async shouldBeAbleToRegisterACustomRouteFile({ assert }: Context) {
     const kernel = new HttpKernel()
-    await kernel.registerRoutes('#tests/stubs/routes/http')
+    await kernel.registerRoutes('#tests/fixtures/routes/http')
 
     Route.register()
 

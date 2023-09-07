@@ -20,7 +20,7 @@ export class ForbiddenException extends HttpException {
    */
   public constructor(
     message = 'Forbidden request error happened.',
-    help = null,
+    help = null
   ) {
     super({ help, message, status: 403, code: 'E_FORBIDDEN_ERROR' })
   }

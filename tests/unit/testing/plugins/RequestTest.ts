@@ -25,7 +25,7 @@ export default class TestRequestTest {
           .header('hello', 'world')
           .header('helloo', 'worldd')
           .header('hellooo', 'worlddd')
-          .send({ hello: 'world', helloo: 'worldd', hellooo: 'worlddd' }),
+          .send({ hello: 'world', helloo: 'worldd', hellooo: 'worlddd' })
     })
 
     Server.get({
@@ -36,7 +36,7 @@ export default class TestRequestTest {
           .header('hello', 'world')
           .header('helloo', 'worldd')
           .header('hellooo', 'worlddd')
-          .send([{ hello: 'world', helloo: 'worldd', hellooo: 'worlddd' }]),
+          .send([{ hello: 'world', helloo: 'worldd', hellooo: 'worlddd' }])
     })
 
     Server.head({
@@ -47,7 +47,7 @@ export default class TestRequestTest {
           .header('hello', 'world')
           .header('helloo', 'worldd')
           .header('hellooo', 'worlddd')
-          .send({ hello: 'world', helloo: 'worldd', hellooo: 'worlddd' }),
+          .send({ hello: 'world', helloo: 'worldd', hellooo: 'worlddd' })
     })
 
     Server.options({
@@ -58,7 +58,7 @@ export default class TestRequestTest {
           .header('hello', 'world')
           .header('helloo', 'worldd')
           .header('hellooo', 'worlddd')
-          .send({ hello: 'world', helloo: 'worldd', hellooo: 'worlddd' }),
+          .send({ hello: 'world', helloo: 'worldd', hellooo: 'worlddd' })
     })
 
     Server.post({
@@ -69,7 +69,7 @@ export default class TestRequestTest {
           .header('hello', 'world')
           .header('helloo', 'worldd')
           .header('hellooo', 'worlddd')
-          .send({ hello: 'world', helloo: 'worldd', hellooo: 'worlddd', ...ctx.request.body }),
+          .send({ hello: 'world', helloo: 'worldd', hellooo: 'worlddd', ...ctx.request.body })
     })
 
     Server.put({
@@ -80,7 +80,7 @@ export default class TestRequestTest {
           .header('hello', 'world')
           .header('helloo', 'worldd')
           .header('hellooo', 'worlddd')
-          .send({ hello: 'world', helloo: 'worldd', hellooo: 'worlddd', ...ctx.request.body }),
+          .send({ hello: 'world', helloo: 'worldd', hellooo: 'worlddd', ...ctx.request.body })
     })
 
     Server.delete({
@@ -91,7 +91,7 @@ export default class TestRequestTest {
           .header('hello', 'world')
           .header('helloo', 'worldd')
           .header('hellooo', 'worlddd')
-          .send({ hello: 'world', helloo: 'worldd', hellooo: 'worlddd' }),
+          .send({ hello: 'world', helloo: 'worldd', hellooo: 'worlddd' })
     })
 
     Server.patch({
@@ -102,7 +102,7 @@ export default class TestRequestTest {
           .header('hello', 'world')
           .header('helloo', 'worldd')
           .header('hellooo', 'worlddd')
-          .send({ hello: 'world', helloo: 'worldd', hellooo: 'worlddd' }),
+          .send({ hello: 'world', helloo: 'worldd', hellooo: 'worlddd' })
     })
   }
 

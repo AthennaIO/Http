@@ -9,5 +9,5 @@
 
 export default {
   debug: true,
-  version: '1.0.0',
+  version: '1.0.0'
 }

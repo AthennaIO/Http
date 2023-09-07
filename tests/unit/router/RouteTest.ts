@@ -7,9 +7,9 @@
  * file that was distributed with this source code.
  */
 
-import { Middleware } from '#tests/stubs/middlewares/Middleware'
+import { Middleware } from '#tests/fixtures/middlewares/Middleware'
 import { Test, AfterEach, BeforeEach, type Context } from '@athenna/test'
-import { HelloController } from '#tests/stubs/controllers/HelloController'
+import { HelloController } from '#tests/fixtures/controllers/HelloController'
 import { Route, Server, HttpRouteProvider, HttpServerProvider } from '#src'
 
 export default class RouteTest {
@@ -26,10 +26,10 @@ export default class RouteTest {
           apiKey: {
             type: 'apiKey',
             name: 'apiKey',
-            in: 'header',
-          },
-        },
-      },
+            in: 'header'
+          }
+        }
+      }
     })
   }
 
@@ -46,7 +46,7 @@ export default class RouteTest {
     Route.get('test', 'HelloController.vanillaError').vanillaOptions({
       onError: async () => {
         errorHappened = true
-      },
+      }
     })
 
     Route.register()
@@ -62,9 +62,9 @@ export default class RouteTest {
       .schema({
         response: {
           200: {
-            properties: { hello: { type: 'string' } },
-          },
-        },
+            properties: { hello: { type: 'string' } }
+          }
+        }
       })
 
     Route.register()
@@ -89,9 +89,9 @@ export default class RouteTest {
     assert.deepEqual(swagger.paths['/test'], {
       get: {
         responses: {
-          200: { description: 'Default Response' },
-        },
-      },
+          200: { description: 'Default Response' }
+        }
+      }
     })
   }
 
@@ -107,9 +107,9 @@ export default class RouteTest {
       get: {
         deprecated: true,
         responses: {
-          200: { description: 'Default Response' },
-        },
-      },
+          200: { description: 'Default Response' }
+        }
+      }
     })
   }
 
@@ -125,9 +125,9 @@ export default class RouteTest {
       get: {
         summary: 'Summary',
         responses: {
-          200: { description: 'Default Response' },
-        },
-      },
+          200: { description: 'Default Response' }
+        }
+      }
     })
   }
 
@@ -143,9 +143,9 @@ export default class RouteTest {
       get: {
         description: 'Description',
         responses: {
-          200: { description: 'Default Response' },
-        },
-      },
+          200: { description: 'Default Response' }
+        }
+      }
     })
   }
 
@@ -161,9 +161,9 @@ export default class RouteTest {
       get: {
         tags: ['test'],
         responses: {
-          200: { description: 'Default Response' },
-        },
-      },
+          200: { description: 'Default Response' }
+        }
+      }
     })
   }
 
@@ -185,12 +185,12 @@ export default class RouteTest {
             schema: {
               type: 'object',
               properties: {
-                hello: { description: 'hello prop' },
-              },
-            },
-          },
-        ],
-      },
+                hello: { description: 'hello prop' }
+              }
+            }
+          }
+        ]
+      }
     })
   }
 
@@ -210,10 +210,10 @@ export default class RouteTest {
             description: 'hello prop',
             required: false,
             in: 'query',
-            name: 'hello',
-          },
-        ],
-      },
+            name: 'hello'
+          }
+        ]
+      }
     })
   }
 
@@ -229,8 +229,8 @@ export default class RouteTest {
 
     assert.containsSubset(swagger.paths['/test'], {
       post: {
-        responses: { '200': { description: 'Default Response' }, '404': { description: 'not found test' } },
-      },
+        responses: { '200': { description: 'Default Response' }, '404': { description: 'not found test' } }
+      }
     })
   }
 
@@ -245,8 +245,8 @@ export default class RouteTest {
     assert.containsSubset(swagger.paths['/test'], {
       post: {
         security: [{ apiKey: ['123', '321'] }],
-        responses: { '200': { description: 'Default Response' } },
-      },
+        responses: { '200': { description: 'Default Response' } }
+      }
     })
   }
 
@@ -261,8 +261,8 @@ export default class RouteTest {
     assert.containsSubset(swagger.paths['/test'], {
       post: {
         responses: { '200': { description: 'Default Response' } },
-        externalDocs: { url: 'https://athenna.io', description: 'Athenna documentation' },
-      },
+        externalDocs: { url: 'https://athenna.io', description: 'Athenna documentation' }
+      }
     })
   }
 
@@ -277,8 +277,8 @@ export default class RouteTest {
     assert.containsSubset(swagger.paths['/test'], {
       post: {
         consumes: ['json', 'yaml'],
-        responses: { '200': { description: 'Default Response' } },
-      },
+        responses: { '200': { description: 'Default Response' } }
+      }
     })
   }
 
@@ -293,8 +293,8 @@ export default class RouteTest {
     assert.containsSubset(swagger.paths['/test'], {
       post: {
         produces: ['json', 'yaml'],
-        responses: { '200': { description: 'Default Response' } },
-      },
+        responses: { '200': { description: 'Default Response' } }
+      }
     })
   }
 }

@@ -26,7 +26,7 @@ export class BaseCommandTest {
 
     process.env.IS_TS = 'true'
 
-    await Config.loadAll(Path.stubs('config'))
+    await Config.loadAll(Path.fixtures('config'))
 
     new ViewProvider().register()
     new LoggerProvider().register()
@@ -45,7 +45,7 @@ export class BaseCommandTest {
     ExitFaker.release()
 
     await Folder.safeRemove(Path.app())
-    await Folder.safeRemove(Path.stubs('storage'))
+    await Folder.safeRemove(Path.fixtures('storage'))
 
     await new File(Path.pwd('package.json')).setContent(this.originalPackageJson)
   }
