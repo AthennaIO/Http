@@ -17,13 +17,13 @@ export default {
       controller: Path.pwd('templates/controller.edge'),
       middleware: Path.pwd('templates/middleware.edge'),
       terminator: Path.pwd('templates/terminator.edge'),
-      interceptor: Path.pwd('templates/interceptor.edge'),
+      interceptor: Path.pwd('templates/interceptor.edge')
     },
     useCustom: true,
-    customTemplatesPath: Path.resources('templates'),
+    customTemplatesPath: Path.resources('templates')
   },
 
   edge: {
-    cache: false,
-  },
+    cache: false
+  }
 }

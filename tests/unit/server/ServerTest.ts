@@ -141,7 +141,7 @@ export default class ServerTest {
       url: '/test',
       handler: () => {
         throw new Error('Something is wrong')
-      },
+      }
     })
 
     const response = await Server.request().get('/test')
@@ -153,7 +153,7 @@ export default class ServerTest {
   public async shouldBeAbleToExecuteAMiddlewareBeforeGoingToTheRouteHandler({ assert }: Context) {
     Server.middleware(async ctx => (ctx.data.handled = true)).get({
       url: '/test',
-      handler: async ctx => ctx.response.send({ handled: ctx.data.handled }),
+      handler: async ctx => ctx.response.send({ handled: ctx.data.handled })
     })
 
     const response = await Server.request().get('/test')
@@ -169,7 +169,7 @@ export default class ServerTest {
       return ctx.body
     }).get({
       url: '/test',
-      handler: async ctx => ctx.response.send({ hello: 'world' }),
+      handler: async ctx => ctx.response.send({ hello: 'world' })
     })
 
     const response = await Server.request().get('/test')
@@ -185,7 +185,7 @@ export default class ServerTest {
       terminated = true
     }).get({
       url: '/test',
-      handler: async ctx => ctx.response.send({ hello: 'world' }),
+      handler: async ctx => ctx.response.send({ hello: 'world' })
     })
 
     const response = await Server.request().get('/test')

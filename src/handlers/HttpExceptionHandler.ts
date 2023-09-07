@@ -35,7 +35,7 @@ export class HttpExceptionHandler {
       code: String.toSnakeCase(error.code || error.name).toUpperCase(),
       name: Json.copy(error.name),
       message: Json.copy(error.message),
-      stack: Json.copy(error.stack),
+      stack: Json.copy(error.stack)
     }
 
     if (error.help) {

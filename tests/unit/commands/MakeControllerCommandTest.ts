@@ -32,19 +32,19 @@ export default class MakeControllerCommandTest extends BaseCommandTest {
   @Test()
   public async shouldBeAbleToCreateAControllerFileWithDifferentDestPath({ assert }: Context) {
     Config.set('rc.commands.make:controller.path', Config.get('rc.commands.make:controller'))
-    Config.set('rc.commands.make:controller.destination', Path.stubs('storage/controllers'))
+    Config.set('rc.commands.make:controller.destination', Path.fixtures('storage/controllers'))
 
     await Artisan.call('make:controller TestController', false)
 
-    const path = Path.stubs('storage/controllers/TestController.ts')
+    const path = Path.fixtures('storage/controllers/TestController.ts')
 
     assert.isTrue(await File.exists(path))
     assert.isTrue(ExitFaker.faker.calledWith(0))
 
     const athennaRc = await new File(Path.pwd('package.json')).getContentAsJson().then(json => json.athenna)
 
-    assert.containsSubset(Config.get('rc.controllers'), ['#tests/stubs/storage/controllers/TestController'])
-    assert.containsSubset(athennaRc.controllers, ['#tests/stubs/storage/controllers/TestController'])
+    assert.containsSubset(Config.get('rc.controllers'), ['#tests/fixtures/storage/controllers/TestController'])
+    assert.containsSubset(athennaRc.controllers, ['#tests/fixtures/storage/controllers/TestController'])
   }
 
   @Test()

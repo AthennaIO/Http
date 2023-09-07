@@ -32,19 +32,19 @@ export default class MakeMiddlewareCommandTest extends BaseCommandTest {
   @Test()
   public async shouldBeAbleToCreateAMiddlewareFileWithDifferentDestPath({ assert }: Context) {
     Config.set('rc.commands.make:middleware.path', Config.get('rc.commands.make:middleware'))
-    Config.set('rc.commands.make:middleware.destination', Path.stubs('storage/middlewares'))
+    Config.set('rc.commands.make:middleware.destination', Path.fixtures('storage/middlewares'))
 
     await Artisan.call('make:middleware TestMiddleware', false)
 
-    const path = Path.stubs('storage/middlewares/TestMiddleware.ts')
+    const path = Path.fixtures('storage/middlewares/TestMiddleware.ts')
 
     assert.isTrue(await File.exists(path))
     assert.isTrue(ExitFaker.faker.calledWith(0))
 
     const athennaRc = await new File(Path.pwd('package.json')).getContentAsJson().then(json => json.athenna)
 
-    assert.containsSubset(Config.get('rc.middlewares'), ['#tests/stubs/storage/middlewares/TestMiddleware'])
-    assert.containsSubset(athennaRc.middlewares, ['#tests/stubs/storage/middlewares/TestMiddleware'])
+    assert.containsSubset(Config.get('rc.middlewares'), ['#tests/fixtures/storage/middlewares/TestMiddleware'])
+    assert.containsSubset(athennaRc.middlewares, ['#tests/fixtures/storage/middlewares/TestMiddleware'])
   }
 
   @Test()

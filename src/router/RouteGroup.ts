@@ -10,7 +10,7 @@
 import type {
   MiddlewareRouteType,
   TerminatorRouteType,
-  InterceptorRouteType,
+  InterceptorRouteType
 } from '#src/types'
 
 import { Route } from '#src/router/Route'
@@ -55,7 +55,7 @@ export class RouteGroup {
    */
   public middleware(middleware: MiddlewareRouteType): RouteGroup {
     this.routes.forEach(route =>
-      this.invoke(route, 'middleware', [middleware, true]),
+      this.invoke(route, 'middleware', [middleware, true])
     )
 
     return this
@@ -73,7 +73,7 @@ export class RouteGroup {
    */
   public interceptor(interceptor: InterceptorRouteType): RouteGroup {
     this.routes.forEach(route =>
-      this.invoke(route, 'interceptor', [interceptor, true]),
+      this.invoke(route, 'interceptor', [interceptor, true])
     )
 
     return this
@@ -91,7 +91,7 @@ export class RouteGroup {
    */
   public terminator(terminator: TerminatorRouteType): RouteGroup {
     this.routes.forEach(route =>
-      this.invoke(route, 'terminator', [terminator, true]),
+      this.invoke(route, 'terminator', [terminator, true])
     )
 
     return this
@@ -110,7 +110,7 @@ export class RouteGroup {
    * ```
    */
   public helmet(
-    options: Omit<import('@fastify/helmet').FastifyHelmetOptions, 'global'>,
+    options: Omit<import('@fastify/helmet').FastifyHelmetOptions, 'global'>
   ): RouteGroup {
     this.routes.forEach(route => this.invoke(route, 'helmet', [options]))
 
@@ -131,7 +131,7 @@ export class RouteGroup {
    * ```
    */
   public rateLimit(
-    options: import('@fastify/rate-limit').RateLimitOptions,
+    options: import('@fastify/rate-limit').RateLimitOptions
   ): RouteGroup {
     this.routes.forEach(route => this.invoke(route, 'rateLimit', [options]))
 
@@ -145,7 +145,7 @@ export class RouteGroup {
   private invoke(
     route: Route | RouteGroup | RouteResource,
     method: string,
-    params: any[],
+    params: any[]
   ) {
     if (route instanceof RouteResource) {
       route.routes.forEach(child => this.invoke(child, method, params))

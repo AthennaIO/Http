@@ -20,7 +20,7 @@ export class MethodNotAllowedException extends HttpException {
    */
   public constructor(
     message = 'Method not allowed error happened.',
-    help = null,
+    help = null
   ) {
     super({ help, message, status: 405, code: 'E_METHOD_NOT_ALLOWED_ERROR' })
   }

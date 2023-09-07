@@ -58,13 +58,13 @@ export class Router {
   public route(
     pattern: string,
     methods: HTTPMethods[],
-    handler: RouteHandler,
+    handler: RouteHandler
   ): Route {
     if (this.isValidControllerHandler(handler)) {
       if (!this.controllerInstance[handler]) {
         throw new UndefinedMethodException(
           handler,
-          this.controllerInstance.name,
+          this.controllerInstance.name
         )
       }
 
@@ -96,7 +96,7 @@ export class Router {
   public resource(resource: string, controller?: any): RouteResource {
     const resourceInstance = new RouteResource(
       resource,
-      controller || this.controllerInstance,
+      controller || this.controllerInstance
     )
     const openedGroup = this.getRecentGroup()
 
@@ -116,7 +116,7 @@ export class Router {
     return this.route(
       pattern,
       ['HEAD', 'OPTIONS', 'GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
-      handler,
+      handler
     )
   }
 
@@ -225,7 +225,7 @@ export class Router {
 
         return list
       },
-      [],
+      []
     )
   }
 

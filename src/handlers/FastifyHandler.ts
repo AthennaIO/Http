@@ -37,7 +37,7 @@ export class FastifyHandler {
         body: req.body,
         params: req.params,
         queries: req.query,
-        headers: req.headers,
+        headers: req.headers
       })
     }
   }
@@ -71,7 +71,7 @@ export class FastifyHandler {
         body: res.body,
         params: req.params,
         queries: req.query,
-        headers: req.headers,
+        headers: req.headers
       })
 
       res.body = payload
@@ -101,7 +101,7 @@ export class FastifyHandler {
         body: res.body || req.body,
         headers: res.getHeaders(),
         status: res.statusCode,
-        responseTime: res.getResponseTime(),
+        responseTime: res.getResponseTime()
       })
     }
   }
@@ -122,7 +122,7 @@ export class FastifyHandler {
         params: req.params,
         queries: req.query,
         headers: req.headers,
-        error,
+        error
       })
     }
   }

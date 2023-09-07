@@ -18,7 +18,7 @@ export default class HttpExceptionHandlerTest {
   public async beforeEach() {
     ioc.reconstruct()
 
-    await Config.loadAll(Path.stubs('config'))
+    await Config.loadAll(Path.fixtures('config'))
     new HttpServerProvider().register()
     new LoggerProvider().register()
   }
@@ -36,7 +36,7 @@ export default class HttpExceptionHandlerTest {
       url: '/hello',
       handler: () => {
         throw new Exception({ code: 'E_NOT_FOUND', message: 'hey', status: 404 })
-      },
+      }
     })
 
     const response = await Server.request().get('hello')
@@ -46,13 +46,13 @@ export default class HttpExceptionHandlerTest {
       statusCode: 404,
       code: 'E_NOT_FOUND',
       name: 'Exception',
-      message: 'hey',
+      message: 'hey'
     })
   }
 
   @Test()
   public async shouldNotSetTheErrorNameErrorMessageAndErrorStackWhenDebugModeIsNotActivatedInDefaultExceptionHandler({
-    assert,
+    assert
   }: Context) {
     Config.set('app.debug', false)
     const kernel = new HttpKernel()
@@ -61,7 +61,7 @@ export default class HttpExceptionHandlerTest {
       url: '/hello',
       handler: () => {
         throw new TypeError('hey')
-      },
+      }
     })
 
     const response = await Server.request().get('hello')
@@ -71,7 +71,7 @@ export default class HttpExceptionHandlerTest {
       statusCode: 500,
       code: 'E_INTERNAL_SERVER',
       name: 'InternalServerException',
-      message: 'An internal server exception has occurred.',
+      message: 'An internal server exception has occurred.'
     })
   }
 
@@ -79,14 +79,14 @@ export default class HttpExceptionHandlerTest {
   public async shouldIgnoreTheExceptionFromBeingLoggedWhenTheCodeIsSetInsideIgnoreCodes({ assert }: Context) {
     const logErrorFake = fake()
     const kernel = new HttpKernel()
-    await kernel.registerExceptionHandler('#tests/stubs/handlers/Handler')
+    await kernel.registerExceptionHandler('#tests/fixtures/handlers/Handler')
     Log.fakeMethod('channelOrVanilla', logErrorFake)
 
     Server.get({
       url: '/hello',
       handler: () => {
         throw new Exception({ code: 'E_IGNORE_THIS' })
-      },
+      }
     })
 
     await Server.request().get('hello')
@@ -98,14 +98,14 @@ export default class HttpExceptionHandlerTest {
   public async shouldIgnoreTheExceptionFromBeingLoggedWhenTheStatusIsSetInsideIgnoreStatuses({ assert }: Context) {
     const logErrorFake = fake()
     const kernel = new HttpKernel()
-    await kernel.registerExceptionHandler('#tests/stubs/handlers/Handler')
+    await kernel.registerExceptionHandler('#tests/fixtures/handlers/Handler')
     Log.fakeMethod('channelOrVanilla', logErrorFake)
 
     Server.get({
       url: '/hello',
       handler: () => {
         throw new Exception({ status: 248 })
-      },
+      }
     })
 
     await Server.request().get('hello')

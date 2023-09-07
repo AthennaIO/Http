@@ -14,7 +14,7 @@ import type {
   MiddlewareRecord,
   MiddlewareRouteType,
   TerminatorRouteType,
-  InterceptorRouteType,
+  InterceptorRouteType
 } from '#src/types'
 
 import { Is, Route as RouteHelper } from '@athenna/common'
@@ -39,7 +39,7 @@ export class Route {
   public constructor(
     url: string,
     methods: HTTPMethods[],
-    handler: RouteHandler,
+    handler: RouteHandler
   ) {
     this.route = {
       url,
@@ -49,9 +49,9 @@ export class Route {
       middlewares: {
         middlewares: [],
         terminators: [],
-        interceptors: [],
+        interceptors: []
       },
-      fastify: { schema: {} },
+      fastify: { schema: {} }
     }
 
     if (Is.String(handler)) {
@@ -96,7 +96,7 @@ export class Route {
   public vanillaOptions(options: Partial<RouteOptions>): Route {
     this.route.fastify = {
       ...this.route.fastify,
-      ...options,
+      ...options
     }
 
     return this
@@ -140,7 +140,7 @@ export class Route {
     }
 
     this.route.middlewares.middlewares[insertionType](
-      middleware.handle.bind(middleware),
+      middleware.handle.bind(middleware)
     )
 
     return this
@@ -152,7 +152,7 @@ export class Route {
    */
   public interceptor(
     interceptor: InterceptorRouteType,
-    prepend = false,
+    prepend = false
   ): Route {
     const insertionType = prepend ? 'unshift' : 'push'
 
@@ -162,7 +162,7 @@ export class Route {
         ioc.safeUse(`App/Http/Interceptors/${interceptor}`)
 
       this.route.middlewares.interceptors[insertionType](
-        inte.intercept.bind(inte),
+        inte.intercept.bind(inte)
       )
 
       return this
@@ -175,7 +175,7 @@ export class Route {
     }
 
     this.route.middlewares.interceptors[insertionType](
-      interceptor.intercept.bind(interceptor),
+      interceptor.intercept.bind(interceptor)
     )
 
     return this
@@ -205,7 +205,7 @@ export class Route {
     }
 
     this.route.middlewares.terminators[insertionType](
-      terminator.terminate.bind(terminator),
+      terminator.terminate.bind(terminator)
     )
 
     return this
@@ -222,7 +222,7 @@ export class Route {
    * ```
    */
   public helmet(
-    options: Omit<import('@fastify/helmet').FastifyHelmetOptions, 'global'>,
+    options: Omit<import('@fastify/helmet').FastifyHelmetOptions, 'global'>
   ): Route {
     this.route.fastify.helmet = options
 
@@ -262,7 +262,7 @@ export class Route {
    * ```
    */
   public rateLimit(
-    options: import('@fastify/rate-limit').RateLimitOptions,
+    options: import('@fastify/rate-limit').RateLimitOptions
   ): Route {
     if (!this.route.fastify.config) {
       this.route.fastify.config = {}
@@ -364,7 +364,7 @@ export class Route {
     if (!this.route.fastify.schema.body) {
       this.route.fastify.schema.body = {
         type: 'object',
-        properties: {},
+        properties: {}
       }
     }
 
@@ -387,7 +387,7 @@ export class Route {
     if (!this.route.fastify.schema.params) {
       this.route.fastify.schema.params = {
         type: 'object',
-        properties: {},
+        properties: {}
       }
     }
 
@@ -410,7 +410,7 @@ export class Route {
     if (!this.route.fastify.schema.querystring) {
       this.route.fastify.schema.querystring = {
         type: 'object',
-        properties: {},
+        properties: {}
       }
     }
 
@@ -488,7 +488,7 @@ export class Route {
     if (!this.route.fastify.schema.externalDocs) {
       this.route.fastify.schema.externalDocs = {
         url: '',
-        description: '',
+        description: ''
       }
     }
 
@@ -543,7 +543,7 @@ export class Route {
       prefixes: this.route.prefixes,
       handler: this.route.handler,
       middlewares: this.route.middlewares,
-      fastify: this.route.fastify,
+      fastify: this.route.fastify
     }
   }
 

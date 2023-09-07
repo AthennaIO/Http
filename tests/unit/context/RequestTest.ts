@@ -82,7 +82,7 @@ export default class RequestTest {
     assert.deepEqual(ctx.request.body, {
       email: 'lenon@athenna.io',
       name: 'João',
-      other: 'other',
+      other: 'other'
     })
   }
 
@@ -91,7 +91,7 @@ export default class RequestTest {
     const ctx = { request: new Request(this.request) }
 
     assert.deepEqual(ctx.request.params, {
-      id: '1',
+      id: '1'
     })
   }
 
@@ -100,7 +100,7 @@ export default class RequestTest {
     const ctx = { request: new Request(this.request) }
 
     assert.deepEqual(ctx.request.queries, {
-      query: 'true',
+      query: 'true'
     })
   }
 
@@ -112,7 +112,7 @@ export default class RequestTest {
       'content-length': '59',
       'content-type': 'application/json',
       host: 'localhost:80',
-      'user-agent': 'lightMyRequest',
+      'user-agent': 'lightMyRequest'
     })
   }
 

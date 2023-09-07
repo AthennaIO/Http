@@ -16,7 +16,7 @@ import type {
   FastifyListenOptions,
   FastifyServerOptions,
   LightMyRequestChain,
-  LightMyRequestResponse,
+  LightMyRequestResponse
 } from 'fastify'
 
 import type {
@@ -24,7 +24,7 @@ import type {
   ErrorHandler,
   RequestHandler,
   InterceptHandler,
-  TerminateHandler,
+  TerminateHandler
 } from '#src/types'
 
 import { Options } from '@athenna/common'
@@ -211,7 +211,7 @@ export class ServerImpl {
     options.middlewares = Options.create(options.middlewares, {
       middlewares: [],
       terminators: [],
-      interceptors: [],
+      interceptors: []
     })
 
     if (options.methods.length === 2 && options.methods.includes('HEAD')) {
@@ -221,8 +221,8 @@ export class ServerImpl {
         methods: ['HEAD'],
         fastify: {
           ...options.fastify,
-          schema: { ...options.fastify.schema, hide: true },
-        },
+          schema: { ...options.fastify.schema, hide: true }
+        }
       })
 
       return
@@ -235,15 +235,15 @@ export class ServerImpl {
       // @ts-ignore
       handler: FastifyHandler.request(options.handler),
       preHandler: options.middlewares.middlewares.map(m =>
-        FastifyHandler.handle(m),
+        FastifyHandler.handle(m)
       ),
       onSend: options.middlewares.interceptors.map(m =>
-        FastifyHandler.intercept(m),
+        FastifyHandler.intercept(m)
       ),
       onResponse: options.middlewares.terminators.map(m =>
-        FastifyHandler.terminate(m),
+        FastifyHandler.terminate(m)
       ),
-      ...options.fastify,
+      ...options.fastify
     })
   }
 

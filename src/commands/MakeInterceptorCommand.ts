@@ -13,7 +13,7 @@ import { BaseCommand, Argument } from '@athenna/artisan'
 
 export class MakeInterceptorCommand extends BaseCommand {
   @Argument({
-    description: 'The interceptor name.',
+    description: 'The interceptor name.'
   })
   public name: string
 
@@ -35,7 +35,7 @@ export class MakeInterceptorCommand extends BaseCommand {
       .make()
 
     this.logger.success(
-      `Interceptor ({yellow} "${file.name}") successfully created.`,
+      `Interceptor ({yellow} "${file.name}") successfully created.`
     )
 
     const importPath = this.getImportPath(file.name)
@@ -43,7 +43,7 @@ export class MakeInterceptorCommand extends BaseCommand {
     await this.rc.pushTo('middlewares', importPath).save()
 
     this.logger.success(
-      `Athenna RC updated: ({dim,yellow} [ middlewares += "${importPath}" ])`,
+      `Athenna RC updated: ({dim,yellow} [ middlewares += "${importPath}" ])`
     )
   }
 
@@ -60,7 +60,7 @@ export class MakeInterceptorCommand extends BaseCommand {
   private getDestinationPath(): string {
     let destination = Config.get(
       'rc.commands.make:interceptor.destination',
-      Path.interceptors(),
+      Path.interceptors()
     )
 
     if (!isAbsolute(destination)) {

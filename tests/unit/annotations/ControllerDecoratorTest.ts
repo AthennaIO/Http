@@ -26,7 +26,7 @@ export default class ControllerDecoratorTest {
 
   @Test()
   public async shouldBeAbleToRegisterControllersInTheServiceProviderWithDifferentAliasesUsingDecorators({
-    assert,
+    assert
   }: Context) {
     @Controller({ alias: 'App/Services/MyController' })
     class _MyController {}
@@ -36,7 +36,7 @@ export default class ControllerDecoratorTest {
 
   @Test()
   public async shouldBeAbleToRegisterControllersInTheServiceProviderWithDifferentRegistrationTypeUsingDecorators({
-    assert,
+    assert
   }: Context) {
     @Controller({ alias: 'myController', type: 'singleton' })
     class _MyController {}

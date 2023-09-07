@@ -48,7 +48,7 @@ export class RouteListCommand extends BaseCommand {
         route.methods.join('|'),
         route.url,
         route.name || 'Not found',
-        route.handler.name || 'closure',
+        route.handler.name || 'closure'
       ])
     })
 
@@ -61,7 +61,7 @@ export class RouteListCommand extends BaseCommand {
   private async resolveRoute() {
     await Module.resolve(
       Config.get('rc.commands.route:list.route', '#routes/http'),
-      Config.get('rc.meta'),
+      Config.get('rc.meta')
     )
   }
 
@@ -75,7 +75,7 @@ export class RouteListCommand extends BaseCommand {
 
     return Module.resolve(
       Config.get('rc.commands.route:list.kernel'),
-      Config.get('rc.meta'),
+      Config.get('rc.meta')
     )
   }
 }

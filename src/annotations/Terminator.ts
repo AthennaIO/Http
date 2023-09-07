@@ -24,7 +24,7 @@ export function Terminator(options?: MiddlewareOptions): ClassDecorator {
       isGlobal: false,
       name: String.toCamelCase(target.name),
       alias: `App/Http/Terminators/${target.name}`,
-      type: 'transient',
+      type: 'transient'
     })
 
     const alias = options.alias
@@ -33,7 +33,7 @@ export function Terminator(options?: MiddlewareOptions): ClassDecorator {
     if (ioc.hasDependency(alias)) {
       debug(
         'Terminator %s was already registered in the service container. Skipping registration via Terminator annotation.',
-        alias,
+        alias
       )
 
       return
@@ -53,7 +53,7 @@ export function Terminator(options?: MiddlewareOptions): ClassDecorator {
 
     debug(
       'Registering %s as a global terminator via Terminator annotation.',
-      Terminator.constructor.name,
+      Terminator.constructor.name
     )
 
     Server.middleware(Terminator.terminate)

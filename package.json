@@ -1,6 +1,6 @@
 {
   "name": "@athenna/http",
-  "version": "4.5.0",
+  "version": "4.6.0",
   "description": "The Athenna Http server. Built on top of fastify.",
   "license": "MIT",
   "author": "João Lenon <lenon@athenna.io>",
@@ -70,13 +70,13 @@
     "fastify": "^4.21.0"
   },
   "devDependencies": {
-    "@athenna/artisan": "^4.2.0",
-    "@athenna/common": "^4.4.0",
-    "@athenna/config": "^4.3.0",
-    "@athenna/ioc": "^4.1.0",
-    "@athenna/logger": "^4.2.0",
-    "@athenna/test": "^4.4.0",
-    "@athenna/view": "^4.1.0",
+    "@athenna/artisan": "^4.9.0",
+    "@athenna/common": "^4.10.1",
+    "@athenna/config": "^4.4.0",
+    "@athenna/ioc": "^4.2.0",
+    "@athenna/logger": "^4.3.0",
+    "@athenna/test": "^4.5.0",
+    "@athenna/view": "^4.2.0",
     "@fastify/cors": "^8.1.1",
     "@fastify/helmet": "^10.0.2",
     "@fastify/rate-limit": "^7.5.0",
@@ -86,7 +86,6 @@
     "@typescript-eslint/parser": "^5.56.0",
     "c8": "^7.12.0",
     "commitizen": "^4.2.6",
-    "cross-env": "^7.0.3",
     "cz-conventional-changelog": "^3.3.0",
     "eslint": "^8.36.0",
     "eslint-config-prettier": "^8.8.0",
@@ -142,7 +141,7 @@
   },
   "prettier": {
     "singleQuote": true,
-    "trailingComma": "all",
+    "trailingComma": "none",
     "arrowParens": "avoid",
     "endOfLine": "lf",
     "semi": false,
@@ -209,37 +208,37 @@
     "services": [],
     "providers": [],
     "controllers": [
-      "#tests/stubs/controllers/HelloController",
-      "#tests/stubs/controllers/DecoratedController"
+      "#tests/fixtures/controllers/HelloController",
+      "#tests/fixtures/controllers/DecoratedController"
     ],
     "middlewares": [
-      "#tests/stubs/middlewares/Middleware",
-      "#tests/stubs/middlewares/ImportedMiddleware",
-      "#tests/stubs/middlewares/DecoratedMiddleware",
-      "#tests/stubs/middlewares/DecoratedInterceptor",
-      "#tests/stubs/middlewares/DecoratedTerminator"
+      "#tests/fixtures/middlewares/Middleware",
+      "#tests/fixtures/middlewares/ImportedMiddleware",
+      "#tests/fixtures/middlewares/DecoratedMiddleware",
+      "#tests/fixtures/middlewares/DecoratedInterceptor",
+      "#tests/fixtures/middlewares/DecoratedTerminator"
     ],
     "namedMiddlewares": {
-      "middleware": "#tests/stubs/middlewares/Middleware",
-      "interceptor": "#tests/stubs/middlewares/Interceptor",
-      "terminator": "#tests/stubs/middlewares/Terminator",
-      "not-found-middleware": "#tests/stubs/middlewares/DecoratedMiddleware",
-      "not-found-interceptor": "#tests/stubs/middlewares/DecoratedInterceptor",
-      "not-found-terminator": "#tests/stubs/middlewares/DecoratedTerminator"
+      "middleware": "#tests/fixtures/middlewares/Middleware",
+      "interceptor": "#tests/fixtures/middlewares/Interceptor",
+      "terminator": "#tests/fixtures/middlewares/Terminator",
+      "not-found-middleware": "#tests/fixtures/middlewares/DecoratedMiddleware",
+      "not-found-interceptor": "#tests/fixtures/middlewares/DecoratedInterceptor",
+      "not-found-terminator": "#tests/fixtures/middlewares/DecoratedTerminator"
     },
     "globalMiddlewares": [
-      "#tests/stubs/middlewares/Middleware",
-      "#tests/stubs/middlewares/Interceptor",
-      "#tests/stubs/middlewares/Terminator",
-      "#tests/stubs/middlewares/DecoratedGlobalMiddleware",
-      "#tests/stubs/middlewares/DecoratedGlobalInterceptor",
-      "#tests/stubs/middlewares/DecoratedGlobalTerminator"
+      "#tests/fixtures/middlewares/Middleware",
+      "#tests/fixtures/middlewares/Interceptor",
+      "#tests/fixtures/middlewares/Terminator",
+      "#tests/fixtures/middlewares/DecoratedGlobalMiddleware",
+      "#tests/fixtures/middlewares/DecoratedGlobalInterceptor",
+      "#tests/fixtures/middlewares/DecoratedGlobalTerminator"
     ],
     "commands": {
       "route:list": {
         "path": "#src/commands/RouteListCommand",
-        "route": "./tests/stubs/routes/http.js",
-        "kernel": "./tests/stubs/kernels/HttpKernel.js"
+        "route": "./tests/fixtures/routes/http.js",
+        "kernel": "./tests/fixtures/kernels/HttpKernel.js"
       },
       "make:controller": "#src/commands/MakeControllerCommand",
       "make:interceptor": "#src/commands/MakeInterceptorCommand",

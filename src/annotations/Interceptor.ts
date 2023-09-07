@@ -24,7 +24,7 @@ export function Interceptor(options?: MiddlewareOptions): ClassDecorator {
       isGlobal: false,
       name: String.toCamelCase(target.name),
       alias: `App/Http/Interceptors/${target.name}`,
-      type: 'transient',
+      type: 'transient'
     })
 
     const alias = options.alias
@@ -33,7 +33,7 @@ export function Interceptor(options?: MiddlewareOptions): ClassDecorator {
     if (ioc.hasDependency(alias)) {
       debug(
         'Interceptor %s was already registered in the service container. Skipping registration via Interceptor annotation.',
-        alias,
+        alias
       )
 
       return
@@ -53,7 +53,7 @@ export function Interceptor(options?: MiddlewareOptions): ClassDecorator {
 
     debug(
       'Registering %s as a global interceptor via Interceptor annotation.',
-      Interceptor.constructor.name,
+      Interceptor.constructor.name
     )
 
     Server.intercept(Interceptor.intercept)

@@ -13,7 +13,7 @@ import { BaseCommand, Argument } from '@athenna/artisan'
 
 export class MakeMiddlewareCommand extends BaseCommand {
   @Argument({
-    description: 'The middleware name.',
+    description: 'The middleware name.'
   })
   public name: string
 
@@ -35,7 +35,7 @@ export class MakeMiddlewareCommand extends BaseCommand {
       .make()
 
     this.logger.success(
-      `Middleware ({yellow} "${file.name}") successfully created.`,
+      `Middleware ({yellow} "${file.name}") successfully created.`
     )
 
     const importPath = this.getImportPath(file.name)
@@ -43,7 +43,7 @@ export class MakeMiddlewareCommand extends BaseCommand {
     await this.rc.pushTo('middlewares', importPath).save()
 
     this.logger.success(
-      `Athenna RC updated: ({dim,yellow} [ middlewares += "${importPath}" ])`,
+      `Athenna RC updated: ({dim,yellow} [ middlewares += "${importPath}" ])`
     )
   }
 
@@ -60,7 +60,7 @@ export class MakeMiddlewareCommand extends BaseCommand {
   private getDestinationPath(): string {
     let destination = Config.get(
       'rc.commands.make:middleware.destination',
-      Path.middlewares(),
+      Path.middlewares()
     )
 
     if (!isAbsolute(destination)) {

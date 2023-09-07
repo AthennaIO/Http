@@ -7,11 +7,11 @@
  * file that was distributed with this source code.
  */
 
-import { Middleware } from '#tests/stubs/middlewares/Middleware'
-import { Terminator } from '#tests/stubs/middlewares/Terminator'
-import { Interceptor } from '#tests/stubs/middlewares/Interceptor'
+import { Middleware } from '#tests/fixtures/middlewares/Middleware'
+import { Terminator } from '#tests/fixtures/middlewares/Terminator'
+import { Interceptor } from '#tests/fixtures/middlewares/Interceptor'
 import { Test, AfterEach, BeforeEach, type Context } from '@athenna/test'
-import { HelloController } from '#tests/stubs/controllers/HelloController'
+import { HelloController } from '#tests/fixtures/controllers/HelloController'
 import { Route, Server, HttpRouteProvider, HttpServerProvider } from '#src'
 import { UndefinedMethodException } from '#src/exceptions/UndefinedMethodException'
 
@@ -40,7 +40,7 @@ export default class RouterTest {
     assert.deepEqual(route.middlewares, {
       middlewares: [],
       terminators: [],
-      interceptors: [],
+      interceptors: []
     })
     assert.deepEqual(route.fastify, { schema: {} })
   }
@@ -212,7 +212,7 @@ export default class RouterTest {
 
     assert.deepEqual((await Server.request({ path: '/test', method: 'get' })).json(), {
       hello: 'world',
-      intercepted: true,
+      intercepted: true
     })
   }
 
@@ -229,7 +229,7 @@ export default class RouterTest {
     Route.register()
 
     assert.deepEqual((await Server.request({ path: '/test', method: 'get' })).json(), {
-      hello: 'world',
+      hello: 'world'
     })
     assert.isTrue(terminated)
   }
@@ -255,7 +255,7 @@ export default class RouterTest {
 
     assert.deepEqual((await Server.request({ path: '/test', method: 'get' })).json(), {
       hello: 'world',
-      intercepted: true,
+      intercepted: true
     })
   }
 
@@ -268,7 +268,7 @@ export default class RouterTest {
     Route.register()
 
     assert.deepEqual((await Server.request({ path: '/test', method: 'get' })).json(), {
-      hello: 'world',
+      hello: 'world'
     })
   }
 
@@ -297,7 +297,7 @@ export default class RouterTest {
 
     assert.deepEqual((await Server.request({ path: '/test', method: 'get' })).json(), {
       hello: 'world',
-      intercepted: true,
+      intercepted: true
     })
   }
 
@@ -312,7 +312,7 @@ export default class RouterTest {
     Route.register()
 
     assert.deepEqual((await Server.request({ path: '/test', method: 'get' })).json(), {
-      hello: 'world',
+      hello: 'world'
     })
   }
 
@@ -341,7 +341,7 @@ export default class RouterTest {
 
     assert.deepEqual((await Server.request({ path: '/test', method: 'get' })).json(), {
       hello: 'world',
-      intercepted: true,
+      intercepted: true
     })
   }
 
@@ -356,7 +356,7 @@ export default class RouterTest {
     Route.register()
 
     assert.deepEqual((await Server.request({ path: '/test', method: 'get' })).json(), {
-      hello: 'world',
+      hello: 'world'
     })
   }
 
@@ -383,7 +383,7 @@ export default class RouterTest {
     Route.get('test', 'HelloController.vanillaError').vanillaOptions({
       onError: async () => {
         errorHappened = true
-      },
+      }
     })
 
     Route.register()

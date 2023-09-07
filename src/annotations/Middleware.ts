@@ -24,7 +24,7 @@ export function Middleware(options?: MiddlewareOptions): ClassDecorator {
       isGlobal: false,
       name: String.toCamelCase(target.name),
       alias: `App/Http/Middlewares/${target.name}`,
-      type: 'transient',
+      type: 'transient'
     })
 
     const alias = options.alias
@@ -33,7 +33,7 @@ export function Middleware(options?: MiddlewareOptions): ClassDecorator {
     if (ioc.hasDependency(alias)) {
       debug(
         'Middleware %s was already registered in the service container. Skipping registration via Middleware annotation.',
-        alias,
+        alias
       )
 
       return
@@ -53,7 +53,7 @@ export function Middleware(options?: MiddlewareOptions): ClassDecorator {
 
     debug(
       'Registering %s as a global middleware via Middleware annotation.',
-      Middleware.constructor.name,
+      Middleware.constructor.name
     )
 
     Server.middleware(Middleware.handle)

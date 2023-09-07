@@ -38,7 +38,7 @@ export default class RouteListCommandTest extends BaseCommandTest {
         '│ PUT|PATCH │ /test/:id │ HelloController.update │ update  │\n' +
         '├───────────┼───────────┼────────────────────────┼─────────┤\n' +
         '│ DELETE    │ /test/:id │ HelloController.delete │ delete  │\n' +
-        '└───────────┴───────────┴────────────────────────┴─────────┘\n',
+        '└───────────┴───────────┴────────────────────────┴─────────┘\n'
     )
   }
 }

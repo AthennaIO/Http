@@ -20,7 +20,7 @@ export class UnprocessableEntityException extends HttpException {
    */
   public constructor(
     message = 'Unprocessable entity error happened.',
-    help = null,
+    help = null
   ) {
     super({ help, message, status: 422, code: 'E_UNPROCESSABLE_ENTITY_ERROR' })
   }

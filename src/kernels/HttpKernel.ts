@@ -44,7 +44,7 @@ export class HttpKernel {
   public async registerHelmet(): Promise<void> {
     if (!helmetPlugin) {
       debug(
-        'Not able to register helmet plugin. Install @fastify/helmet package.',
+        'Not able to register helmet plugin. Install @fastify/helmet package.'
       )
 
       return
@@ -59,18 +59,18 @@ export class HttpKernel {
   public async registerSwagger(): Promise<void> {
     if (swaggerPlugin) {
       debug(
-        'Not able to register swagger plugin. Install @fastify/swagger package.',
+        'Not able to register swagger plugin. Install @fastify/swagger package.'
       )
 
       await Server.plugin(
         swaggerPlugin,
-        Config.get('http.swagger.configurations'),
+        Config.get('http.swagger.configurations')
       )
     }
 
     if (swaggerUiPlugin) {
       debug(
-        'Not able to register swagger-ui plugin. Install @fastify/swagger-ui package.',
+        'Not able to register swagger-ui plugin. Install @fastify/swagger-ui package.'
       )
 
       await Server.plugin(swaggerUiPlugin, Config.get('http.swagger.ui'))
@@ -83,7 +83,7 @@ export class HttpKernel {
   public async registerRateLimit(): Promise<void> {
     if (!rateLimitPlugin) {
       debug(
-        'Not able to register rate limit plugin. Install @fastify/rate-limit package.',
+        'Not able to register rate limit plugin. Install @fastify/rate-limit package.'
       )
 
       return
@@ -120,7 +120,7 @@ export class HttpKernel {
       Config.is('http.logger.enabled', false)
     ) {
       debug(
-        'Not able to register http request logger. Enable it in your http.logger.enabled configuration.',
+        'Not able to register http request logger. Enable it in your http.logger.enabled configuration.'
       )
 
       return
@@ -142,7 +142,7 @@ export class HttpKernel {
       if (Reflect.hasMetadata('ioc:registered', Controller)) {
         debug(
           'Controller %s already registered by Controller annotation. Skipping registration via HttpKernel.',
-          Controller.name,
+          Controller.name
         )
 
         return
@@ -175,7 +175,7 @@ export class HttpKernel {
    */
   public async registerNamedMiddlewares(): Promise<void> {
     const namedMiddlewares = Config.get<Record<string, string>>(
-      'rc.namedMiddlewares',
+      'rc.namedMiddlewares'
     )
 
     if (Is.Empty(namedMiddlewares)) {
@@ -188,7 +188,7 @@ export class HttpKernel {
       if (Reflect.hasMetadata('ioc:registered', Middleware)) {
         debug(
           'Named middleware %s already registered by Middleware annotation. Skipping registration via HttpKernel.',
-          Middleware.name,
+          Middleware.name
         )
 
         return
@@ -197,7 +197,7 @@ export class HttpKernel {
       const createCamelAlias = false
       const { alias, namedAlias } = this.getNamedMiddlewareAlias(
         key,
-        Middleware,
+        Middleware
       )
 
       ioc.bind(alias, Middleware, createCamelAlias).alias(namedAlias, alias)
@@ -221,7 +221,7 @@ export class HttpKernel {
       if (Reflect.hasMetadata('ioc:registered', Middleware)) {
         debug(
           'Global middleware %s already registered by Middleware annotation. Skipping registration via HttpKernel.',
-          Middleware.name,
+          Middleware.name
         )
 
         return
@@ -243,7 +243,7 @@ export class HttpKernel {
   public async registerExceptionHandler(path?: string): Promise<void> {
     if (!path) {
       debug(
-        'No custom exception handler path provided for HttpKernel. Using the default one.',
+        'No custom exception handler path provided for HttpKernel. Using the default one.'
       )
 
       const handler = new HttpExceptionHandler()
@@ -292,21 +292,21 @@ export class HttpKernel {
     if (middleware.handle) {
       return {
         alias: `App/Http/Middlewares/${Middleware.name}`,
-        namedAlias: `App/Http/Middlewares/Names/${name}`,
+        namedAlias: `App/Http/Middlewares/Names/${name}`
       }
     }
 
     if (middleware.intercept) {
       return {
         alias: `App/Http/Interceptors/${Middleware.name}`,
-        namedAlias: `App/Http/Interceptors/Names/${name}`,
+        namedAlias: `App/Http/Interceptors/Names/${name}`
       }
     }
 
     if (middleware.terminate) {
       return {
         alias: `App/Http/Terminators/${Middleware.name}`,
-        namedAlias: `App/Http/Terminators/Names/${name}`,
+        namedAlias: `App/Http/Terminators/Names/${name}`
       }
     }
   }
@@ -322,7 +322,7 @@ export class HttpKernel {
       return {
         handler: 'handle',
         serverMethod: 'middleware',
-        alias: `App/Http/Middlewares/${Middleware.name}`,
+        alias: `App/Http/Middlewares/${Middleware.name}`
       }
     }
 
@@ -330,7 +330,7 @@ export class HttpKernel {
       return {
         handler: 'intercept',
         serverMethod: 'intercept',
-        alias: `App/Http/Interceptors/${Middleware.name}`,
+        alias: `App/Http/Interceptors/${Middleware.name}`
       }
     }
 
@@ -338,7 +338,7 @@ export class HttpKernel {
       return {
         handler: 'terminate',
         serverMethod: 'terminate',
-        alias: `App/Http/Terminators/${Middleware.name}`,
+        alias: `App/Http/Terminators/${Middleware.name}`
       }
     }
   }
@@ -349,7 +349,7 @@ export class HttpKernel {
   private resolvePath(path: string) {
     return Module.resolve(
       `${path}?version=${Math.random()}`,
-      Config.get('rc.meta'),
+      Config.get('rc.meta')
     )
   }
 }

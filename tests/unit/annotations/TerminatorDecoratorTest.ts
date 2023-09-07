@@ -26,7 +26,7 @@ export default class TerminatorDecoratorTest {
 
   @Test()
   public async shouldBeAbleToRegisterTerminatorInTheServiceProviderWithDifferentAliasesUsingDecorators({
-    assert,
+    assert
   }: Context) {
     @Terminator({ alias: 'App/Services/MyTerminator' })
     class _MyTerminator {}
@@ -36,7 +36,7 @@ export default class TerminatorDecoratorTest {
 
   @Test()
   public async shouldBeAbleToRegisterTerminatorInTheServiceProviderWithDifferentRegistrationTypeUsingDecorators({
-    assert,
+    assert
   }: Context) {
     @Terminator({ alias: 'myTerminator', type: 'singleton' })
     class _MyTerminator {}

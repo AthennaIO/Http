@@ -8,9 +8,9 @@
  */
 
 import { Route } from '#src'
-import { Middleware } from '#tests/stubs/middlewares/Middleware'
-import { Interceptor } from '#tests/stubs/middlewares/Interceptor'
-import { HelloController } from '#tests/stubs/controllers/HelloController'
+import { Middleware } from '#tests/fixtures/middlewares/Middleware'
+import { Interceptor } from '#tests/fixtures/middlewares/Interceptor'
+import { HelloController } from '#tests/fixtures/controllers/HelloController'
 
 ioc.bind('App/Http/Interceptors/Names/interceptor', Interceptor)
 

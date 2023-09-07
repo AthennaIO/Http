@@ -26,7 +26,7 @@ export default class InterceptorDecoratorTest {
 
   @Test()
   public async shouldBeAbleToRegisterInterceptorInTheServiceProviderWithDifferentAliasesUsingDecorators({
-    assert,
+    assert
   }: Context) {
     @Interceptor({ alias: 'App/Services/MyInterceptor' })
     class _MyInterceptor {}
@@ -36,7 +36,7 @@ export default class InterceptorDecoratorTest {
 
   @Test()
   public async shouldBeAbleToRegisterInterceptorInTheServiceProviderWithDifferentRegistrationTypeUsingDecorators({
-    assert,
+    assert
   }: Context) {
     @Interceptor({ alias: 'myInterceptor', type: 'singleton' })
     class _MyInterceptor {}

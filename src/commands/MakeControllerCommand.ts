@@ -13,7 +13,7 @@ import { BaseCommand, Argument } from '@athenna/artisan'
 
 export class MakeControllerCommand extends BaseCommand {
   @Argument({
-    description: 'The controller name.',
+    description: 'The controller name.'
   })
   public name: string
 
@@ -35,7 +35,7 @@ export class MakeControllerCommand extends BaseCommand {
       .make()
 
     this.logger.success(
-      `Controller ({yellow} "${file.name}") successfully created.`,
+      `Controller ({yellow} "${file.name}") successfully created.`
     )
 
     const importPath = this.getImportPath(file.name)
@@ -43,7 +43,7 @@ export class MakeControllerCommand extends BaseCommand {
     await this.rc.pushTo('controllers', importPath).save()
 
     this.logger.success(
-      `Athenna RC updated: ({dim,yellow} [ controllers += "${importPath}" ])`,
+      `Athenna RC updated: ({dim,yellow} [ controllers += "${importPath}" ])`
     )
   }
 
@@ -60,7 +60,7 @@ export class MakeControllerCommand extends BaseCommand {
   private getDestinationPath(): string {
     let destination = Config.get(
       'rc.commands.make:controller.destination',
-      Path.controllers(),
+      Path.controllers()
     )
 
     if (!isAbsolute(destination)) {

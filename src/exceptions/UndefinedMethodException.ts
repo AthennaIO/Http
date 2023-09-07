@@ -15,7 +15,7 @@ export class UndefinedMethodException extends Exception {
       status: 500,
       code: 'E_UNDEFINED_METHOD',
       message: `Cannot register the ${method} method in your Route because it's not defined inside your ${className} class.`,
-      help: `Remember defining the method ${method} inside your ${className} class.`,
+      help: `Remember defining the method ${method} inside your ${className} class.`
     })
   }
 }
