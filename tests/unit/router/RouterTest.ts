@@ -7,9 +7,9 @@
  * file that was distributed with this source code.
  */
 
-import { Middleware } from '#tests/fixtures/middlewares/Middleware'
-import { Terminator } from '#tests/fixtures/middlewares/Terminator'
-import { Interceptor } from '#tests/fixtures/middlewares/Interceptor'
+import { MyMiddleware } from '#tests/fixtures/middlewares/MyMiddleware'
+import { MyTerminator } from '#tests/fixtures/middlewares/MyTerminator'
+import { MyInterceptor } from '#tests/fixtures/middlewares/MyInterceptor'
 import { Test, AfterEach, BeforeEach, type Context } from '@athenna/test'
 import { HelloController } from '#tests/fixtures/controllers/HelloController'
 import { Route, Server, HttpRouteProvider, HttpServerProvider } from '#src'
@@ -238,7 +238,7 @@ export default class RouterTest {
   public async shouldBeAbleToRegisterAMiddlewareClassInRouteUsingRouter({ assert }: Context) {
     Route.get('test', ctx => {
       ctx.response.send({ hello: 'world', handled: ctx.data.handled })
-    }).middleware(new Middleware())
+    }).middleware(new MyMiddleware())
 
     Route.register()
 
@@ -249,7 +249,7 @@ export default class RouterTest {
   public async shouldBeAbleToRegisterAnInterceptMiddlewareClassInRouteUsingRouter({ assert }: Context) {
     Route.get('test', ctx => {
       ctx.response.send({ hello: 'world', handled: ctx.data.handled })
-    }).interceptor(new Interceptor())
+    }).interceptor(new MyInterceptor())
 
     Route.register()
 
@@ -263,7 +263,7 @@ export default class RouterTest {
   public async shouldBeAbleToRegisterATerminateMiddlewareClassInRouteUsingRouter({ assert }: Context) {
     Route.get('test', ctx => {
       ctx.response.send({ hello: 'world' })
-    }).terminator(new Terminator())
+    }).terminator(new MyTerminator())
 
     Route.register()
 
@@ -274,7 +274,7 @@ export default class RouterTest {
 
   @Test()
   public async shouldBeAbleToRegisterAMiddlewareDependencyInRouteUsingRouter({ assert }: Context) {
-    ioc.bind('App/Http/Middlewares/Middleware', Middleware)
+    ioc.bind('App/Http/Middlewares/Middleware', MyMiddleware)
 
     Route.get('test', ctx => {
       ctx.response.send({ hello: 'world', handled: ctx.data.handled })
@@ -287,7 +287,7 @@ export default class RouterTest {
 
   @Test()
   public async shouldBeAbleToRegisterAnInterceptMiddlewareDependencyInRouteUsingRouter({ assert }: Context) {
-    ioc.bind('App/Http/Interceptors/Interceptor', Interceptor)
+    ioc.bind('App/Http/Interceptors/Interceptor', MyInterceptor)
 
     Route.get('test', ctx => {
       ctx.response.send({ hello: 'world', handled: ctx.data.handled })
@@ -303,7 +303,7 @@ export default class RouterTest {
 
   @Test()
   public async shouldBeAbleToRegisterATerminateMiddlewareDependencyInRouteUsingRouter({ assert }: Context) {
-    ioc.bind('App/Http/Terminators/Terminator', Terminator)
+    ioc.bind('App/Http/Terminators/Terminator', MyTerminator)
 
     Route.get('test', ctx => {
       ctx.response.send({ hello: 'world' })
@@ -318,7 +318,7 @@ export default class RouterTest {
 
   @Test()
   public async shouldBeAbleToRegisterANamedMiddlewareDependencyInRouteUsingRouter({ assert }: Context) {
-    ioc.bind('App/Http/Middlewares/Names/middleware', Middleware)
+    ioc.bind('App/Http/Middlewares/Names/middleware', MyMiddleware)
 
     Route.get('test', ctx => {
       ctx.response.send({ hello: 'world', handled: ctx.data.handled })
@@ -331,7 +331,7 @@ export default class RouterTest {
 
   @Test()
   public async shouldBeAbleToRegisterANamedInterceptMiddlewareDependencyInRouteUsingRouter({ assert }: Context) {
-    ioc.bind('App/Http/Interceptors/Names/interceptor', Interceptor)
+    ioc.bind('App/Http/Interceptors/Names/interceptor', MyInterceptor)
 
     Route.get('test', ctx => {
       ctx.response.send({ hello: 'world', handled: ctx.data.handled })
@@ -347,7 +347,7 @@ export default class RouterTest {
 
   @Test()
   public async shouldBeAbleToRegisterANamedTerminateMiddlewareDependencyInRouteUsingRouter({ assert }: Context) {
-    ioc.bind('App/Http/Terminators/Names/terminator', Terminator)
+    ioc.bind('App/Http/Terminators/Names/terminator', MyTerminator)
 
     Route.get('test', ctx => {
       ctx.response.send({ hello: 'world' })

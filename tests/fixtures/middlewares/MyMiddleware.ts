@@ -7,12 +7,10 @@
  * file that was distributed with this source code.
  */
 
-import { Middleware } from '#src'
 import type { Context, MiddlewareContract } from '#src/types'
 
-@Middleware({ type: 'singleton', alias: 'decoratedGlobalMiddleware', isGlobal: true })
-export class DecoratedGlobalMiddleware implements MiddlewareContract {
-  handle(ctx: Context): any {
+export class MyMiddleware implements MiddlewareContract {
+  public handle(ctx: Context): any {
     ctx.data.handled = true
   }
 }

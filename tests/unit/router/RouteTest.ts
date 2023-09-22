@@ -7,7 +7,7 @@
  * file that was distributed with this source code.
  */
 
-import { Middleware } from '#tests/fixtures/middlewares/Middleware'
+import { MyMiddleware } from '#tests/fixtures/middlewares/MyMiddleware'
 import { Test, AfterEach, BeforeEach, type Context } from '@athenna/test'
 import { HelloController } from '#tests/fixtures/controllers/HelloController'
 import { Route, Server, HttpRouteProvider, HttpServerProvider } from '#src'
@@ -58,7 +58,7 @@ export default class RouteTest {
   @Test()
   public async shouldBeAbleToSetFastifySchemaOptionsInRoute({ assert }: Context) {
     Route.get('test', new HelloController().index)
-      .middleware(new Middleware())
+      .middleware(new MyMiddleware())
       .schema({
         response: {
           200: {

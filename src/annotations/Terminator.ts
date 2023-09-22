@@ -9,11 +9,10 @@
 
 import 'reflect-metadata'
 
-import { Server } from '#src/facades/Server'
+import { debug } from '#src/debug'
+import { Annotation } from '@athenna/ioc'
 import { Options, String } from '@athenna/common'
-import type { TerminatorContract } from '#src/types/contracts/TerminatorContract'
 import type { MiddlewareOptions } from '#src/types/middlewares/MiddlewareOptions'
-import { debug } from '#src/debug/index'
 
 /**
  * Create a terminator inside the service provider.
@@ -22,40 +21,37 @@ export function Terminator(options?: MiddlewareOptions): ClassDecorator {
   return (target: any) => {
     options = Options.create(options, {
       isGlobal: false,
-      name: String.toCamelCase(target.name),
+      type: 'transient',
       alias: `App/Http/Terminators/${target.name}`,
-      type: 'transient'
+      name: String.toCamelCase(target.name)
     })
 
-    const alias = options.alias
-    const createCamelAlias = false
+    options.name = `App/Http/Terminators/Names/${options.name}`
 
-    if (ioc.hasDependency(alias)) {
+    debug('Registering terminator metadata for the service container %o', {
+      ...options,
+      name: target.name,
+      namedAlias: options.name
+    })
+
+    if (ioc.has(options.name)) {
       debug(
-        'Terminator %s was already registered in the service container. Skipping registration via Terminator annotation.',
-        alias
+        'Skipping registration, named alias %s is already registered.',
+        options.name
       )
 
       return
     }
 
-    ioc[options.type](alias, target, createCamelAlias)
-
-    Reflect.defineMetadata('ioc:registered', true, target)
-
-    if (!options.isGlobal) {
-      ioc.alias(`App/Http/Terminators/Names/${options.name}`, alias)
+    if (ioc.has(options.alias)) {
+      debug(
+        'Skipping registration, alias %s is already registered.',
+        options.alias
+      )
 
       return
     }
 
-    const Terminator = ioc.safeUse<TerminatorContract>(alias)
-
-    debug(
-      'Registering %s as a global terminator via Terminator annotation.',
-      Terminator.constructor.name
-    )
-
-    Server.middleware(Terminator.terminate)
+    Annotation.defineMeta(target, options)
   }
 }

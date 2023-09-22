@@ -7,9 +7,9 @@
  * file that was distributed with this source code.
  */
 
-import { Middleware } from '#tests/fixtures/middlewares/Middleware'
-import { Terminator } from '#tests/fixtures/middlewares/Terminator'
-import { Interceptor } from '#tests/fixtures/middlewares/Interceptor'
+import { MyMiddleware } from '#tests/fixtures/middlewares/MyMiddleware'
+import { MyTerminator } from '#tests/fixtures/middlewares/MyTerminator'
+import { MyInterceptor } from '#tests/fixtures/middlewares/MyInterceptor'
 import { Test, AfterEach, BeforeEach, type Context } from '@athenna/test'
 import { HelloController } from '#tests/fixtures/controllers/HelloController'
 import { Route, Server, HttpRouteProvider, HttpServerProvider } from '#src'
@@ -219,7 +219,7 @@ export default class RouteResourceTest {
   public async shouldBeAbleToRegisterAMiddlewareClassInRouteResourceUsingRouter({ assert }: Context) {
     ioc.bind('App/Http/Controllers/HelloController', HelloController)
 
-    Route.controller('HelloController').resource('test').only(['index']).middleware(new Middleware())
+    Route.controller('HelloController').resource('test').only(['index']).middleware(new MyMiddleware())
 
     Route.register()
 
@@ -230,7 +230,7 @@ export default class RouteResourceTest {
   public async shouldBeAbleToRegisterAnInterceptMiddlewareClassInRouteResourceUsingRouter({ assert }: Context) {
     ioc.bind('App/Http/Controllers/HelloController', HelloController)
 
-    Route.controller('HelloController').resource('test').only(['index']).interceptor(new Interceptor())
+    Route.controller('HelloController').resource('test').only(['index']).interceptor(new MyInterceptor())
 
     Route.register()
 
@@ -244,7 +244,7 @@ export default class RouteResourceTest {
   public async shouldBeAbleToRegisterATerminateMiddlewareClassInRouteResourceUsingRouter({ assert }: Context) {
     ioc.bind('App/Http/Controllers/HelloController', HelloController)
 
-    Route.controller('HelloController').resource('test').only(['index']).terminator(new Terminator())
+    Route.controller('HelloController').resource('test').only(['index']).terminator(new MyTerminator())
 
     Route.register()
 
@@ -256,7 +256,7 @@ export default class RouteResourceTest {
   @Test()
   public async shouldBeAbleToRegisterAMiddlewareDependencyInRouteResourceUsingRouter({ assert }: Context) {
     ioc.bind('App/Http/Controllers/HelloController', HelloController)
-    ioc.bind('App/Http/Middlewares/Middleware', Middleware)
+    ioc.bind('App/Http/Middlewares/Middleware', MyMiddleware)
 
     Route.controller('HelloController').resource('test').only(['index']).middleware('Middleware')
 
@@ -268,7 +268,7 @@ export default class RouteResourceTest {
   @Test()
   public async shouldBeAbleToRegisterAnInterceptMiddlewareDependencyInRouteResourceUsingRouter({ assert }: Context) {
     ioc.bind('App/Http/Controllers/HelloController', HelloController)
-    ioc.bind('App/Http/Interceptors/Interceptor', Interceptor)
+    ioc.bind('App/Http/Interceptors/Interceptor', MyInterceptor)
 
     Route.controller('HelloController').resource('test').only(['index']).interceptor('Interceptor')
 
@@ -283,7 +283,7 @@ export default class RouteResourceTest {
   @Test()
   public async shouldBeAbleToRegisterATerminateMiddlewareDependencyInRouteResourceUsingRouter({ assert }: Context) {
     ioc.bind('App/Http/Controllers/HelloController', HelloController)
-    ioc.bind('App/Http/Terminators/Terminator', Terminator)
+    ioc.bind('App/Http/Terminators/Terminator', MyTerminator)
 
     Route.controller('HelloController').resource('test').only(['index']).terminator('Terminator')
 
@@ -297,7 +297,7 @@ export default class RouteResourceTest {
   @Test()
   public async shouldBeAbleToRegisterANamedMiddlewareDependencyInRouteResourceUsingRouter({ assert }: Context) {
     ioc.bind('App/Http/Controllers/HelloController', HelloController)
-    ioc.bind('App/Http/Middlewares/Names/my-middleware', Middleware)
+    ioc.bind('App/Http/Middlewares/Names/my-middleware', MyMiddleware)
 
     Route.controller('HelloController').resource('test').only(['index']).middleware('my-middleware')
 
@@ -311,7 +311,7 @@ export default class RouteResourceTest {
     assert
   }: Context) {
     ioc.bind('App/Http/Controllers/HelloController', HelloController)
-    ioc.bind('App/Http/Interceptors/Names/my-interceptor', Interceptor)
+    ioc.bind('App/Http/Interceptors/Names/my-interceptor', MyInterceptor)
 
     Route.controller('HelloController').resource('test').only(['index']).interceptor('my-interceptor')
 
@@ -328,7 +328,7 @@ export default class RouteResourceTest {
     assert
   }: Context) {
     ioc.bind('App/Http/Controllers/HelloController', HelloController)
-    ioc.bind('App/Http/Terminators/Names/my-terminator', Terminator)
+    ioc.bind('App/Http/Terminators/Names/my-terminator', MyTerminator)
 
     Route.controller('HelloController').resource('test').only(['index']).terminator('my-terminator')
 

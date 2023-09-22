@@ -9,19 +9,28 @@
 
 export type MiddlewareOptions = {
   /**
-   * The alias that will be used to register the dependency inside
-   * the service provider. Athenna will not create camel alias from
-   * the alias set here.
+   * The alias that will be used to register the middleware inside
+   * the service container.
    *
    * @default App/Http/Middlewares/YourMiddlewareClassName
    */
   alias?: string
 
   /**
-   * The registration type that will be used to register your middleware
-   * inside the service provider.
+   * The camel alias that will be used as an alias of the real
+   * middleware alias. Camel alias is important when you want to
+   * work with constructor injection. By default, Athenna doesn't
+   * create camel alias for middlewares.
    *
-   * @default transient
+   * @default undefined
+   */
+  camelAlias?: string
+
+  /**
+   * The registration type that will be used to register your middleware
+   * inside the service container.
+   *
+   * @default 'transient'
    */
   type?: 'fake' | 'scoped' | 'singleton' | 'transient'
 
@@ -38,7 +47,7 @@ export type MiddlewareOptions = {
    * is true, Athenna will ignore this property. Athenna will always set the default
    * name of your middleware as the middleware class name in camel case format.
    *
-   * @default yourMiddlewareClassName
+   * @default 'yourMiddlewareClassName'
    */
   name?: string
 }

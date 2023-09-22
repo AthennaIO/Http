@@ -11,6 +11,6 @@ import { Terminator } from '#src'
 import type { TerminateContext, TerminatorContract } from '#src/types'
 
 @Terminator({ type: 'singleton', alias: 'decoratedGlobalTerminator', isGlobal: true })
-export class DecoratedGlobalTerminator implements TerminatorContract {
-  terminate(_: TerminateContext) {}
+export class AnnotatedGlobalTerminator implements TerminatorContract {
+  public terminate(_: TerminateContext) {}
 }

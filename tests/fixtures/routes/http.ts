@@ -8,15 +8,15 @@
  */
 
 import { Route } from '#src'
-import { Middleware } from '#tests/fixtures/middlewares/Middleware'
-import { Interceptor } from '#tests/fixtures/middlewares/Interceptor'
+import { MyMiddleware } from '#tests/fixtures/middlewares/MyMiddleware'
+import { MyInterceptor } from '#tests/fixtures/middlewares/MyInterceptor'
 import { HelloController } from '#tests/fixtures/controllers/HelloController'
 
-ioc.bind('App/Http/Interceptors/Names/interceptor', Interceptor)
+ioc.bind('App/Http/Interceptors/Names/interceptor', MyInterceptor)
 
 Route.get('/hello', ctx => ctx.response.send({}))
   .name('get::hello')
-  .middleware(new Middleware())
+  .middleware(new MyMiddleware())
 Route.post('/hello', ctx => ctx.response.send({}))
   .name('post::hello')
   .interceptor('interceptor')

@@ -7,9 +7,9 @@
  * file that was distributed with this source code.
  */
 
-import { Middleware } from '#tests/fixtures/middlewares/Middleware'
-import { Terminator } from '#tests/fixtures/middlewares/Terminator'
-import { Interceptor } from '#tests/fixtures/middlewares/Interceptor'
+import { MyMiddleware } from '#tests/fixtures/middlewares/MyMiddleware'
+import { MyTerminator } from '#tests/fixtures/middlewares/MyTerminator'
+import { MyInterceptor } from '#tests/fixtures/middlewares/MyInterceptor'
 import { Test, AfterEach, BeforeEach, type Context } from '@athenna/test'
 import { Route, Server, HttpRouteProvider, HttpServerProvider } from '#src'
 
@@ -160,7 +160,7 @@ export default class RouteGroupTest {
       Route.get('test', ctx => {
         ctx.response.send({ hello: 'world', handled: ctx.data.handled })
       })
-    }).middleware(new Middleware())
+    }).middleware(new MyMiddleware())
 
     Route.register()
 
@@ -173,7 +173,7 @@ export default class RouteGroupTest {
       Route.get('test', ctx => {
         ctx.response.send({ hello: 'world', handled: ctx.data.handled })
       })
-    }).interceptor(new Interceptor())
+    }).interceptor(new MyInterceptor())
 
     Route.register()
 
@@ -189,7 +189,7 @@ export default class RouteGroupTest {
       Route.get('test', ctx => {
         ctx.response.send({ hello: 'world', handled: ctx.data.handled })
       })
-    }).terminator(new Terminator())
+    }).terminator(new MyTerminator())
 
     Route.register()
 
@@ -200,7 +200,7 @@ export default class RouteGroupTest {
 
   @Test()
   public async shouldBeAbleToRegisterAMiddlewareDependencyInRouteGroupUsingRouter({ assert }: Context) {
-    ioc.bind('App/Http/Middlewares/Middleware', Middleware)
+    ioc.bind('App/Http/Middlewares/Middleware', MyMiddleware)
 
     Route.group(() => {
       Route.get('test', ctx => {
@@ -215,7 +215,7 @@ export default class RouteGroupTest {
 
   @Test()
   public async shouldBeAbleToRegisterAnInterceptMiddlewareDepedencyInRouteGroupUsingRouter({ assert }: Context) {
-    ioc.bind('App/Http/Interceptors/Interceptor', Interceptor)
+    ioc.bind('App/Http/Interceptors/Interceptor', MyInterceptor)
 
     Route.group(() => {
       Route.get('test', ctx => {
@@ -233,7 +233,7 @@ export default class RouteGroupTest {
 
   @Test()
   public async shouldBeAbleToRegisterATerminateMiddlewareDependencyInRouteGroupUsingRouter({ assert }: Context) {
-    ioc.bind('App/Http/Terminators/Terminator', Terminator)
+    ioc.bind('App/Http/Terminators/Terminator', MyTerminator)
 
     Route.group(() => {
       Route.get('test', ctx => {
@@ -250,7 +250,7 @@ export default class RouteGroupTest {
 
   @Test()
   public async shouldBeAbleToRegisterANamedMiddlewareInRouteGroupUsingRouter({ assert }: Context) {
-    ioc.bind('App/Http/Middlewares/Names/middleware', Middleware)
+    ioc.bind('App/Http/Middlewares/Names/middleware', MyMiddleware)
 
     Route.group(() => {
       Route.get('test', ctx => {
@@ -265,7 +265,7 @@ export default class RouteGroupTest {
 
   @Test()
   public async shouldBeAbleToRegisterAnInterceptNamedMiddlewareInRouteGroupUsingRouter({ assert }: Context) {
-    ioc.bind('App/Http/Interceptors/Names/interceptor', Interceptor)
+    ioc.bind('App/Http/Interceptors/Names/interceptor', MyInterceptor)
 
     Route.group(() => {
       Route.get('test', ctx => {
@@ -283,7 +283,7 @@ export default class RouteGroupTest {
 
   @Test()
   public async shouldBeAbleToRegisterATerminateNamedMiddlewareInRouteGroupUsingRouter({ assert }: Context) {
-    ioc.bind('App/Http/Terminators/Names/terminator', Terminator)
+    ioc.bind('App/Http/Terminators/Names/terminator', MyTerminator)
 
     Route.group(() => {
       Route.get('test', ctx => {

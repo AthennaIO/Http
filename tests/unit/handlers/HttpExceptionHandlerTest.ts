@@ -7,11 +7,10 @@
  * file that was distributed with this source code.
  */
 
-import { fake } from 'sinon'
 import { Exception } from '@athenna/common'
 import { Log, LoggerProvider } from '@athenna/logger'
 import { HttpKernel, HttpServerProvider, Server } from '#src'
-import { Test, AfterEach, BeforeEach, type Context } from '@athenna/test'
+import { Test, AfterEach, BeforeEach, type Context, Mock } from '@athenna/test'
 
 export default class HttpExceptionHandlerTest {
   @BeforeEach()
@@ -25,7 +24,7 @@ export default class HttpExceptionHandlerTest {
 
   @AfterEach()
   public async afterEach() {
-    Log.restoreAllMethods()
+    Mock.restoreAll()
   }
 
   @Test()
@@ -77,10 +76,10 @@ export default class HttpExceptionHandlerTest {
 
   @Test()
   public async shouldIgnoreTheExceptionFromBeingLoggedWhenTheCodeIsSetInsideIgnoreCodes({ assert }: Context) {
-    const logErrorFake = fake()
+    const logErrorFake = Mock.sandbox.fake()
     const kernel = new HttpKernel()
     await kernel.registerExceptionHandler('#tests/fixtures/handlers/Handler')
-    Log.fakeMethod('channelOrVanilla', logErrorFake)
+    Log.when('channelOrVanilla').return(logErrorFake)
 
     Server.get({
       url: '/hello',
@@ -96,10 +95,10 @@ export default class HttpExceptionHandlerTest {
 
   @Test()
   public async shouldIgnoreTheExceptionFromBeingLoggedWhenTheStatusIsSetInsideIgnoreStatuses({ assert }: Context) {
-    const logErrorFake = fake()
+    const logErrorFake = Mock.sandbox.fake()
     const kernel = new HttpKernel()
     await kernel.registerExceptionHandler('#tests/fixtures/handlers/Handler')
-    Log.fakeMethod('channelOrVanilla', logErrorFake)
+    Log.when('channelOrVanilla').return(logErrorFake)
 
     Server.get({
       url: '/hello',

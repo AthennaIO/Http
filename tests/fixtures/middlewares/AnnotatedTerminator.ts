@@ -7,8 +7,10 @@
  * file that was distributed with this source code.
  */
 
+import { Terminator } from '#src'
 import type { TerminateContext, TerminatorContract } from '#src/types'
 
-export class Terminator implements TerminatorContract {
-  terminate(_: TerminateContext) {}
+@Terminator({ name: 'terminator', type: 'singleton', alias: 'decoratedTerminator', isGlobal: false })
+export class AnnotatedTerminator implements TerminatorContract {
+  public terminate(_: TerminateContext) {}
 }

@@ -9,19 +9,28 @@
 
 export type ControllerOptions = {
   /**
-   * The alias that will be used to register the dependency inside
-   * the service provider. Athenna will not create camel alias from
-   * the alias set here.
+   * The alias that will be used to register the controller inside
+   * the service container.
    *
    * @default App/Http/Controllers/YourControllerClassName
    */
   alias?: string
 
   /**
-   * The registration type that will be used to register your controller
-   * inside the service provider.
+   * The camel alias that will be used as an alias of the real
+   * controller alias. Camel alias is important when you want to
+   * work with constructor injection. By default, Athenna doesn't
+   * create camel alias for controllers.
    *
-   * @default transient
+   * @default undefined
+   */
+  camelAlias?: string
+
+  /**
+   * The registration type that will be used to register your controller
+   * inside the service container.
+   *
+   * @default 'transient'
    */
   type?: 'fake' | 'scoped' | 'singleton' | 'transient'
 }

@@ -7,10 +7,12 @@
  * file that was distributed with this source code.
  */
 
+import { Interceptor } from '#src'
 import type { InterceptContext, InterceptorContract } from '#src/types'
 
-export class Interceptor implements InterceptorContract {
-  intercept(ctx: InterceptContext): unknown {
+@Interceptor({ name: 'interceptor', type: 'singleton', alias: 'decoratedInterceptor', isGlobal: false })
+export class AnnotatedInterceptor implements InterceptorContract {
+  public intercept(ctx: InterceptContext): unknown {
     ctx.body.intercepted = true
 
     return ctx.body

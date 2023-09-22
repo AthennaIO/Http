@@ -11,6 +11,7 @@ import 'reflect-metadata'
 
 import { debug } from '#src/debug'
 import { Options } from '@athenna/common'
+import { Annotation } from '@athenna/ioc'
 import type { ControllerOptions } from '#src/types/controllers/ControllerOptions'
 
 /**
@@ -23,20 +24,17 @@ export function Controller(options?: ControllerOptions): ClassDecorator {
       type: 'transient'
     })
 
-    const alias = options.alias
-    const createCamelAlias = false
+    debug('Registering controller metadata for the service container %o', {
+      name: target.name,
+      ...options
+    })
 
-    if (ioc.hasDependency(alias)) {
-      debug(
-        'Controller %s was already registered in the service container. Skipping registration via Controller annotation.',
-        alias
-      )
+    if (ioc.has(options.alias) || ioc.has(options.camelAlias)) {
+      debug('Skipping registration, controller is already registered.')
 
       return
     }
 
-    ioc[options.type](alias, target, createCamelAlias)
-
-    Reflect.defineMetadata('ioc:registered', true, target)
+    Annotation.defineMeta(target, options)
   }
 }

@@ -11,18 +11,19 @@ import { Config, Rc } from '@athenna/config'
 import { ViewProvider } from '@athenna/view'
 import { File, Folder } from '@athenna/common'
 import { LoggerProvider } from '@athenna/logger'
-import { ExitFaker, AfterEach, BeforeEach } from '@athenna/test'
 import { ConsoleKernel, ArtisanProvider } from '@athenna/artisan'
+import { AfterEach, BeforeEach, Mock, type Stub } from '@athenna/test'
 
 export class BaseCommandTest {
   public artisan = Path.pwd('bin/artisan.ts')
+  public processExit: Stub
   public originalPackageJson = new File(Path.pwd('package.json')).getContentAsStringSync()
 
   @BeforeEach()
   public async beforeEach() {
     ioc.reconstruct()
 
-    ExitFaker.fake()
+    this.processExit = Mock.when(process, 'exit').return(undefined)
 
     process.env.IS_TS = 'true'
 
@@ -42,7 +43,7 @@ export class BaseCommandTest {
 
   @AfterEach()
   public async afterEach() {
-    ExitFaker.release()
+    this.processExit.restore()
 
     await Folder.safeRemove(Path.app())
     await Folder.safeRemove(Path.fixtures('storage'))

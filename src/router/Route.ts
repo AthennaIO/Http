@@ -20,6 +20,7 @@ import type {
 import { Is, Route as RouteHelper } from '@athenna/common'
 import type { HTTPMethods, FastifySchema, RouteOptions } from 'fastify'
 import { UndefinedMethodException } from '#src/exceptions/UndefinedMethodException'
+import { NotFoundMiddlewareException } from '#src/exceptions/NotFoundMiddlewareException'
 
 export class Route {
   /**
@@ -63,7 +64,15 @@ export class Route {
         throw new UndefinedMethodException(method, controller)
       }
 
-      this.route.handler = dependency[method].bind(dependency)
+      this.route.handler = (...args: any[]) => {
+        const service = ioc.safeUse(`App/Http/Controllers/${controller}`)
+
+        if (!service[method]) {
+          throw new UndefinedMethodException(method, controller)
+        }
+
+        return service[method].bind(dependency)(...args)
+      }
     } else {
       this.route.handler = handler
     }
@@ -124,11 +133,18 @@ export class Route {
     const insertionType = prepend ? 'unshift' : 'push'
 
     if (Is.String(middleware)) {
-      const mid =
-        ioc.use(`App/Http/Middlewares/Names/${middleware}`) ||
-        ioc.safeUse(`App/Http/Middlewares/${middleware}`)
+      const namedAlias = `App/Http/Middlewares/Names/${middleware}`
+      const alias = `App/Http/Middlewares/${middleware}`
 
-      this.route.middlewares.middlewares[insertionType](mid.handle.bind(mid))
+      if (!ioc.has(namedAlias) && !ioc.has(alias)) {
+        throw new NotFoundMiddlewareException(alias, namedAlias)
+      }
+
+      this.route.middlewares.middlewares[insertionType]((...args: any[]) => {
+        const mid = ioc.use(namedAlias) || ioc.safeUse(alias)
+
+        return mid.handle.bind(mid)(...args)
+      })
 
       return this
     }
@@ -157,13 +173,18 @@ export class Route {
     const insertionType = prepend ? 'unshift' : 'push'
 
     if (Is.String(interceptor)) {
-      const inte =
-        ioc.use(`App/Http/Interceptors/Names/${interceptor}`) ||
-        ioc.safeUse(`App/Http/Interceptors/${interceptor}`)
+      const namedAlias = `App/Http/Interceptors/Names/${interceptor}`
+      const alias = `App/Http/Interceptors/${interceptor}`
 
-      this.route.middlewares.interceptors[insertionType](
-        inte.intercept.bind(inte)
-      )
+      if (!ioc.has(namedAlias) && !ioc.has(alias)) {
+        throw new NotFoundMiddlewareException(alias, namedAlias)
+      }
+
+      this.route.middlewares.interceptors[insertionType]((...args: any[]) => {
+        const mid = ioc.use(namedAlias) || ioc.safeUse(alias)
+
+        return mid.intercept.bind(mid)(...args)
+      })
 
       return this
     }
@@ -189,11 +210,18 @@ export class Route {
     const insertionType = prepend ? 'unshift' : 'push'
 
     if (Is.String(terminator)) {
-      const ter =
-        ioc.use(`App/Http/Terminators/Names/${terminator}`) ||
-        ioc.safeUse(`App/Http/Terminators/${terminator}`)
+      const namedAlias = `App/Http/Terminators/Names/${terminator}`
+      const alias = `App/Http/Terminators/${terminator}`
 
-      this.route.middlewares.terminators[insertionType](ter.terminate.bind(ter))
+      if (!ioc.has(namedAlias) && !ioc.has(alias)) {
+        throw new NotFoundMiddlewareException(alias, namedAlias)
+      }
+
+      this.route.middlewares.terminators[insertionType]((...args: any[]) => {
+        const mid = ioc.use(namedAlias) || ioc.safeUse(alias)
+
+        return mid.terminate.bind(mid)(...args)
+      })
 
       return this
     }

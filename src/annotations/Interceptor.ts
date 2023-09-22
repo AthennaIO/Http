@@ -9,11 +9,10 @@
 
 import 'reflect-metadata'
 
-import { Server } from '#src/facades/Server'
+import { debug } from '#src/debug'
+import { Annotation } from '@athenna/ioc'
 import { Options, String } from '@athenna/common'
-import type { InterceptorContract } from '#src/types/contracts/InterceptorContract'
 import type { MiddlewareOptions } from '#src/types/middlewares/MiddlewareOptions'
-import { debug } from '#src/debug/index'
 
 /**
  * Create an interceptor inside the service provider.
@@ -22,40 +21,37 @@ export function Interceptor(options?: MiddlewareOptions): ClassDecorator {
   return (target: any) => {
     options = Options.create(options, {
       isGlobal: false,
-      name: String.toCamelCase(target.name),
+      type: 'transient',
       alias: `App/Http/Interceptors/${target.name}`,
-      type: 'transient'
+      name: String.toCamelCase(target.name)
     })
 
-    const alias = options.alias
-    const createCamelAlias = false
+    options.name = `App/Http/Interceptors/Names/${options.name}`
 
-    if (ioc.hasDependency(alias)) {
+    debug('Registering interceptor metadata for the service container %o', {
+      ...options,
+      name: target.name,
+      namedAlias: options.name
+    })
+
+    if (ioc.has(options.name)) {
       debug(
-        'Interceptor %s was already registered in the service container. Skipping registration via Interceptor annotation.',
-        alias
+        'Skipping registration, named alias %s is already registered.',
+        options.name
       )
 
       return
     }
 
-    ioc[options.type](alias, target, createCamelAlias)
-
-    Reflect.defineMetadata('ioc:registered', true, target)
-
-    if (!options.isGlobal) {
-      ioc.alias(`App/Http/Interceptors/Names/${options.name}`, alias)
+    if (ioc.has(options.alias)) {
+      debug(
+        'Skipping registration, alias %s is already registered.',
+        options.alias
+      )
 
       return
     }
 
-    const Interceptor = ioc.safeUse<InterceptorContract>(alias)
-
-    debug(
-      'Registering %s as a global interceptor via Interceptor annotation.',
-      Interceptor.constructor.name
-    )
-
-    Server.intercept(Interceptor.intercept)
+    Annotation.defineMeta(target, options)
   }
 }
