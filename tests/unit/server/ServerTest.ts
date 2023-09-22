@@ -57,7 +57,7 @@ export default class ServerTest {
 
   @Test()
   public async shouldBeAbleToGetTheFastifyVersionFromTheHttpServer({ assert }: Context) {
-    assert.equal(Server.getFastifyVersion(), '4.21.0')
+    assert.equal(Server.getFastifyVersion(), '4.22.0')
   }
 
   @Test()
