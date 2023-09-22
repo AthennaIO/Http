@@ -14,19 +14,23 @@ import { Test, type Context } from '@athenna/test'
 export default class ResponseTest {
   @Test()
   public async shouldBeAbleToSetHeadersInResponse({ assert }: Context) {
+    assert.plan(4)
+
     const server = fastify()
 
     server.get('/test/:id', async (_, res) => {
       const response = new Response(res)
 
       response.header('key', 'value').removeHeader('key').safeHeader('key', 'value')
-
-      await response.status(200).send()
-
-      assert.equal(response.status, 200)
-      assert.isDefined(response.responseTime)
-      assert.isTrue(response.hasHeader('key'))
-      assert.deepEqual(response.headers, { key: 'value' })
+      response
+        .status(200)
+        .send()
+        .then(() => {
+          assert.equal(response.statusCode, 200)
+          assert.isTrue(response.hasHeader('key'))
+          assert.deepEqual(response.headers, { key: 'value', 'content-length': '0' })
+          assert.isDefined(response.responseTime)
+        })
     })
 
     await server.inject().get('/test/1')
@@ -34,6 +38,8 @@ export default class ResponseTest {
 
   @Test()
   public async shouldBeAbleToSetVerifyIfTheResponseHasBeenSentOrNot({ assert }: Context) {
+    assert.plan(2)
+
     const server = fastify()
 
     server.get('/test/:id', async (_, res) => {
@@ -41,9 +47,12 @@ export default class ResponseTest {
 
       assert.isFalse(response.sent)
 
-      await response.status(200).send()
-
-      assert.isTrue(response.sent)
+      response
+        .status(200)
+        .send()
+        .then(() => {
+          assert.isTrue(response.sent)
+        })
     })
 
     await server.inject().get('/test/1')
@@ -51,6 +60,8 @@ export default class ResponseTest {
 
   @Test()
   public async shouldBeAbleToGetTheHeadersAfterTheResponseIsSent({ assert }: Context) {
+    assert.plan(1)
+
     const server = fastify()
 
     server.get('/test/:id', async (_, res) => {
@@ -68,14 +79,19 @@ export default class ResponseTest {
 
   @Test()
   public async shouldBeAbleToGetTheStatusCodeAfterTheResponseIsSent({ assert }: Context) {
+    assert.plan(1)
+
     const server = fastify()
 
     server.get('/test/:id', async (_, res) => {
       const response = new Response(res)
 
-      await response.status(200).send()
-
-      assert.equal(response.status, 200)
+      response
+        .status(200)
+        .send()
+        .then(() => {
+          assert.equal(response.statusCode, 200)
+        })
     })
 
     await server.inject().get('/test/1')
@@ -83,15 +99,20 @@ export default class ResponseTest {
 
   @Test()
   public async shouldBeAbleToGetTheResponseBodyAfterTheResponseIsSent({ assert }: Context) {
+    assert.plan(2)
+
     const server = fastify()
 
     server.get('/test/:id', async (_, res) => {
       const response = new Response(res)
 
-      await response.status(200).send({ hello: 'world' })
-
-      assert.equal(response.status, 200)
-      assert.equal(response.body, { hello: 'world' })
+      response
+        .status(200)
+        .send({ hello: 'world' })
+        .then(() => {
+          assert.equal(response.statusCode, 200)
+          assert.deepEqual(response.body, { hello: 'world' })
+        })
     })
 
     await server.inject().get('/test/1')
@@ -99,14 +120,19 @@ export default class ResponseTest {
 
   @Test()
   public async shouldBeAbleToGetTheResponseTimeAfterTheResponseIsSent({ assert }: Context) {
+    assert.plan(1)
+
     const server = fastify()
 
     server.get('/test/:id', async (_, res) => {
       const response = new Response(res)
 
-      await response.status(200).send()
-
-      assert.isDefined(response.responseTime)
+      response
+        .status(200)
+        .send()
+        .then(() => {
+          assert.isDefined(response.responseTime)
+        })
     })
 
     await server.inject().get('/test/1')
@@ -114,17 +140,22 @@ export default class ResponseTest {
 
   @Test()
   public async shouldBeAbleToVerifyThatTheHeaderExistsInTheResponse({ assert }: Context) {
+    assert.plan(2)
+
     const server = fastify()
 
     server.get('/test/:id', async (_, res) => {
       const response = new Response(res)
 
-      await response.status(200).send()
+      response
+        .status(200)
+        .send()
+        .then(() => {
+          response.header('key', 'value')
 
-      response.header('key', 'value')
-
-      assert.isTrue(response.hasHeader('key'))
-      assert.isFalse(response.hasHeader('not-found'))
+          assert.isTrue(response.hasHeader('key'))
+          assert.isFalse(response.hasHeader('not-found'))
+        })
     })
 
     await server.inject().get('/test/1')

@@ -11,7 +11,7 @@ import type { Context } from '#src/types'
 import { Controller } from '#src/annotations/Controller'
 
 @Controller({ alias: 'decoratedController', type: 'singleton' })
-export class DecoratedController {
+export class AnnotatedController {
   async index(ctx: Context) {
     if (ctx.data.handled) {
       return ctx.response.send({ hello: 'world', handled: true })

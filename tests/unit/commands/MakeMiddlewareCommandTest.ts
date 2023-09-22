@@ -10,7 +10,7 @@
 import { File } from '@athenna/common'
 import { Config } from '@athenna/config'
 import { Artisan } from '@athenna/artisan'
-import { Test, ExitFaker, type Context } from '@athenna/test'
+import { Test, type Context } from '@athenna/test'
 import { BaseCommandTest } from '#tests/helpers/BaseCommandTest'
 
 export default class MakeMiddlewareCommandTest extends BaseCommandTest {
@@ -21,7 +21,7 @@ export default class MakeMiddlewareCommandTest extends BaseCommandTest {
     const path = Path.middlewares('TestMiddleware.ts')
 
     assert.isTrue(await File.exists(path))
-    assert.isTrue(ExitFaker.faker.calledWith(0))
+    assert.isTrue(this.processExit.calledWith(0))
 
     const athennaRc = await new File(Path.pwd('package.json')).getContentAsJson().then(json => json.athenna)
 
@@ -39,7 +39,7 @@ export default class MakeMiddlewareCommandTest extends BaseCommandTest {
     const path = Path.fixtures('storage/middlewares/TestMiddleware.ts')
 
     assert.isTrue(await File.exists(path))
-    assert.isTrue(ExitFaker.faker.calledWith(0))
+    assert.isTrue(this.processExit.calledWith(0))
 
     const athennaRc = await new File(Path.pwd('package.json')).getContentAsJson().then(json => json.athenna)
 
@@ -52,6 +52,6 @@ export default class MakeMiddlewareCommandTest extends BaseCommandTest {
     await Artisan.call('make:middleware TestMiddleware', false)
     await Artisan.call('make:middleware TestMiddleware', false)
 
-    assert.isTrue(ExitFaker.faker.calledWith(1))
+    assert.isTrue(this.processExit.calledWith(1))
   }
 }

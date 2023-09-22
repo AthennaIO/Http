@@ -12,7 +12,7 @@ import type { Context, MiddlewareContract } from '#src/types'
 
 @Middleware({ alias: 'importedMiddleware', isGlobal: false })
 export class ImportedMiddleware implements MiddlewareContract {
-  handle(ctx: Context): any {
+  public handle(ctx: Context): any {
     ctx.data.handled = true
   }
 }

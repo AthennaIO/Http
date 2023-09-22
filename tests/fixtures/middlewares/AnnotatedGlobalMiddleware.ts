@@ -10,9 +10,9 @@
 import { Middleware } from '#src'
 import type { Context, MiddlewareContract } from '#src/types'
 
-@Middleware({ name: 'middleware', type: 'singleton', alias: 'decoratedMiddleware', isGlobal: false })
-export class DecoratedMiddleware implements MiddlewareContract {
-  handle(ctx: Context): any {
+@Middleware({ type: 'singleton', alias: 'decoratedGlobalMiddleware', isGlobal: true })
+export class AnnotatedGlobalMiddleware implements MiddlewareContract {
+  public handle(ctx: Context): any {
     ctx.data.handled = true
   }
 }

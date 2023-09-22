@@ -14,7 +14,8 @@ import { debug } from '#src/debug'
 import { Log } from '@athenna/logger'
 import { Config } from '@athenna/config'
 import { isAbsolute, resolve } from 'node:path'
-import { File, Exec, Is, Module } from '@athenna/common'
+import { Annotation, type ServiceMeta } from '@athenna/ioc'
+import { File, Exec, Module, String } from '@athenna/common'
 import { HttpExceptionHandler } from '#src/handlers/HttpExceptionHandler'
 
 const corsPlugin = await Module.safeImport('@fastify/cors')
@@ -29,19 +30,35 @@ export class HttpKernel {
    * Register the @fastify/cors plugin in the Http server.
    */
   public async registerCors(): Promise<void> {
+    if (Config.is('http.cors.enabled', false)) {
+      debug(
+        'Not able to register cors plugin. Set the http.cors.enabled configuration as true.'
+      )
+
+      return
+    }
+
     if (!corsPlugin) {
       debug('Not able to register cors plugin. Install @fastify/cors package.')
 
       return
     }
 
-    await Server.plugin(corsPlugin, Config.get('http.cors'))
+    await Server.plugin(corsPlugin, this.getConfig('http.cors'))
   }
 
   /**
    * Register the @fastify/helmet plugin in the Http server.
    */
   public async registerHelmet(): Promise<void> {
+    if (Config.is('http.helmet.enabled', false)) {
+      debug(
+        'Not able to register helmet plugin. Set the http.helmet.enabled configuration as true.'
+      )
+
+      return
+    }
+
     if (!helmetPlugin) {
       debug(
         'Not able to register helmet plugin. Install @fastify/helmet package.'
@@ -50,13 +67,21 @@ export class HttpKernel {
       return
     }
 
-    await Server.plugin(helmetPlugin, Config.get('http.helmet'))
+    await Server.plugin(helmetPlugin, this.getConfig('http.helmet'))
   }
 
   /**
    * Register the @fastify/swagger plugin in the Http server.
    */
   public async registerSwagger(): Promise<void> {
+    if (Config.is('http.swagger.enabled', false)) {
+      debug(
+        'Not able to register swagger plugin. Set the http.swagger.enabled configuration as true.'
+      )
+
+      return
+    }
+
     if (swaggerPlugin) {
       debug(
         'Not able to register swagger plugin. Install @fastify/swagger package.'
@@ -81,6 +106,14 @@ export class HttpKernel {
    * Register the @fastify/rate-limit plugin in the Http server.
    */
   public async registerRateLimit(): Promise<void> {
+    if (Config.is('http.rateLimit.enabled', false)) {
+      debug(
+        'Not able to register rate limit plugin. Set the http.rateLimit.enabled configuration as true.'
+      )
+
+      return
+    }
+
     if (!rateLimitPlugin) {
       debug(
         'Not able to register rate limit plugin. Install @fastify/rate-limit package.'
@@ -89,7 +122,7 @@ export class HttpKernel {
       return
     }
 
-    await Server.plugin(rateLimitPlugin, Config.get('http.rateLimit'))
+    await Server.plugin(rateLimitPlugin, this.getConfig('http.rateLimit'))
   }
 
   /**
@@ -97,6 +130,18 @@ export class HttpKernel {
    */
   public async registerRTracer(trace?: boolean): Promise<void> {
     if (trace === false) {
+      debug(
+        'Not able to register rTracer plugin. Set the trace option as true in your http server options.'
+      )
+
+      return
+    }
+
+    if (trace === undefined && Config.is('http.rTracer.enabled', false)) {
+      debug(
+        'Not able to register rTracer plugin. Set the http.rTracer.enabled configuration as true.'
+      )
+
       return
     }
 
@@ -108,17 +153,17 @@ export class HttpKernel {
 
     Server.middleware(async ctx => (ctx.data.traceId = rTracerPlugin.id()))
 
-    await Server.plugin(rTracerPlugin.fastifyPlugin, Config.get('http.rTracer'))
+    await Server.plugin(
+      rTracerPlugin.fastifyPlugin,
+      this.getConfig('http.rTracer')
+    )
   }
 
   /**
    * Register the global log terminator in the Http server.
    */
   public async registerLoggerTerminator(): Promise<void> {
-    if (
-      !Config.exists('http.logger.enabled') ||
-      Config.is('http.logger.enabled', false)
-    ) {
+    if (Config.is('http.logger.enabled', false)) {
       debug(
         'Not able to register http request logger. Enable it in your http.logger.enabled configuration.'
       )
@@ -139,19 +184,13 @@ export class HttpKernel {
     await Exec.concurrently(controllers, async path => {
       const Controller = await this.resolvePath(path)
 
-      if (Reflect.hasMetadata('ioc:registered', Controller)) {
-        debug(
-          'Controller %s already registered by Controller annotation. Skipping registration via HttpKernel.',
-          Controller.name
-        )
+      if (Annotation.isAnnotated(Controller)) {
+        this.registerUsingMeta(Controller)
 
         return
       }
 
-      const createCamelAlias = false
-      const alias = `App/Http/Controllers/${Controller.name}`
-
-      ioc.bind(alias, Controller, createCamelAlias)
+      ioc.transient(`App/Http/Controllers/${Controller.name}`, Controller)
     })
   }
 
@@ -161,12 +200,27 @@ export class HttpKernel {
    * and "rc.globalMiddlewares" exists.
    */
   public async registerMiddlewares(): Promise<void> {
+    const middlewares = Config.get<string[]>('rc.middlewares', [])
+
+    await Exec.concurrently(middlewares, async path => {
+      const Middleware = await this.resolvePath(path)
+
+      if (Annotation.isAnnotated(Middleware)) {
+        this.registerUsingMeta(Middleware)
+
+        return
+      }
+
+      const alias = `App/Http/Middlewares/${Middleware.name}`
+      const namedAlias = `App/Http/Middlewares/Names/${String.toCamelCase(
+        Middleware.name
+      )}`
+
+      ioc.transient(alias, Middleware).alias(namedAlias, alias)
+    })
+
     await this.registerNamedMiddlewares()
     await this.registerGlobalMiddlewares()
-
-    if (Config.exists('rc.middlewares')) {
-      await Exec.concurrently(Config.get('rc.middlewares'), this.resolvePath)
-    }
   }
 
   /**
@@ -175,32 +229,25 @@ export class HttpKernel {
    */
   public async registerNamedMiddlewares(): Promise<void> {
     const namedMiddlewares = Config.get<Record<string, string>>(
-      'rc.namedMiddlewares'
+      'rc.namedMiddlewares',
+      {}
     )
-
-    if (Is.Empty(namedMiddlewares)) {
-      return
-    }
 
     await Exec.concurrently(Object.keys(namedMiddlewares), async key => {
       const Middleware = await this.resolvePath(namedMiddlewares[key])
 
-      if (Reflect.hasMetadata('ioc:registered', Middleware)) {
-        debug(
-          'Named middleware %s already registered by Middleware annotation. Skipping registration via HttpKernel.',
-          Middleware.name
-        )
+      if (Annotation.isAnnotated(Middleware)) {
+        this.registerUsingMeta(Middleware)
 
         return
       }
 
-      const createCamelAlias = false
       const { alias, namedAlias } = this.getNamedMiddlewareAlias(
         key,
         Middleware
       )
 
-      ioc.bind(alias, Middleware, createCamelAlias).alias(namedAlias, alias)
+      ioc.bind(alias, Middleware).alias(namedAlias, alias)
     })
   }
 
@@ -209,31 +256,27 @@ export class HttpKernel {
    * property.
    */
   public async registerGlobalMiddlewares(): Promise<void> {
-    const globalMiddlewares = Config.get<string[]>('rc.globalMiddlewares')
-
-    if (Is.Empty(globalMiddlewares)) {
-      return
-    }
+    const globalMiddlewares = Config.get<string[]>('rc.globalMiddlewares', [])
 
     await Exec.concurrently(globalMiddlewares, async path => {
       const Middleware = await this.resolvePath(path)
 
-      if (Reflect.hasMetadata('ioc:registered', Middleware)) {
-        debug(
-          'Global middleware %s already registered by Middleware annotation. Skipping registration via HttpKernel.',
-          Middleware.name
-        )
+      if (Annotation.isAnnotated(Middleware)) {
+        this.registerUsingMeta(Middleware)
 
         return
       }
 
-      const createCamelAlias = false
       const { alias, handler, serverMethod } =
         this.getGlobalMiddlewareAliasAndHandler(Middleware)
 
-      ioc.bind(alias, Middleware, createCamelAlias)
+      ioc.bind(alias, Middleware)
 
-      Server[serverMethod](ioc.safeUse(alias)[handler])
+      Server[serverMethod]((...args: any[]) => {
+        const mid = ioc.safeUse(alias)
+
+        return mid[handler].bind(mid)(...args)
+      })
     })
   }
 
@@ -351,5 +394,49 @@ export class HttpKernel {
       `${path}?version=${Math.random()}`,
       Config.get('rc.meta')
     )
+  }
+
+  /**
+   * Register the controllers using the meta information
+   * defined by annotations.
+   */
+  private registerUsingMeta(target: any): ServiceMeta {
+    const meta = Annotation.getMeta(target)
+
+    ioc[meta.type](meta.alias, target)
+
+    if (meta.name && !meta.isGlobal) {
+      ioc.alias(meta.name, meta.alias)
+    }
+
+    if (meta.camelAlias) {
+      ioc.alias(meta.camelAlias, meta.alias)
+    }
+
+    if (meta.isGlobal) {
+      const { handler, serverMethod } =
+        this.getGlobalMiddlewareAliasAndHandler(target)
+
+      Server[serverMethod]((...args: any[]) => {
+        const mid = ioc.safeUse(meta.alias)
+
+        return mid[handler].bind(mid)(...args)
+      })
+    }
+
+    return meta
+  }
+
+  /**
+   * Get the configuration for the given key.
+   */
+  private getConfig(key: string): any {
+    const config = Config.get(key)
+
+    if (Config.exists(`${key}.enabled`)) {
+      delete config.enabled
+    }
+
+    return config
   }
 }

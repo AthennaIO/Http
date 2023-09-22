@@ -12,6 +12,6 @@ import { ServiceProvider } from '@athenna/ioc'
 
 export class HttpRouteProvider extends ServiceProvider {
   public register() {
-    this.container.instance('Athenna/Core/HttpRoute', new Router(), false)
+    this.container.singleton('Athenna/Core/HttpRoute', Router)
   }
 }

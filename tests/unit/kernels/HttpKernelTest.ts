@@ -7,11 +7,11 @@
  * file that was distributed with this source code.
  */
 
-import { fake } from 'sinon'
+import { Config } from '@athenna/config'
 import { Module } from '@athenna/common'
 import { Log, LoggerProvider } from '@athenna/logger'
-import { Test, AfterEach, BeforeEach, type Context } from '@athenna/test'
 import { HttpKernel, HttpServerProvider, HttpRouteProvider, Server, Route } from '#src'
+import { Test, Mock, AfterEach, BeforeEach, type Context, Cleanup } from '@athenna/test'
 
 export default class HttpKernelTest {
   @BeforeEach()
@@ -26,7 +26,7 @@ export default class HttpKernelTest {
 
   @AfterEach()
   public async afterEach() {
-    Log.restoreAllMethods()
+    Mock.restoreAll()
   }
 
   @Test()
@@ -104,58 +104,90 @@ export default class HttpKernelTest {
 
   @Test()
   public async shouldBeAbleToRegisterTheLoggerTerminatorInTheHttpServer({ assert }: Context) {
-    const logInfoFake = fake()
     const kernel = new HttpKernel()
     await kernel.registerLoggerTerminator()
-    Log.fakeMethod('channelOrVanilla', logInfoFake)
+    const mock = Log.when('channelOrVanilla').return(undefined)
     Server.get({ url: '/hello', handler: ctx => ctx.response.send({ hello: true }) })
 
     const response = await Server.request().get('hello')
 
-    assert.isTrue(logInfoFake.called)
+    assert.called(mock)
     assert.deepEqual(response.json(), { hello: true })
   }
 
   @Test()
-  public async shouldBeAbleToRegisterTheFastifyCorsPluginIfTheConfigurationFileDoesNotExist({ assert }: Context) {
-    const originalSafeImport = Module.safeImport
-    Module.safeImport = () => Promise.resolve(null)
+  public async shouldNotRegisterTheFastifyCorsPluginIfThePackageIsNotInstalled({ assert }: Context) {
+    Mock.when(Module, 'safeImport').resolve(null)
+
     const { HttpKernel } = await import(`../../../src/kernels/HttpKernel.js?v=${Math.random()}`)
     const kernel = new HttpKernel()
     await kernel.registerCors()
-    Module.safeImport = originalSafeImport
 
     assert.isFalse(Server.fastify.hasPlugin('@fastify/cors'))
   }
 
   @Test()
-  public async shouldNotRegisterTheFastifyHelmetPluginIfTheConfigurationFileDoesNotExist({ assert }: Context) {
-    const originalSafeImport = Module.safeImport
-    Module.safeImport = () => Promise.resolve(null)
+  @Cleanup(() => Config.set('http.cors.enabled', true))
+  public async shouldNotRegisterTheFastifyCorsPluginIfTheConfigurationIsDisabled({ assert }: Context) {
+    Config.set('http.cors.enabled', false)
+
+    const { HttpKernel } = await import(`../../../src/kernels/HttpKernel.js?v=${Math.random()}`)
+    const kernel = new HttpKernel()
+    await kernel.registerCors()
+
+    assert.isFalse(Server.fastify.hasPlugin('@fastify/cors'))
+  }
+
+  @Test()
+  public async shouldNotRegisterTheFastifyHelmetPluginIfThePackageIsNotInstalled({ assert }: Context) {
+    Mock.when(Module, 'safeImport').resolve(null)
+
     const { HttpKernel } = await import(`../../../src/kernels/HttpKernel.js?v=${Math.random()}`)
     const kernel = new HttpKernel()
     await kernel.registerHelmet()
-    Module.safeImport = originalSafeImport
 
     assert.isFalse(Server.fastify.hasPlugin('@fastify/helmet'))
   }
 
   @Test()
-  public async shouldNotRegisterTheFastifySwaggerPluginIfTheConfigurationFileDoesNotExist({ assert }: Context) {
-    const originalSafeImport = Module.safeImport
-    Module.safeImport = () => Promise.resolve(null)
+  @Cleanup(() => Config.set('http.helmet.enabled', true))
+  public async shouldNotRegisterTheFastifyHelmetPluginIfTheConfigurationIsDisabled({ assert }: Context) {
+    Config.set('http.helmet.enabled', false)
+
+    const { HttpKernel } = await import(`../../../src/kernels/HttpKernel.js?v=${Math.random()}`)
+    const kernel = new HttpKernel()
+    await kernel.registerHelmet()
+
+    assert.isFalse(Server.fastify.hasPlugin('@fastify/helmet'))
+  }
+
+  @Test()
+  public async shouldNotRegisterTheFastifySwaggerPluginIfThePackageIsNotInstalled({ assert }: Context) {
+    Mock.when(Module, 'safeImport').resolve(null)
+
     const { HttpKernel } = await import(`../../../src/kernels/HttpKernel.js?v=${Math.random()}`)
     const kernel = new HttpKernel()
     await kernel.registerSwagger()
-    Module.safeImport = originalSafeImport
 
     assert.isFalse(Server.fastify.hasPlugin('@fastify/swagger'))
   }
 
   @Test()
-  public async shouldNotRegisterTheFastifyRateLimitPluginIfTheConfigurationFileDoesNotExist({ assert }: Context) {
-    const originalSafeImport = Module.safeImport
-    Module.safeImport = () => Promise.resolve(null)
+  @Cleanup(() => Config.set('http.swagger.enabled', true))
+  public async shouldNotRegisterTheFastifySwaggerPluginIfTheConfigurationIsDisabled({ assert }: Context) {
+    Config.set('http.swagger.enabled', false)
+
+    const { HttpKernel } = await import(`../../../src/kernels/HttpKernel.js?v=${Math.random()}`)
+    const kernel = new HttpKernel()
+    await kernel.registerSwagger()
+
+    assert.isFalse(Server.fastify.hasPlugin('@fastify/swagger'))
+  }
+
+  @Test()
+  public async shouldNotRegisterTheFastifyRateLimitPluginIfThePackageIsNotInstalled({ assert }: Context) {
+    Mock.when(Module, 'safeImport').resolve(null)
+
     const { HttpKernel } = await import(`../../../src/kernels/HttpKernel.js?v=${Math.random()}`)
     const kernel = new HttpKernel()
     await kernel.registerRateLimit()
@@ -165,86 +197,130 @@ export default class HttpKernelTest {
 
     assert.deepEqual(response.json(), { hello: true })
     assert.isFalse(Server.fastify.hasPlugin('@fastify/rate-limit'))
-    Module.safeImport = originalSafeImport
   }
 
   @Test()
-  public async shouldNotRegisterTheFastifyRTracerPluginIfTheConfigurationFileDoesNotExist({ assert }: Context) {
-    const originalSafeImport = Module.safeImport
-    Module.safeImport = () => Promise.resolve(null)
+  @Cleanup(() => Config.set('http.rateLimit.enabled', true))
+  public async shouldNotRegisterTheFastifyRateLimitPluginIfTheConfigurationIsDisabled({ assert }: Context) {
+    Config.set('http.rateLimit.enabled', false)
+
+    const { HttpKernel } = await import(`../../../src/kernels/HttpKernel.js?v=${Math.random()}`)
+    const kernel = new HttpKernel()
+    await kernel.registerRateLimit()
+
+    assert.isFalse(Server.fastify.hasPlugin('@fastify/rate-limit'))
+  }
+
+  @Test()
+  public async shouldNotRegisterTheFastifyRTracerPluginIfThePackageIsNotInstalled({ assert }: Context) {
+    Mock.when(Module, 'safeImport').resolve(null)
+
     const { HttpKernel } = await import(`../../../src/kernels/HttpKernel.js?v=${Math.random()}`)
     const kernel = new HttpKernel()
     await kernel.registerRTracer()
-    Module.safeImport = originalSafeImport
 
     assert.isFalse(Server.fastify.hasPlugin('cls-rtracer'))
   }
 
   @Test()
-  public async shouldBeAbleToRegisterControllersOfTheRcFileWithAndWithoutDecorators({ assert }: Context) {
+  public async shouldNotRegisterTheFastifyRTracerPluginIfTheTraceOptionsIsSetToFalse({ assert }: Context) {
+    const { HttpKernel } = await import(`../../../src/kernels/HttpKernel.js?v=${Math.random()}`)
+    const kernel = new HttpKernel()
+    await kernel.registerRTracer(false)
+
+    assert.isFalse(Server.fastify.hasPlugin('cls-rtracer'))
+  }
+
+  @Test()
+  @Cleanup(() => Config.set('http.rTracer.enabled', true))
+  public async shouldNotRegisterTheFastifyRTracerPluginIfTheConfigurationIsDisabled({ assert }: Context) {
+    Config.set('http.rTracer.enabled', false)
+
+    const { HttpKernel } = await import(`../../../src/kernels/HttpKernel.js?v=${Math.random()}`)
+    const kernel = new HttpKernel()
+    await kernel.registerRTracer()
+
+    assert.isFalse(Server.fastify.hasPlugin('cls-rtracer'))
+  }
+
+  @Test()
+  @Cleanup(() => Config.set('http.logger.enabled', true))
+  public async shouldNotRegisterTheLoggerTerminatorIfTheConfigIsDisabled({ assert }: Context) {
+    Config.set('http.logger.enabled', false)
+
+    const kernel = new HttpKernel()
+    await kernel.registerLoggerTerminator()
+    const mock = Log.when('channelOrVanilla').return(undefined)
+    Server.get({ url: '/hello', handler: ctx => ctx.response.send({ hello: true }) })
+
+    const response = await Server.request().get('hello')
+
+    assert.isTrue(mock.notCalled)
+    assert.deepEqual(response.json(), { hello: true })
+  }
+
+  @Test()
+  public async shouldBeAbleToRegisterControllersOfTheRcFileWithAndWithoutAnnotations({ assert }: Context) {
     const kernel = new HttpKernel()
     await kernel.registerControllers()
 
-    assert.isFalse(ioc.hasDependency('helloController'))
-    assert.isTrue(ioc.hasDependency('App/Http/Controllers/HelloController'))
+    assert.isFalse(ioc.has('helloController'))
+    assert.isTrue(ioc.has('App/Http/Controllers/HelloController'))
     assert.equal(ioc.getRegistration('App/Http/Controllers/HelloController').lifetime, 'TRANSIENT')
 
-    assert.isTrue(ioc.hasDependency('decoratedController'))
-    assert.isFalse(ioc.hasDependency('App/Http/Controllers/DecoratedController'))
+    assert.isTrue(ioc.has('decoratedController'))
+    assert.isFalse(ioc.has('App/Http/Controllers/AnnotatedController'))
     assert.equal(ioc.getRegistration('decoratedController').lifetime, 'SINGLETON')
   }
 
   @Test()
-  public async shouldBeAbleToRegisterNamedMiddlewaresOfTheRcFileWithAndWithoutDecorators({ assert }: Context) {
+  public async shouldBeAbleToRegisterNamedMiddlewaresOfTheRcFileWithAndWithoutAnnotations({ assert }: Context) {
     const kernel = new HttpKernel()
     await kernel.registerNamedMiddlewares()
 
-    assert.isFalse(ioc.hasDependency('middleware'))
-    assert.isTrue(ioc.hasDependency('App/Http/Middlewares/Middleware'))
-    assert.isTrue(ioc.hasDependency('App/Http/Interceptors/Interceptor'))
-    assert.isTrue(ioc.hasDependency('App/Http/Terminators/Terminator'))
-    assert.equal(ioc.getRegistration('App/Http/Middlewares/Middleware').lifetime, 'TRANSIENT')
+    assert.isFalse(ioc.has('middleware'))
+    assert.isTrue(ioc.has('App/Http/Middlewares/MyMiddleware'))
+    assert.isTrue(ioc.has('App/Http/Interceptors/MyInterceptor'))
+    assert.isTrue(ioc.has('App/Http/Terminators/MyTerminator'))
+    assert.equal(ioc.getRegistration('App/Http/Middlewares/MyMiddleware').lifetime, 'TRANSIENT')
 
-    assert.isTrue(ioc.hasDependency('decoratedMiddleware'))
-    assert.isTrue(ioc.hasDependency('App/Http/Middlewares/Names/middleware'))
-    assert.isFalse(ioc.hasDependency('App/Http/Middlewares/Names/not-found-middleware'))
-    assert.isFalse(ioc.hasDependency('App/Http/Middlewares/DecoratedMiddleware'))
+    assert.isTrue(ioc.has('App/Http/Middlewares/Names/middleware'))
+    assert.isFalse(ioc.has('App/Http/Middlewares/Names/not-found-middleware'))
+    assert.isFalse(ioc.has('App/Http/Middlewares/AnnotatedMiddleware'))
     assert.equal(ioc.getRegistration('decoratedMiddleware').lifetime, 'SINGLETON')
 
-    assert.isTrue(ioc.hasDependency('decoratedInterceptor'))
-    assert.isTrue(ioc.hasDependency('App/Http/Interceptors/Names/interceptor'))
-    assert.isFalse(ioc.hasDependency('App/Http/Interceptors/Names/not-found-interceptor'))
-    assert.isFalse(ioc.hasDependency('App/Http/Interceptors/DecoratedInterceptor'))
+    assert.isTrue(ioc.has('App/Http/Interceptors/Names/interceptor'))
+    assert.isFalse(ioc.has('App/Http/Interceptors/Names/not-found-interceptor'))
+    assert.isFalse(ioc.has('App/Http/Interceptors/AnnotatedInterceptor'))
     assert.equal(ioc.getRegistration('decoratedInterceptor').lifetime, 'SINGLETON')
 
-    assert.isTrue(ioc.hasDependency('decoratedTerminator'))
-    assert.isTrue(ioc.hasDependency('App/Http/Terminators/Names/terminator'))
-    assert.isFalse(ioc.hasDependency('App/Http/Terminators/Names/not-found-terminator'))
-    assert.isFalse(ioc.hasDependency('App/Http/Terminators/DecoratedTerminator'))
+    assert.isTrue(ioc.has('App/Http/Terminators/Names/terminator'))
+    assert.isFalse(ioc.has('App/Http/Terminators/Names/not-found-terminator'))
+    assert.isFalse(ioc.has('App/Http/Terminators/AnnotatedTerminator'))
     assert.equal(ioc.getRegistration('decoratedTerminator').lifetime, 'SINGLETON')
   }
 
   @Test()
-  public async shouldBeAbleToRegisterGlobalMiddlewaresOfTheRcFileWithAndWithoutDecorators({ assert }: Context) {
+  public async shouldBeAbleToRegisterGlobalMiddlewaresOfTheRcFileWithAndWithoutAnnotations({ assert }: Context) {
     const kernel = new HttpKernel()
     await kernel.registerGlobalMiddlewares()
 
-    assert.isFalse(ioc.hasDependency('middleware'))
-    assert.isTrue(ioc.hasDependency('App/Http/Middlewares/Middleware'))
-    assert.isTrue(ioc.hasDependency('App/Http/Interceptors/Interceptor'))
-    assert.isTrue(ioc.hasDependency('App/Http/Terminators/Terminator'))
-    assert.equal(ioc.getRegistration('App/Http/Middlewares/Middleware').lifetime, 'TRANSIENT')
+    assert.isFalse(ioc.has('middleware'))
+    assert.isTrue(ioc.has('App/Http/Middlewares/MyMiddleware'))
+    assert.isTrue(ioc.has('App/Http/Interceptors/MyInterceptor'))
+    assert.isTrue(ioc.has('App/Http/Terminators/MyTerminator'))
+    assert.equal(ioc.getRegistration('App/Http/Middlewares/MyMiddleware').lifetime, 'TRANSIENT')
 
-    assert.isTrue(ioc.hasDependency('decoratedGlobalMiddleware'))
-    assert.isFalse(ioc.hasDependency('App/Http/Middlewares/DecoratedMiddleware'))
+    assert.isTrue(ioc.has('decoratedGlobalMiddleware'))
+    assert.isFalse(ioc.has('App/Http/Middlewares/AnnotatedMiddleware'))
     assert.equal(ioc.getRegistration('decoratedGlobalMiddleware').lifetime, 'SINGLETON')
 
-    assert.isTrue(ioc.hasDependency('decoratedGlobalInterceptor'))
-    assert.isFalse(ioc.hasDependency('App/Http/Interceptors/DecoratedInterceptor'))
+    assert.isTrue(ioc.has('decoratedGlobalInterceptor'))
+    assert.isFalse(ioc.has('App/Http/Interceptors/AnnotatedInterceptor'))
     assert.equal(ioc.getRegistration('decoratedGlobalInterceptor').lifetime, 'SINGLETON')
 
-    assert.isTrue(ioc.hasDependency('decoratedGlobalTerminator'))
-    assert.isFalse(ioc.hasDependency('App/Http/Terminators/DecoratedTerminator'))
+    assert.isTrue(ioc.has('decoratedGlobalTerminator'))
+    assert.isFalse(ioc.has('App/Http/Terminators/AnnotatedTerminator'))
     assert.equal(ioc.getRegistration('decoratedGlobalTerminator').lifetime, 'SINGLETON')
   }
 
@@ -253,47 +329,38 @@ export default class HttpKernelTest {
     const kernel = new HttpKernel()
     await kernel.registerMiddlewares()
 
-    // Named
-    assert.isFalse(ioc.hasDependency('middleware'))
-    assert.isTrue(ioc.hasDependency('App/Http/Middlewares/Middleware'))
-    assert.isTrue(ioc.hasDependency('App/Http/Interceptors/Interceptor'))
-    assert.isTrue(ioc.hasDependency('App/Http/Terminators/Terminator'))
-    assert.equal(ioc.getRegistration('App/Http/Middlewares/Middleware').lifetime, 'TRANSIENT')
-    assert.isTrue(ioc.hasDependency('decoratedMiddleware'))
-    assert.isTrue(ioc.hasDependency('App/Http/Middlewares/Names/middleware'))
-    assert.isFalse(ioc.hasDependency('App/Http/Middlewares/Names/not-found-middleware'))
-    assert.isFalse(ioc.hasDependency('App/Http/Middlewares/DecoratedMiddleware'))
+    assert.isTrue(ioc.has('App/Http/Middlewares/MyMiddleware'))
+    assert.isTrue(ioc.has('App/Http/Interceptors/MyInterceptor'))
+    assert.isTrue(ioc.has('App/Http/Terminators/MyTerminator'))
+    assert.isTrue(ioc.has('App/Http/Middlewares/Names/myMiddleware'))
+    assert.isTrue(ioc.has('App/Http/Interceptors/Names/myInterceptor'))
+    assert.isTrue(ioc.has('App/Http/Terminators/Names/myTerminator'))
+    assert.equal(ioc.getRegistration('App/Http/Middlewares/MyMiddleware').lifetime, 'TRANSIENT')
+    assert.equal(ioc.getRegistration('App/Http/Interceptors/MyInterceptor').lifetime, 'TRANSIENT')
+    assert.equal(ioc.getRegistration('App/Http/Terminators/MyTerminator').lifetime, 'TRANSIENT')
+
+    assert.isTrue(ioc.has('decoratedMiddleware'))
+    assert.isTrue(ioc.has('decoratedInterceptor'))
+    assert.isTrue(ioc.has('decoratedTerminator'))
+    assert.isTrue(ioc.has('App/Http/Middlewares/Names/middleware'))
+    assert.isTrue(ioc.has('App/Http/Interceptors/Names/interceptor'))
+    assert.isTrue(ioc.has('App/Http/Terminators/Names/terminator'))
+    assert.isFalse(ioc.has('App/Http/Middlewares/Names/not-found-middleware'))
+    assert.isFalse(ioc.has('App/Http/Interceptors/Names/not-found-interceptor'))
+    assert.isFalse(ioc.has('App/Http/Terminators/Names/not-found-terminator'))
     assert.equal(ioc.getRegistration('decoratedMiddleware').lifetime, 'SINGLETON')
-    assert.isTrue(ioc.hasDependency('decoratedInterceptor'))
-    assert.isTrue(ioc.hasDependency('App/Http/Interceptors/Names/interceptor'))
-    assert.isFalse(ioc.hasDependency('App/Http/Interceptors/Names/not-found-interceptor'))
-    assert.isFalse(ioc.hasDependency('App/Http/Interceptors/DecoratedInterceptor'))
     assert.equal(ioc.getRegistration('decoratedInterceptor').lifetime, 'SINGLETON')
-    assert.isTrue(ioc.hasDependency('decoratedTerminator'))
-    assert.isTrue(ioc.hasDependency('App/Http/Terminators/Names/terminator'))
-    assert.isFalse(ioc.hasDependency('App/Http/Terminators/Names/not-found-terminator'))
-    assert.isFalse(ioc.hasDependency('App/Http/Terminators/DecoratedTerminator'))
     assert.equal(ioc.getRegistration('decoratedTerminator').lifetime, 'SINGLETON')
 
-    // Globals
-    assert.isFalse(ioc.hasDependency('middleware'))
-    assert.isTrue(ioc.hasDependency('App/Http/Middlewares/Middleware'))
-    assert.isTrue(ioc.hasDependency('App/Http/Interceptors/Interceptor'))
-    assert.isTrue(ioc.hasDependency('App/Http/Terminators/Terminator'))
-    assert.equal(ioc.getRegistration('App/Http/Middlewares/Middleware').lifetime, 'TRANSIENT')
-    assert.isTrue(ioc.hasDependency('decoratedGlobalMiddleware'))
-    assert.isFalse(ioc.hasDependency('App/Http/Middlewares/DecoratedMiddleware'))
+    assert.isTrue(ioc.has('decoratedGlobalMiddleware'))
+    assert.isTrue(ioc.has('decoratedGlobalInterceptor'))
+    assert.isTrue(ioc.has('decoratedGlobalTerminator'))
+    assert.isFalse(ioc.has('App/Http/Middlewares/Names/decoratedGlobalMiddleware'))
+    assert.isFalse(ioc.has('App/Http/Interceptors/Names/decoratedGlobalInterceptor'))
+    assert.isFalse(ioc.has('App/Http/Terminators/Names/decoratedGlobalTerminator'))
     assert.equal(ioc.getRegistration('decoratedGlobalMiddleware').lifetime, 'SINGLETON')
-    assert.isTrue(ioc.hasDependency('decoratedGlobalInterceptor'))
-    assert.isFalse(ioc.hasDependency('App/Http/Interceptors/DecoratedInterceptor'))
     assert.equal(ioc.getRegistration('decoratedGlobalInterceptor').lifetime, 'SINGLETON')
-    assert.isTrue(ioc.hasDependency('decoratedGlobalTerminator'))
-    assert.isFalse(ioc.hasDependency('App/Http/Terminators/DecoratedTerminator'))
     assert.equal(ioc.getRegistration('decoratedGlobalTerminator').lifetime, 'SINGLETON')
-
-    // By imports
-    assert.isTrue(ioc.hasDependency('importedMiddleware'))
-    assert.isTrue(ioc.hasDependency('App/Http/Middlewares/Names/importedMiddleware'))
   }
 
   @Test()
