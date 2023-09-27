@@ -8,50 +8,53 @@
  */
 
 import { File } from '@athenna/common'
-import { Config } from '@athenna/config'
-import { Artisan } from '@athenna/artisan'
 import { Test, type Context } from '@athenna/test'
 import { BaseCommandTest } from '#tests/helpers/BaseCommandTest'
 
 export default class MakeControllerCommandTest extends BaseCommandTest {
   @Test()
-  public async shouldBeAbleToCreateAControllerFile({ assert }: Context) {
-    await Artisan.call('make:controller TestController', false)
+  public async shouldBeAbleToCreateAControllerFile({ assert, command }: Context) {
+    const output = await command.run('make:controller TestController')
 
-    const path = Path.controllers('TestController.ts')
+    output.assertSucceeded()
+    output.assertLogged('[ MAKING CONTROLLER ]')
+    output.assertLogged('[  success  ] Controller "TestController" successfully created.')
+    output.assertLogged('[  success  ] Athenna RC updated: [ controllers += "#app/http/controllers/TestController" ]')
 
-    assert.isTrue(await File.exists(path))
-    assert.isTrue(this.processExit.calledWith(0))
+    const { athenna } = await new File(Path.pwd('package.json')).getContentAsJson()
 
-    const athennaRc = await new File(Path.pwd('package.json')).getContentAsJson().then(json => json.athenna)
-
-    assert.containsSubset(Config.get('rc.controllers'), ['#app/http/controllers/TestController'])
-    assert.containsSubset(athennaRc.controllers, ['#app/http/controllers/TestController'])
+    assert.isTrue(await File.exists(Path.controllers('TestController.ts')))
+    assert.containsSubset(athenna.controllers, ['#app/http/controllers/TestController'])
   }
 
   @Test()
-  public async shouldBeAbleToCreateAControllerFileWithDifferentDestPath({ assert }: Context) {
-    Config.set('rc.commands.make:controller.path', Config.get('rc.commands.make:controller'))
-    Config.set('rc.commands.make:controller.destination', Path.fixtures('storage/controllers'))
+  public async shouldBeAbleToCreateAControllerFileWithADifferentDestPathAndImportPath({ assert, command }: Context) {
+    const output = await command.run('make:controller TestController', {
+      path: Path.fixtures('consoles/console-mock-dest-import.ts')
+    })
 
-    await Artisan.call('make:controller TestController', false)
+    output.assertSucceeded()
+    output.assertLogged('[ MAKING CONTROLLER ]')
+    output.assertLogged('[  success  ] Controller "TestController" successfully created.')
+    output.assertLogged(
+      '[  success  ] Athenna RC updated: [ controllers += "#tests/fixtures/storage/controllers/TestController" ]'
+    )
 
-    const path = Path.fixtures('storage/controllers/TestController.ts')
+    const { athenna } = await new File(Path.pwd('package.json')).getContentAsJson()
 
-    assert.isTrue(await File.exists(path))
-    assert.isTrue(this.processExit.calledWith(0))
-
-    const athennaRc = await new File(Path.pwd('package.json')).getContentAsJson().then(json => json.athenna)
-
-    assert.containsSubset(Config.get('rc.controllers'), ['#tests/fixtures/storage/controllers/TestController'])
-    assert.containsSubset(athennaRc.controllers, ['#tests/fixtures/storage/controllers/TestController'])
+    assert.isTrue(await File.exists(Path.fixtures('storage/controllers/TestController.ts')))
+    assert.containsSubset(athenna.controllers, ['#tests/fixtures/storage/controllers/TestController'])
   }
 
   @Test()
-  public async shouldThrowAnExceptionWhenTheFileAlreadyExists({ assert }: Context) {
-    await Artisan.call('make:controller TestController', false)
-    await Artisan.call('make:controller TestController', false)
+  public async shouldThrowAnExceptionWhenTheFileAlreadyExists({ command }: Context) {
+    await command.run('make:controller TestController')
+    const output = await command.run('make:controller TestController')
 
-    assert.isTrue(this.processExit.calledWith(1))
+    output.assertFailed()
+    output.assertLogged('[ MAKING CONTROLLER ]')
+    output.assertLogged('The file')
+    output.assertLogged('TestController.ts')
+    output.assertLogged('already exists')
   }
 }

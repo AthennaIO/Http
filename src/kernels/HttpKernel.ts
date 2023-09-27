@@ -13,7 +13,7 @@ import { Server } from '#src'
 import { debug } from '#src/debug'
 import { Log } from '@athenna/logger'
 import { Config } from '@athenna/config'
-import { isAbsolute, resolve } from 'node:path'
+import { sep, isAbsolute, resolve } from 'node:path'
 import { Annotation, type ServiceMeta } from '@athenna/ioc'
 import { File, Exec, Module, String } from '@athenna/common'
 import { HttpExceptionHandler } from '#src/handlers/HttpExceptionHandler'
@@ -182,7 +182,7 @@ export class HttpKernel {
     const controllers = Config.get<string[]>('rc.controllers', [])
 
     await Exec.concurrently(controllers, async path => {
-      const Controller = await this.resolvePath(path)
+      const Controller = await Module.resolve(path, this.getMeta())
 
       if (Annotation.isAnnotated(Controller)) {
         this.registerUsingMeta(Controller)
@@ -203,7 +203,7 @@ export class HttpKernel {
     const middlewares = Config.get<string[]>('rc.middlewares', [])
 
     await Exec.concurrently(middlewares, async path => {
-      const Middleware = await this.resolvePath(path)
+      const Middleware = await Module.resolve(path, this.getMeta())
 
       if (Annotation.isAnnotated(Middleware)) {
         this.registerUsingMeta(Middleware)
@@ -234,7 +234,10 @@ export class HttpKernel {
     )
 
     await Exec.concurrently(Object.keys(namedMiddlewares), async key => {
-      const Middleware = await this.resolvePath(namedMiddlewares[key])
+      const Middleware = await Module.resolve(
+        namedMiddlewares[key],
+        this.getMeta()
+      )
 
       if (Annotation.isAnnotated(Middleware)) {
         this.registerUsingMeta(Middleware)
@@ -259,7 +262,7 @@ export class HttpKernel {
     const globalMiddlewares = Config.get<string[]>('rc.globalMiddlewares', [])
 
     await Exec.concurrently(globalMiddlewares, async path => {
-      const Middleware = await this.resolvePath(path)
+      const Middleware = await Module.resolve(path, this.getMeta())
 
       if (Annotation.isAnnotated(Middleware)) {
         this.registerUsingMeta(Middleware)
@@ -296,7 +299,7 @@ export class HttpKernel {
       return
     }
 
-    const Handler = await this.resolvePath(path)
+    const Handler = await Module.resolve(path, this.getMeta())
 
     debug('Using custom exception handler %s in HttpKernel.', Handler.name)
 
@@ -310,7 +313,7 @@ export class HttpKernel {
    */
   public async registerRoutes(path: string) {
     if (path.startsWith('#')) {
-      await this.resolvePath(path)
+      await Module.resolve(path, this.getMeta())
 
       return
     }
@@ -323,7 +326,7 @@ export class HttpKernel {
       return
     }
 
-    await this.resolvePath(path)
+    await Module.resolve(path, this.getMeta())
   }
 
   /**
@@ -387,16 +390,6 @@ export class HttpKernel {
   }
 
   /**
-   * Resolve the import path by meta URL and import it.
-   */
-  private resolvePath(path: string) {
-    return Module.resolve(
-      `${path}?version=${Math.random()}`,
-      Config.get('rc.meta')
-    )
-  }
-
-  /**
    * Register the controllers using the meta information
    * defined by annotations.
    */
@@ -438,5 +431,12 @@ export class HttpKernel {
     }
 
     return config
+  }
+
+  /**
+   * Get the meta URL of the project.
+   */
+  private getMeta() {
+    return Config.get('rc.meta', Path.toHref(Path.pwd() + sep))
   }
 }

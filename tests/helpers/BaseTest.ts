@@ -7,17 +7,25 @@
  * file that was distributed with this source code.
  */
 
-import { Ioc } from '@athenna/ioc'
 import { Module } from '@athenna/common'
 import { AfterEach } from '@athenna/test'
 
 export class BaseTest {
   @AfterEach()
   public baseAfterEach() {
-    new Ioc().reconstruct()
+    ioc.reconstruct()
   }
 
-  public async import(module: string) {
-    return Module.get(import(`${module}.js?version=${Math.random()}`))
+  /**
+   * Safe import a module, avoiding cache and if
+   * the module is not found, return null.
+   */
+  public async import<T = any>(path: string): Promise<T> {
+    try {
+      return await Module.get(import(`${path}.js?version=${Math.random()}`))
+    } catch (error) {
+      console.log(error)
+      return null
+    }
   }
 }

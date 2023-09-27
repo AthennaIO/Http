@@ -76,7 +76,7 @@ export default class HttpExceptionHandlerTest {
 
   @Test()
   public async shouldIgnoreTheExceptionFromBeingLoggedWhenTheCodeIsSetInsideIgnoreCodes({ assert }: Context) {
-    const logErrorFake = Mock.sandbox.fake()
+    const logErrorFake = Mock.fake()
     const kernel = new HttpKernel()
     await kernel.registerExceptionHandler('#tests/fixtures/handlers/Handler')
     Log.when('channelOrVanilla').return(logErrorFake)
@@ -95,7 +95,7 @@ export default class HttpExceptionHandlerTest {
 
   @Test()
   public async shouldIgnoreTheExceptionFromBeingLoggedWhenTheStatusIsSetInsideIgnoreStatuses({ assert }: Context) {
-    const logErrorFake = Mock.sandbox.fake()
+    const logErrorFake = Mock.fake()
     const kernel = new HttpKernel()
     await kernel.registerExceptionHandler('#tests/fixtures/handlers/Handler')
     Log.when('channelOrVanilla').return(logErrorFake)

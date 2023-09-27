@@ -7,12 +7,10 @@
  * file that was distributed with this source code.
  */
 
-import { Config } from '@athenna/config'
 import { Path, File } from '@athenna/common'
 
 const athennaRc = new File(Path.pwd('package.json')).getContentAsJsonSync().athenna
 
 athennaRc.isInPackageJson = true
-athennaRc.meta = Config.get('meta')
 
 export default athennaRc

@@ -378,6 +378,10 @@ export default class HttpKernelTest {
 
   @Test()
   public async shouldBeAbleToRegisterTheDefaultExceptionHandlerForTheServerRequestHandlers({ assert }: Context) {
+    Log.when('channelOrVanilla').return({
+      error: Mock.fake()
+    })
+
     const kernel = new HttpKernel()
     await kernel.registerExceptionHandler()
     Server.get({
@@ -400,6 +404,10 @@ export default class HttpKernelTest {
 
   @Test()
   public async shouldBeAbleToRegisterACustomExceptionHandlerForTheServerRequestHandlers({ assert }: Context) {
+    Log.when('channelOrVanilla').return({
+      error: Mock.fake()
+    })
+
     const kernel = new HttpKernel()
     await kernel.registerExceptionHandler('#tests/fixtures/handlers/Handler')
     Server.get({

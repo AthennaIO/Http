@@ -8,50 +8,53 @@
  */
 
 import { File } from '@athenna/common'
-import { Config } from '@athenna/config'
-import { Artisan } from '@athenna/artisan'
 import { Test, type Context } from '@athenna/test'
 import { BaseCommandTest } from '#tests/helpers/BaseCommandTest'
 
 export default class MakeTerminatorCommandTest extends BaseCommandTest {
   @Test()
-  public async shouldBeAbleToCreateATerminatorFile({ assert }: Context) {
-    await Artisan.call('make:terminator TestTerminator', false)
+  public async shouldBeAbleToCreateATerminatorFile({ assert, command }: Context) {
+    const output = await command.run('make:terminator TestTerminator')
 
-    const path = Path.terminators('TestTerminator.ts')
+    output.assertSucceeded()
+    output.assertLogged('[ MAKING TERMINATOR ]')
+    output.assertLogged('[  success  ] Terminator "TestTerminator" successfully created.')
+    output.assertLogged('[  success  ] Athenna RC updated: [ middlewares += "#app/http/terminators/TestTerminator" ]')
 
-    assert.isTrue(await File.exists(path))
-    assert.isTrue(this.processExit.calledWith(0))
+    const { athenna } = await new File(Path.pwd('package.json')).getContentAsJson()
 
-    const athennaRc = await new File(Path.pwd('package.json')).getContentAsJson().then(json => json.athenna)
-
-    assert.containsSubset(Config.get('rc.middlewares'), ['#app/http/terminators/TestTerminator'])
-    assert.containsSubset(athennaRc.middlewares, ['#app/http/terminators/TestTerminator'])
+    assert.isTrue(await File.exists(Path.terminators('TestTerminator.ts')))
+    assert.containsSubset(athenna.middlewares, ['#app/http/terminators/TestTerminator'])
   }
 
   @Test()
-  public async shouldBeAbleToCreateATerminatorFileWithDifferentDestPath({ assert }: Context) {
-    Config.set('rc.commands.make:terminator.path', Config.get('rc.commands.make:terminator'))
-    Config.set('rc.commands.make:terminator.destination', Path.fixtures('storage/terminators'))
+  public async shouldBeAbleToCreateATerminatorFileWithADifferentDestPathAndImportPath({ assert, command }: Context) {
+    const output = await command.run('make:terminator TestTerminator', {
+      path: Path.fixtures('consoles/console-mock-dest-import.ts')
+    })
 
-    await Artisan.call('make:terminator TestTerminator', false)
+    output.assertSucceeded()
+    output.assertLogged('[ MAKING TERMINATOR ]')
+    output.assertLogged('[  success  ] Terminator "TestTerminator" successfully created.')
+    output.assertLogged(
+      '[  success  ] Athenna RC updated: [ middlewares += "#tests/fixtures/storage/terminators/TestTerminator" ]'
+    )
 
-    const path = Path.fixtures('storage/terminators/TestTerminator.ts')
+    const { athenna } = await new File(Path.pwd('package.json')).getContentAsJson()
 
-    assert.isTrue(await File.exists(path))
-    assert.isTrue(this.processExit.calledWith(0))
-
-    const athennaRc = await new File(Path.pwd('package.json')).getContentAsJson().then(json => json.athenna)
-
-    assert.containsSubset(Config.get('rc.middlewares'), ['#tests/fixtures/storage/terminators/TestTerminator'])
-    assert.containsSubset(athennaRc.middlewares, ['#tests/fixtures/storage/terminators/TestTerminator'])
+    assert.isTrue(await File.exists(Path.fixtures('storage/terminators/TestTerminator.ts')))
+    assert.containsSubset(athenna.middlewares, ['#tests/fixtures/storage/terminators/TestTerminator'])
   }
 
   @Test()
-  public async shouldThrowAnExceptionWhenTheFileAlreadyExists({ assert }: Context) {
-    await Artisan.call('make:terminator TestTerminator', false)
-    await Artisan.call('make:terminator TestTerminator', false)
+  public async shouldThrowAnExceptionWhenTheFileAlreadyExists({ command }: Context) {
+    await command.run('make:terminator TestTerminator')
+    const output = await command.run('make:terminator TestTerminator')
 
-    assert.isTrue(this.processExit.calledWith(1))
+    output.assertFailed()
+    output.assertLogged('[ MAKING TERMINATOR ]')
+    output.assertLogged('The file')
+    output.assertLogged('TestTerminator.ts')
+    output.assertLogged('already exists')
   }
 }

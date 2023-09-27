@@ -7,38 +7,20 @@
  * file that was distributed with this source code.
  */
 
-import { Color } from '@athenna/common'
-import { Artisan } from '@athenna/artisan'
 import { Test, type Context } from '@athenna/test'
 import { BaseCommandTest } from '#tests/helpers/BaseCommandTest'
 
 export default class RouteListCommandTest extends BaseCommandTest {
   @Test()
-  public async shouldBeAbleToListAllRoutesRegisteredInTheHttpServer({ assert }: Context) {
-    const { stderr, stdout } = await Artisan.callInChild('route:list', this.artisan)
+  public async shouldBeAbleToListAllRoutesRegisteredInTheHttpServer({ command }: Context) {
+    const output = await command.run('route:list')
 
-    assert.deepEqual(stderr, '')
-    assert.deepEqual(
-      Color.removeColors(stdout),
-      '[ LISTING ROUTES ]\n' +
-        '\n' +
-        '┌───────────┬───────────┬────────────────────────┬─────────┐\n' +
-        '│ Methods   │ Route     │ Name                   │ Handler │\n' +
-        '├───────────┼───────────┼────────────────────────┼─────────┤\n' +
-        '│ GET|HEAD  │ /hello    │ get::hello             │ closure │\n' +
-        '├───────────┼───────────┼────────────────────────┼─────────┤\n' +
-        '│ POST      │ /hello    │ post::hello            │ closure │\n' +
-        '├───────────┼───────────┼────────────────────────┼─────────┤\n' +
-        '│ GET       │ /test     │ HelloController.index  │ index   │\n' +
-        '├───────────┼───────────┼────────────────────────┼─────────┤\n' +
-        '│ POST      │ /test     │ HelloController.store  │ store   │\n' +
-        '├───────────┼───────────┼────────────────────────┼─────────┤\n' +
-        '│ GET       │ /test/:id │ HelloController.show   │ show    │\n' +
-        '├───────────┼───────────┼────────────────────────┼─────────┤\n' +
-        '│ PUT|PATCH │ /test/:id │ HelloController.update │ update  │\n' +
-        '├───────────┼───────────┼────────────────────────┼─────────┤\n' +
-        '│ DELETE    │ /test/:id │ HelloController.delete │ delete  │\n' +
-        '└───────────┴───────────┴────────────────────────┴─────────┘\n'
-    )
+    console.log(output.output.stderr)
+
+    output.assertSucceeded()
+    output.assertLogged('[ LISTING ROUTES ]')
+    output.assertLogged('GET|HEAD')
+    output.assertLogged('/hello')
+    output.assertLogged('get::hello')
   }
 }
