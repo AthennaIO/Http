@@ -7,6 +7,7 @@
  * file that was distributed with this source code.
  */
 
+import { sep } from 'node:path'
 import { Config } from '@athenna/config'
 import { Module } from '@athenna/common'
 import { BaseCommand } from '@athenna/artisan'
@@ -61,7 +62,7 @@ export class RouteListCommand extends BaseCommand {
   private async resolveRoute() {
     await Module.resolve(
       Config.get('rc.commands.route:list.route', '#routes/http'),
-      Config.get('rc.meta')
+      this.getMeta()
     )
   }
 
@@ -75,7 +76,14 @@ export class RouteListCommand extends BaseCommand {
 
     return Module.resolve(
       Config.get('rc.commands.route:list.kernel'),
-      Config.get('rc.meta')
+      this.getMeta()
     )
+  }
+
+  /**
+   * Get the meta URL of the project.
+   */
+  private getMeta() {
+    return Config.get('rc.meta', Path.toHref(Path.pwd() + sep))
   }
 }

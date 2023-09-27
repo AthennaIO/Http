@@ -9,6 +9,7 @@
 
 import { Config } from '@athenna/config'
 import { request } from '#src/testing/plugins/index'
+import { command } from '@athenna/artisan/testing/plugins'
 import { Runner, assert, specReporter } from '@athenna/test'
 
 Config.set('meta', import.meta.url)
@@ -16,6 +17,7 @@ Config.set('meta', import.meta.url)
 await Runner.setTsEnv()
   .addPlugin(assert())
   .addPlugin(request())
+  .addPlugin(command())
   .addReporter(specReporter())
   .addPath('tests/unit/**/*.ts')
   .setCliArgs(process.argv.slice(2))

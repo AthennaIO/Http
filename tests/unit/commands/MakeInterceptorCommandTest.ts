@@ -8,50 +8,53 @@
  */
 
 import { File } from '@athenna/common'
-import { Config } from '@athenna/config'
-import { Artisan } from '@athenna/artisan'
 import { Test, type Context } from '@athenna/test'
 import { BaseCommandTest } from '#tests/helpers/BaseCommandTest'
 
 export default class MakeInterceptorCommandTest extends BaseCommandTest {
   @Test()
-  public async shouldBeAbleToCreateAInterceptorFile({ assert }: Context) {
-    await Artisan.call('make:interceptor TestInterceptor', false)
+  public async shouldBeAbleToCreateAInterceptorFile({ assert, command }: Context) {
+    const output = await command.run('make:interceptor TestInterceptor')
 
-    const path = Path.interceptors('TestInterceptor.ts')
+    output.assertSucceeded()
+    output.assertLogged('[ MAKING INTERCEPTOR ]')
+    output.assertLogged('[  success  ] Interceptor "TestInterceptor" successfully created.')
+    output.assertLogged('[  success  ] Athenna RC updated: [ middlewares += "#app/http/interceptors/TestInterceptor" ]')
 
-    assert.isTrue(await File.exists(path))
-    assert.isTrue(this.processExit.calledWith(0))
+    const { athenna } = await new File(Path.pwd('package.json')).getContentAsJson()
 
-    const athennaRc = await new File(Path.pwd('package.json')).getContentAsJson().then(json => json.athenna)
-
-    assert.containsSubset(Config.get('rc.middlewares'), ['#app/http/interceptors/TestInterceptor'])
-    assert.containsSubset(athennaRc.middlewares, ['#app/http/interceptors/TestInterceptor'])
+    assert.isTrue(await File.exists(Path.interceptors('TestInterceptor.ts')))
+    assert.containsSubset(athenna.middlewares, ['#app/http/interceptors/TestInterceptor'])
   }
 
   @Test()
-  public async shouldBeAbleToCreateAInterceptorFileWithDifferentDestPath({ assert }: Context) {
-    Config.set('rc.commands.make:interceptor.path', Config.get('rc.commands.make:interceptor'))
-    Config.set('rc.commands.make:interceptor.destination', Path.fixtures('storage/interceptors'))
+  public async shouldBeAbleToCreateAInterceptorFileWithADifferentDestPathAndImportPath({ assert, command }: Context) {
+    const output = await command.run('make:interceptor TestInterceptor', {
+      path: Path.fixtures('consoles/console-mock-dest-import.ts')
+    })
 
-    await Artisan.call('make:interceptor TestInterceptor', false)
+    output.assertSucceeded()
+    output.assertLogged('[ MAKING INTERCEPTOR ]')
+    output.assertLogged('[  success  ] Interceptor "TestInterceptor" successfully created.')
+    output.assertLogged(
+      '[  success  ] Athenna RC updated: [ middlewares += "#tests/fixtures/storage/interceptors/TestInterceptor" ]'
+    )
 
-    const path = Path.fixtures('storage/interceptors/TestInterceptor.ts')
+    const { athenna } = await new File(Path.pwd('package.json')).getContentAsJson()
 
-    assert.isTrue(await File.exists(path))
-    assert.isTrue(this.processExit.calledWith(0))
-
-    const athennaRc = await new File(Path.pwd('package.json')).getContentAsJson().then(json => json.athenna)
-
-    assert.containsSubset(Config.get('rc.middlewares'), ['#tests/fixtures/storage/interceptors/TestInterceptor'])
-    assert.containsSubset(athennaRc.middlewares, ['#tests/fixtures/storage/interceptors/TestInterceptor'])
+    assert.isTrue(await File.exists(Path.fixtures('storage/interceptors/TestInterceptor.ts')))
+    assert.containsSubset(athenna.middlewares, ['#tests/fixtures/storage/interceptors/TestInterceptor'])
   }
 
   @Test()
-  public async shouldThrowAnExceptionWhenTheFileAlreadyExists({ assert }: Context) {
-    await Artisan.call('make:interceptor TestInterceptor', false)
-    await Artisan.call('make:interceptor TestInterceptor', false)
+  public async shouldThrowAnExceptionWhenTheFileAlreadyExists({ command }: Context) {
+    await command.run('make:interceptor TestInterceptor')
+    const output = await command.run('make:interceptor TestInterceptor')
 
-    assert.isTrue(this.processExit.calledWith(1))
+    output.assertFailed()
+    output.assertLogged('[ MAKING INTERCEPTOR ]')
+    output.assertLogged('The file')
+    output.assertLogged('TestInterceptor.ts')
+    output.assertLogged('already exists')
   }
 }

@@ -8,50 +8,53 @@
  */
 
 import { File } from '@athenna/common'
-import { Config } from '@athenna/config'
-import { Artisan } from '@athenna/artisan'
 import { Test, type Context } from '@athenna/test'
 import { BaseCommandTest } from '#tests/helpers/BaseCommandTest'
 
 export default class MakeMiddlewareCommandTest extends BaseCommandTest {
   @Test()
-  public async shouldBeAbleToCreateAMiddlewareFile({ assert }: Context) {
-    await Artisan.call('make:middleware TestMiddleware', false)
+  public async shouldBeAbleToCreateAMiddlewareFile({ assert, command }: Context) {
+    const output = await command.run('make:middleware TestMiddleware')
 
-    const path = Path.middlewares('TestMiddleware.ts')
+    output.assertSucceeded()
+    output.assertLogged('[ MAKING MIDDLEWARE ]')
+    output.assertLogged('[  success  ] Middleware "TestMiddleware" successfully created.')
+    output.assertLogged('[  success  ] Athenna RC updated: [ middlewares += "#app/http/middlewares/TestMiddleware" ]')
 
-    assert.isTrue(await File.exists(path))
-    assert.isTrue(this.processExit.calledWith(0))
+    const { athenna } = await new File(Path.pwd('package.json')).getContentAsJson()
 
-    const athennaRc = await new File(Path.pwd('package.json')).getContentAsJson().then(json => json.athenna)
-
-    assert.containsSubset(Config.get('rc.middlewares'), ['#app/http/middlewares/TestMiddleware'])
-    assert.containsSubset(athennaRc.middlewares, ['#app/http/middlewares/TestMiddleware'])
+    assert.isTrue(await File.exists(Path.middlewares('TestMiddleware.ts')))
+    assert.containsSubset(athenna.middlewares, ['#app/http/middlewares/TestMiddleware'])
   }
 
   @Test()
-  public async shouldBeAbleToCreateAMiddlewareFileWithDifferentDestPath({ assert }: Context) {
-    Config.set('rc.commands.make:middleware.path', Config.get('rc.commands.make:middleware'))
-    Config.set('rc.commands.make:middleware.destination', Path.fixtures('storage/middlewares'))
+  public async shouldBeAbleToCreateAMiddlewareFileWithADifferentDestPathAndImportPath({ assert, command }: Context) {
+    const output = await command.run('make:middleware TestMiddleware', {
+      path: Path.fixtures('consoles/console-mock-dest-import.ts')
+    })
 
-    await Artisan.call('make:middleware TestMiddleware', false)
+    output.assertSucceeded()
+    output.assertLogged('[ MAKING MIDDLEWARE ]')
+    output.assertLogged('[  success  ] Middleware "TestMiddleware" successfully created.')
+    output.assertLogged(
+      '[  success  ] Athenna RC updated: [ middlewares += "#tests/fixtures/storage/middlewares/TestMiddleware" ]'
+    )
 
-    const path = Path.fixtures('storage/middlewares/TestMiddleware.ts')
+    const { athenna } = await new File(Path.pwd('package.json')).getContentAsJson()
 
-    assert.isTrue(await File.exists(path))
-    assert.isTrue(this.processExit.calledWith(0))
-
-    const athennaRc = await new File(Path.pwd('package.json')).getContentAsJson().then(json => json.athenna)
-
-    assert.containsSubset(Config.get('rc.middlewares'), ['#tests/fixtures/storage/middlewares/TestMiddleware'])
-    assert.containsSubset(athennaRc.middlewares, ['#tests/fixtures/storage/middlewares/TestMiddleware'])
+    assert.isTrue(await File.exists(Path.fixtures('storage/middlewares/TestMiddleware.ts')))
+    assert.containsSubset(athenna.middlewares, ['#tests/fixtures/storage/middlewares/TestMiddleware'])
   }
 
   @Test()
-  public async shouldThrowAnExceptionWhenTheFileAlreadyExists({ assert }: Context) {
-    await Artisan.call('make:middleware TestMiddleware', false)
-    await Artisan.call('make:middleware TestMiddleware', false)
+  public async shouldThrowAnExceptionWhenTheFileAlreadyExists({ command }: Context) {
+    await command.run('make:middleware TestMiddleware')
+    const output = await command.run('make:middleware TestMiddleware')
 
-    assert.isTrue(this.processExit.calledWith(1))
+    output.assertFailed()
+    output.assertLogged('[ MAKING MIDDLEWARE ]')
+    output.assertLogged('The file')
+    output.assertLogged('TestMiddleware.ts')
+    output.assertLogged('already exists')
   }
 }

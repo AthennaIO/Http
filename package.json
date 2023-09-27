@@ -67,12 +67,12 @@
     "#tests": "./tests/index.js"
   },
   "devDependencies": {
-    "@athenna/artisan": "^4.10.0",
-    "@athenna/common": "^4.11.0",
+    "@athenna/artisan": "^4.12.0",
+    "@athenna/common": "^4.15.4",
     "@athenna/config": "^4.4.0",
-    "@athenna/ioc": "^4.4.0",
-    "@athenna/logger": "^4.4.0",
-    "@athenna/test": "^4.7.0",
+    "@athenna/ioc": "^4.4.3",
+    "@athenna/logger": "^4.5.0",
+    "@athenna/test": "^4.8.0",
     "@athenna/view": "^4.3.0",
     "@fastify/cors": "^8.1.1",
     "@fastify/helmet": "^10.0.2",
@@ -201,9 +201,6 @@
       "terminator": "./templates/terminator.edge",
       "command": "@athenna/artisan/templates/command.edge"
     },
-    "preloads": [],
-    "services": [],
-    "providers": [],
     "controllers": [
       "#tests/fixtures/controllers/HelloController",
       "#tests/fixtures/controllers/AnnotatedController"
@@ -227,17 +224,6 @@
       "#tests/fixtures/middlewares/AnnotatedGlobalMiddleware",
       "#tests/fixtures/middlewares/AnnotatedGlobalInterceptor",
       "#tests/fixtures/middlewares/AnnotatedGlobalTerminator"
-    ],
-    "commands": {
-      "route:list": {
-        "path": "#src/commands/RouteListCommand",
-        "route": "./tests/fixtures/routes/http.js",
-        "kernel": "./tests/fixtures/kernels/HttpKernel.js"
-      },
-      "make:controller": "#src/commands/MakeControllerCommand",
-      "make:interceptor": "#src/commands/MakeInterceptorCommand",
-      "make:middleware": "#src/commands/MakeMiddlewareCommand",
-      "make:terminator": "#src/commands/MakeTerminatorCommand"
-    }
+    ]
   }
 }
