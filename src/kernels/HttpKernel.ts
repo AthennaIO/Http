@@ -437,6 +437,6 @@ export class HttpKernel {
    * Get the meta URL of the project.
    */
   private getMeta() {
-    return Config.get('rc.meta', Path.toHref(Path.pwd() + sep))
+    return Config.get('rc.parentURL', Path.toHref(Path.pwd() + sep))
   }
 }

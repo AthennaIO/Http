@@ -62,7 +62,7 @@ export class RouteListCommand extends BaseCommand {
   private async resolveRoute() {
     await Module.resolve(
       Config.get('rc.commands.route:list.route', '#routes/http'),
-      this.getMeta()
+      this.getParentURL()
     )
   }
 
@@ -76,14 +76,14 @@ export class RouteListCommand extends BaseCommand {
 
     return Module.resolve(
       Config.get('rc.commands.route:list.kernel'),
-      this.getMeta()
+      this.getParentURL()
     )
   }
 
   /**
-   * Get the meta URL of the project.
+   * Get the parent URL of the project.
    */
-  private getMeta() {
-    return Config.get('rc.meta', Path.toHref(Path.pwd() + sep))
+  private getParentURL() {
+    return Config.get('rc.parentURL', Path.toHref(Path.pwd() + sep))
   }
 }

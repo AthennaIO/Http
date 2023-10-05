@@ -99,18 +99,18 @@ export class ServerImpl {
    * @fastify/swagger plugin in the server. If the plugin is not installed
    * will return null.
    */
-  public getSwagger(options?: {
+  public async getSwagger(options?: {
     yaml: boolean
-  }): import('openapi-types').OpenAPI.Document | string {
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
+  }): Promise<import('openapi-types').OpenAPI.Document | string> {
     const swagger = this.fastify.swagger
 
     if (!swagger) {
       return null
     }
 
-    return swagger(options) as import('openapi-types').OpenAPI.Document
+    await this.fastify.ready()
+
+    return swagger(options)
   }
 
   /**

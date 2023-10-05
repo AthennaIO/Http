@@ -35,7 +35,7 @@ declare module 'fastify' {
   }
 }
 
-export * from './types/index.js'
+export * from '#src/types'
 
 export * from '#src/context/Request'
 export * from '#src/context/Response'

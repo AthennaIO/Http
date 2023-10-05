@@ -84,7 +84,7 @@ export default class RouteTest {
 
     Route.register()
 
-    const swagger = Server.getSwagger()
+    const swagger = await Server.getSwagger()
 
     assert.deepEqual(swagger.paths['/test'], {
       get: {
@@ -101,7 +101,7 @@ export default class RouteTest {
 
     Route.register()
 
-    const swagger = Server.getSwagger()
+    const swagger = await Server.getSwagger()
 
     assert.deepEqual(swagger.paths['/test'], {
       get: {
@@ -119,7 +119,7 @@ export default class RouteTest {
 
     Route.register()
 
-    const swagger = Server.getSwagger()
+    const swagger = await Server.getSwagger()
 
     assert.deepEqual(swagger.paths['/test'], {
       get: {
@@ -137,7 +137,7 @@ export default class RouteTest {
 
     Route.register()
 
-    const swagger = Server.getSwagger()
+    const swagger = await Server.getSwagger()
 
     assert.deepEqual(swagger.paths['/test'], {
       get: {
@@ -155,7 +155,7 @@ export default class RouteTest {
 
     Route.register()
 
-    const swagger = Server.getSwagger()
+    const swagger = await Server.getSwagger()
 
     assert.deepEqual(swagger.paths['/test'], {
       get: {
@@ -173,7 +173,7 @@ export default class RouteTest {
 
     Route.register()
 
-    const swagger = Server.getSwagger()
+    const swagger = await Server.getSwagger()
 
     assert.containsSubset(swagger.paths['/test'], {
       post: {
@@ -200,7 +200,7 @@ export default class RouteTest {
 
     Route.register()
 
-    const swagger = Server.getSwagger()
+    const swagger = await Server.getSwagger()
 
     assert.containsSubset(swagger.paths['/test'], {
       post: {
@@ -225,7 +225,7 @@ export default class RouteTest {
 
     Route.register()
 
-    const swagger = Server.getSwagger()
+    const swagger = await Server.getSwagger()
 
     assert.containsSubset(swagger.paths['/test'], {
       post: {
@@ -240,7 +240,7 @@ export default class RouteTest {
 
     Route.register()
 
-    const swagger = Server.getSwagger()
+    const swagger = await Server.getSwagger()
 
     assert.containsSubset(swagger.paths['/test'], {
       post: {
@@ -256,7 +256,7 @@ export default class RouteTest {
 
     Route.register()
 
-    const swagger = Server.getSwagger()
+    const swagger = await Server.getSwagger()
 
     assert.containsSubset(swagger.paths['/test'], {
       post: {
@@ -272,7 +272,7 @@ export default class RouteTest {
 
     Route.register()
 
-    const swagger = Server.getSwagger()
+    const swagger = await Server.getSwagger()
 
     assert.containsSubset(swagger.paths['/test'], {
       post: {
@@ -288,7 +288,7 @@ export default class RouteTest {
 
     Route.register()
 
-    const swagger = Server.getSwagger()
+    const swagger = await Server.getSwagger()
 
     assert.containsSubset(swagger.paths['/test'], {
       post: {

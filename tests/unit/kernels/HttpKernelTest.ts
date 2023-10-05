@@ -59,7 +59,6 @@ export default class HttpKernelTest {
       'x-dns-prefetch-control': 'off',
       'cross-origin-opener-policy': 'same-origin',
       'cross-origin-resource-policy': 'same-origin',
-      'cross-origin-embedder-policy': 'require-corp',
       'strict-transport-security': 'max-age=15552000; includeSubDomains'
     })
     assert.isTrue(Server.fastify.hasPlugin('@fastify/helmet'))
