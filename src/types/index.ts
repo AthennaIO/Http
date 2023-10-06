@@ -31,3 +31,5 @@ export * from '#src/types/middlewares/TerminatorRouteType'
 export * from '#src/types/router/RouteHandler'
 export * from '#src/types/router/RouteJson'
 export * from '#src/types/router/RouteResourceTypes'
+
+export * from '#src/types/swagger/SwaggerDocument'
