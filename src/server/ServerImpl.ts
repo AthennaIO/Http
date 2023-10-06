@@ -101,6 +101,8 @@ export class ServerImpl {
   public async getSwagger(options?: {
     yaml: boolean
   }): Promise<SwaggerDocument | string> {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     const swagger = this.fastify.swagger
 
     if (!swagger) {
