@@ -7,12 +7,9 @@
  * file that was distributed with this source code.
  */
 
-import { Config } from '@athenna/config'
 import { request } from '#src/testing/plugins/index'
 import { command } from '@athenna/artisan/testing/plugins'
 import { Runner, assert, specReporter } from '@athenna/test'
-
-Config.set('meta', import.meta.url)
 
 await Runner.setTsEnv()
   .addPlugin(assert())

@@ -17,7 +17,7 @@ process.env.IS_TS = 'true'
 
 await Config.loadAll(Path.fixtures('config'))
 
-Config.set('rc.meta', Path.toHref(Path.pwd() + sep))
+Config.set('rc.parentURL', Path.toHref(Path.pwd() + sep))
 
 Config.set('rc.commands', {
   'route:list': {

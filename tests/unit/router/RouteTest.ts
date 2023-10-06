@@ -84,7 +84,7 @@ export default class RouteTest {
 
     Route.register()
 
-    const swagger = Server.getSwagger()
+    const swagger = await Server.getSwagger()
 
     assert.deepEqual(swagger.paths['/test'], {
       get: {
@@ -101,7 +101,7 @@ export default class RouteTest {
 
     Route.register()
 
-    const swagger = Server.getSwagger()
+    const swagger = await Server.getSwagger()
 
     assert.deepEqual(swagger.paths['/test'], {
       get: {
@@ -119,7 +119,7 @@ export default class RouteTest {
 
     Route.register()
 
-    const swagger = Server.getSwagger()
+    const swagger = await Server.getSwagger()
 
     assert.deepEqual(swagger.paths['/test'], {
       get: {
@@ -137,7 +137,7 @@ export default class RouteTest {
 
     Route.register()
 
-    const swagger = Server.getSwagger()
+    const swagger = await Server.getSwagger()
 
     assert.deepEqual(swagger.paths['/test'], {
       get: {
@@ -155,7 +155,7 @@ export default class RouteTest {
 
     Route.register()
 
-    const swagger = Server.getSwagger()
+    const swagger = await Server.getSwagger()
 
     assert.deepEqual(swagger.paths['/test'], {
       get: {
@@ -173,7 +173,7 @@ export default class RouteTest {
 
     Route.register()
 
-    const swagger = Server.getSwagger()
+    const swagger = await Server.getSwagger()
 
     assert.containsSubset(swagger.paths['/test'], {
       post: {
@@ -200,7 +200,7 @@ export default class RouteTest {
 
     Route.register()
 
-    const swagger = Server.getSwagger()
+    const swagger = await Server.getSwagger()
 
     assert.containsSubset(swagger.paths['/test'], {
       post: {
@@ -218,18 +218,143 @@ export default class RouteTest {
   }
 
   @Test()
-  public async shouldBeAbleToSetResponseCodeInTheRouteForSwaggerDocumentation({ assert }: Context) {
+  public async shouldBeAbleToSetResponseCodeInTheRouteReturningStringForSwaggerDocumentation({ assert }: Context) {
     Route.post('test', new HelloController().index)
-      .response(200, { description: 'Default Response' })
-      .response(404, { description: 'not found test' })
+      .response(200, { type: 'string', example: 'hello world!' })
+      .response(404, { type: 'string', example: 'hello world!' })
 
     Route.register()
 
-    const swagger = Server.getSwagger()
+    const swagger = await Server.getSwagger()
 
     assert.containsSubset(swagger.paths['/test'], {
       post: {
-        responses: { '200': { description: 'Default Response' }, '404': { description: 'not found test' } }
+        responses: {
+          '200': {
+            description: 'Status code 200 response',
+            schema: {
+              type: 'string',
+              description: 'Status code 200 response',
+              example: 'hello world!'
+            }
+          },
+          '404': {
+            description: 'Status code 404 response',
+            schema: {
+              type: 'string',
+              description: 'Status code 404 response',
+              example: 'hello world!'
+            }
+          }
+        }
+      }
+    })
+  }
+
+  @Test()
+  public async shouldBeAbleToSetResponseCodeInTheRouteReturningBooleanForSwaggerDocumentation({ assert }: Context) {
+    Route.post('test', new HelloController().index)
+      .response(200, { type: 'boolean', example: false })
+      .response(404, { type: 'boolean', example: true })
+
+    Route.register()
+
+    const swagger = await Server.getSwagger()
+
+    assert.containsSubset(swagger.paths['/test'], {
+      post: {
+        responses: {
+          '200': {
+            description: 'Status code 200 response',
+            schema: {
+              type: 'boolean',
+              description: 'Status code 200 response',
+              example: false
+            }
+          },
+          '404': {
+            description: 'Status code 404 response',
+            schema: {
+              type: 'boolean',
+              description: 'Status code 404 response',
+              example: true
+            }
+          }
+        }
+      }
+    })
+  }
+
+  @Test()
+  public async shouldBeAbleToSetResponseCodeInTheRouteReturningIntegerForSwaggerDocumentation({ assert }: Context) {
+    Route.post('test', new HelloController().index)
+      .response(200, { type: 'integer', example: 200 })
+      .response(404, { type: 'integer', example: 404 })
+
+    Route.register()
+
+    const swagger = await Server.getSwagger()
+
+    assert.containsSubset(swagger.paths['/test'], {
+      post: {
+        responses: {
+          '200': {
+            description: 'Status code 200 response',
+            schema: {
+              type: 'integer',
+              description: 'Status code 200 response',
+              example: 200
+            }
+          },
+          '404': {
+            description: 'Status code 404 response',
+            schema: {
+              type: 'integer',
+              description: 'Status code 404 response',
+              example: 404
+            }
+          }
+        }
+      }
+    })
+  }
+
+  @Test()
+  public async shouldBeAbleToSetResponseCodeInTheRouteReturningObjectForSwaggerDocumentation({ assert }: Context) {
+    Route.post('test', new HelloController().index)
+      .response(200, {
+        description: 'Success',
+        properties: { hello: { type: 'string' } }
+      })
+      .response(404, {
+        description: 'Not found',
+        properties: { hello: { type: 'string' } }
+      })
+
+    Route.register()
+
+    const swagger = await Server.getSwagger()
+
+    assert.containsSubset(swagger.paths['/test'], {
+      post: {
+        responses: {
+          '200': {
+            description: 'Success',
+            schema: {
+              type: 'object',
+              description: 'Success',
+              properties: { hello: { type: 'string' } }
+            }
+          },
+          '404': {
+            description: 'Not found',
+            schema: {
+              type: 'object',
+              description: 'Not found',
+              properties: { hello: { type: 'string' } }
+            }
+          }
+        }
       }
     })
   }
@@ -240,7 +365,7 @@ export default class RouteTest {
 
     Route.register()
 
-    const swagger = Server.getSwagger()
+    const swagger = await Server.getSwagger()
 
     assert.containsSubset(swagger.paths['/test'], {
       post: {
@@ -256,7 +381,7 @@ export default class RouteTest {
 
     Route.register()
 
-    const swagger = Server.getSwagger()
+    const swagger = await Server.getSwagger()
 
     assert.containsSubset(swagger.paths['/test'], {
       post: {
@@ -272,7 +397,7 @@ export default class RouteTest {
 
     Route.register()
 
-    const swagger = Server.getSwagger()
+    const swagger = await Server.getSwagger()
 
     assert.containsSubset(swagger.paths['/test'], {
       post: {
@@ -288,7 +413,7 @@ export default class RouteTest {
 
     Route.register()
 
-    const swagger = Server.getSwagger()
+    const swagger = await Server.getSwagger()
 
     assert.containsSubset(swagger.paths['/test'], {
       post: {

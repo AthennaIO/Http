@@ -90,7 +90,7 @@ export class Request {
    * @example /users/:id
    */
   public get routeUrl(): string {
-    return this.request.routerPath
+    return this.request.routeOptions.url
   }
 
   /**

@@ -17,7 +17,7 @@ import type {
   InterceptorRouteType
 } from '#src/types'
 
-import { Is, Route as RouteHelper } from '@athenna/common'
+import { Is, Options, Route as RouteHelper } from '@athenna/common'
 import type { HTTPMethods, FastifySchema, RouteOptions } from 'fastify'
 import { UndefinedMethodException } from '#src/exceptions/UndefinedMethodException'
 import { NotFoundMiddlewareException } from '#src/exceptions/NotFoundMiddlewareException'
@@ -476,7 +476,11 @@ export class Route {
    * })
    * ```
    */
-  public response(statusCode: number, response: any = {}): Route {
+  public response(statusCode: number, response?: any): Route {
+    response = Options.create(response, {
+      description: `Status code ${statusCode} response`
+    })
+
     if (!this.route.fastify.schema.response) {
       this.route.fastify.schema.response = {}
     }

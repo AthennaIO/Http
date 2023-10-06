@@ -1,6 +1,6 @@
 {
   "name": "@athenna/http",
-  "version": "4.9.0",
+  "version": "4.10.0",
   "description": "The Athenna Http server. Built on top of fastify.",
   "license": "MIT",
   "author": "João Lenon <lenon@athenna.io>",
@@ -23,11 +23,14 @@
     "athenna",
     "esm"
   ],
+  "engines": {
+    "node": ">=20.0.0"
+  },
   "scripts": {
-    "build": "rimraf build && tsc --project bin/tsconfig.build.json",
+    "build": "node node_modules/@athenna/tsconfig/src/build.js",
     "lint:fix": "eslint \"{bin,src,tests}/**/*.ts\" --fix",
-    "test": "npm run --silent lint:fix && sh node bin/test.ts",
-    "test:debug": "cross-env NODE_DEBUG=athenna:* sh node --inspect bin/test.ts",
+    "test": "npm run --silent lint:fix && node --enable-source-maps --import=@athenna/tsconfig bin/test.ts",
+    "test:debug": "cross-env NODE_DEBUG=athenna:* node --inspect --enable-source-maps --import=@athenna/tsconfig bin/test.ts",
     "test:coverage": "c8 npm run --silent test"
   },
   "files": [
@@ -44,6 +47,7 @@
   "exports": {
     ".": "./src/index.js",
     "./types": "./src/types/index.js",
+    "./package": "./package.json",
     "./package.json": "./package.json",
     "./testing/plugins": "./src/testing/plugins/index.js",
     "./kernels/HttpKernel": "./src/kernels/HttpKernel.js",
@@ -67,21 +71,21 @@
     "#tests": "./tests/index.js"
   },
   "devDependencies": {
-    "@athenna/artisan": "^4.12.0",
-    "@athenna/common": "^4.15.4",
-    "@athenna/config": "^4.4.0",
-    "@athenna/ioc": "^4.4.3",
-    "@athenna/logger": "^4.5.0",
-    "@athenna/test": "^4.8.0",
-    "@athenna/view": "^4.3.0",
-    "@fastify/cors": "^8.1.1",
-    "@fastify/helmet": "^10.0.2",
-    "@fastify/rate-limit": "^7.5.0",
-    "@fastify/swagger": "^8.1.0",
-    "@fastify/swagger-ui": "^1.1.0",
-    "@typescript-eslint/eslint-plugin": "^5.56.0",
-    "@typescript-eslint/parser": "^5.56.0",
-    "c8": "^7.12.0",
+    "@athenna/artisan": "^4.13.0",
+    "@athenna/common": "^4.17.2",
+    "@athenna/config": "^4.6.0",
+    "@athenna/ioc": "^4.6.0",
+    "@athenna/logger": "^4.7.0",
+    "@athenna/test": "^4.11.0",
+    "@athenna/tsconfig": "^4.8.2",
+    "@athenna/view": "^4.5.0",
+    "@fastify/cors": "^8.4.0",
+    "@fastify/helmet": "^11.1.1",
+    "@fastify/rate-limit": "^8.0.3",
+    "@fastify/swagger": "^8.11.0",
+    "@fastify/swagger-ui": "^1.10.0",
+    "@typescript-eslint/eslint-plugin": "^6.7.4",
+    "@typescript-eslint/parser": "^6.7.4",
     "commitizen": "^4.2.6",
     "cz-conventional-changelog": "^3.3.0",
     "eslint": "^8.36.0",
@@ -91,13 +95,10 @@
     "eslint-plugin-n": "^15.6.1",
     "eslint-plugin-prettier": "^4.2.1",
     "eslint-plugin-promise": "^6.1.1",
+    "foreground-child": "^2.0.0",
     "husky": "^3.1.0",
     "lint-staged": "^12.5.0",
-    "prettier": "^2.8.7",
-    "reflect-metadata": "^0.1.13",
-    "rimraf": "^5.0.1",
-    "ts-node": "^10.9.1",
-    "typescript": "^5.0.2"
+    "prettier": "^2.8.7"
   },
   "c8": {
     "all": true,
