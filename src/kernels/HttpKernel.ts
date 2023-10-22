@@ -101,7 +101,17 @@ export class HttpKernel {
       const swaggerUiConfig = Config.get('http.swagger.ui', {})
 
       if (!swaggerUiConfig.logo) {
-        const image = new File(Path.resources('images/athenna-logo.png'))
+        const __dirname = Module.createDirname(import.meta.url)
+        const image = new File(
+          resolve(
+            __dirname,
+            '..',
+            '..',
+            'resources',
+            'images',
+            'athenna-logo.png'
+          )
+        )
 
         swaggerUiConfig.logo = {
           type: 'image/png',
