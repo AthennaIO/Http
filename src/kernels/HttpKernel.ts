@@ -98,7 +98,18 @@ export class HttpKernel {
         'Not able to register swagger-ui plugin. Install @fastify/swagger-ui package.'
       )
 
-      await Server.plugin(swaggerUiPlugin, Config.get('http.swagger.ui'))
+      const swaggerUiConfig = Config.get('http.swagger.ui', {})
+
+      if (!swaggerUiConfig.logo) {
+        const image = new File(Path.resources('images/athenna-logo.png'))
+
+        swaggerUiConfig.logo = {
+          type: 'image/png',
+          content: image.getContentSync()
+        }
+      }
+
+      await Server.plugin(swaggerUiPlugin, swaggerUiConfig)
     }
   }
 
