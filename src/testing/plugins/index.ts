@@ -7,9 +7,10 @@
  * file that was distributed with this source code.
  */
 
+import { TestContext } from '@japa/runner/core'
 import { TestRequest } from '#src/testing/plugins/request/TestRequest'
 
-declare module '@japa/runner' {
+declare module '@japa/runner/core' {
   interface TestContext {
     request: TestRequest
   }
@@ -22,7 +23,7 @@ export * from '#src/testing/plugins/request/TestResponse'
  * Request plugin registers the request macro to the test context.
  */
 export function request() {
-  return function (_config, _runner, classes) {
-    classes.TestContext.macro('request', new TestRequest())
+  return function () {
+    TestContext.macro('request', new TestRequest())
   }
 }

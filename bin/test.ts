@@ -7,15 +7,14 @@
  * file that was distributed with this source code.
  */
 
+import { Runner } from '@athenna/test'
 import { request } from '#src/testing/plugins/index'
 import { command } from '@athenna/artisan/testing/plugins'
-import { Runner, assert, specReporter } from '@athenna/test'
 
 await Runner.setTsEnv()
-  .addPlugin(assert())
+  .addAssertPlugin()
   .addPlugin(request())
   .addPlugin(command())
-  .addReporter(specReporter())
   .addPath('tests/unit/**/*.ts')
   .setCliArgs(process.argv.slice(2))
   .setGlobalTimeout(10000)
