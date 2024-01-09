@@ -105,12 +105,12 @@ export default class HttpKernelTest {
   public async shouldBeAbleToRegisterTheLoggerTerminatorInTheHttpServer({ assert }: Context) {
     const kernel = new HttpKernel()
     await kernel.registerLoggerTerminator()
-    const mock = Log.when('channelOrVanilla').return(undefined)
+    Log.when('channelOrVanilla').return(undefined)
     Server.get({ url: '/hello', handler: ctx => ctx.response.send({ hello: true }) })
 
     const response = await Server.request().get('hello')
 
-    assert.called(mock)
+    assert.called(Log.channelOrVanilla)
     assert.deepEqual(response.json(), { hello: true })
   }
 
@@ -249,12 +249,12 @@ export default class HttpKernelTest {
 
     const kernel = new HttpKernel()
     await kernel.registerLoggerTerminator()
-    const mock = Log.when('channelOrVanilla').return(undefined)
+    Log.when('channelOrVanilla').return(undefined)
     Server.get({ url: '/hello', handler: ctx => ctx.response.send({ hello: true }) })
 
     const response = await Server.request().get('hello')
 
-    assert.isTrue(mock.notCalled)
+    assert.notCalled(Log.channelOrVanilla)
     assert.deepEqual(response.json(), { hello: true })
   }
 
