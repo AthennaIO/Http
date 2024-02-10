@@ -203,7 +203,7 @@ export class RouteResource {
     this.makeRoute(fullUrl, ['GET'], 'index')
     this.makeRoute(fullUrl, ['POST'], 'store')
     this.makeRoute(`${fullUrl}/:id`, ['GET'], 'show')
-    this.makeRoute(`${fullUrl}/:id`, ['PUT', 'PATCH'], 'update')
+    this.makeRoute(`${fullUrl}/:id`, ['PUT'], 'update')
     this.makeRoute(`${fullUrl}/:id`, ['DELETE'], 'delete')
   }
 }
