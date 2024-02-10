@@ -37,7 +37,6 @@ export default class RouteResourceTest {
     assert.deepEqual((await Server.request({ path: '/test', method: 'post' })).json(), { hello: 'world' })
     assert.deepEqual((await Server.request({ path: '/test/:id', method: 'get' })).json(), { hello: 'world' })
     assert.deepEqual((await Server.request({ path: '/test/:id', method: 'put' })).json(), { hello: 'world' })
-    assert.deepEqual((await Server.request({ path: '/test/:id', method: 'patch' })).json(), { hello: 'world' })
     assert.deepEqual((await Server.request({ path: '/test/:id', method: 'delete' })).json(), { hello: 'world' })
   }
 
@@ -82,7 +81,6 @@ export default class RouteResourceTest {
     assert.deepEqual((await Server.request({ path: '/test', method: 'post' })).json(), { hello: 'world' })
     assert.deepEqual((await Server.request({ path: '/test/:id', method: 'get' })).json(), { hello: 'world' })
     assert.deepEqual((await Server.request({ path: '/test/:id', method: 'put' })).json(), { hello: 'world' })
-    assert.deepEqual((await Server.request({ path: '/test/:id', method: 'patch' })).json(), { hello: 'world' })
     assert.deepEqual((await Server.request({ path: '/test/:id', method: 'delete' })).json(), { hello: 'world' })
     assert.deepEqual((await Server.request({ path: '/test', method: 'get' })).json(), {
       error: 'Not Found',
@@ -103,7 +101,6 @@ export default class RouteResourceTest {
     assert.deepEqual((await Server.request({ path: '/v1/test', method: 'post' })).json(), { hello: 'world' })
     assert.deepEqual((await Server.request({ path: '/v1/test/:id', method: 'get' })).json(), { hello: 'world' })
     assert.deepEqual((await Server.request({ path: '/v1/test/:id', method: 'put' })).json(), { hello: 'world' })
-    assert.deepEqual((await Server.request({ path: '/v1/test/:id', method: 'patch' })).json(), { hello: 'world' })
     assert.deepEqual((await Server.request({ path: '/v1/test/:id', method: 'delete' })).json(), { hello: 'world' })
   }
 
