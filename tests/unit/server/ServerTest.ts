@@ -51,7 +51,7 @@ export default class ServerTest {
   }
 
   @Test()
-  public async shouldReturnNormalyIfTheHttpServerIsNotRunningOnCloseMethod({ assert }: Context) {
+  public async shouldReturnNormallyIfTheHttpServerIsNotRunningOnCloseMethod({ assert }: Context) {
     assert.isUndefined(await Server.close())
   }
 
