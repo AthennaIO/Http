@@ -2,23 +2,23 @@ import { Controller, type Context } from '@athenna/http'
 
 @Controller()
 export class {{ namePascal }} {
-    public async index({ response }: Context): Promise<void> {
+    public async index({ response }: Context) {
       return response.status(200).send([{}])
     }
 
-    public async store({ response }: Context): Promise<void> {
+    public async store({ response }: Context) {
       return response.status(201).send({})
     }
 
-    public async show({ response }: Context): Promise<void> {
+    public async show({ response }: Context) {
       return response.status(200).send({})
     }
 
-    public async update({ response, params }: Context): Promise<void> {
+    public async update({ response, params }: Context) {
       return response.status(200).send({ id: params.id })
     }
 
-    public async delete({ response }: Context): Promise<void> {
+    public async delete({ response }: Context) {
       return response.status(204)
     }
 }
