@@ -7,13 +7,12 @@
  * file that was distributed with this source code.
  */
 
-import type { InterceptHandler, TerminateHandler } from '#src/types'
-
 import { Is } from '@athenna/common'
 import { Request } from '#src/context/Request'
 import { Response } from '#src/context/Response'
 import type { RequestHandler } from '#src/types/contexts/Context'
 import type { ErrorHandler } from '#src/types/contexts/ErrorContext'
+import type { InterceptHandler, TerminateHandler } from '#src/types'
 import type { FastifyReply, FastifyRequest, RouteHandlerMethod } from 'fastify'
 
 export class FastifyHandler {
@@ -24,11 +23,12 @@ export class FastifyHandler {
   public static request(handler: RequestHandler): RouteHandlerMethod {
     return async (req: FastifyRequest, res: FastifyReply) => {
       const request = new Request(req)
-      const response = new Response(res)
 
       if (!req.data) {
         req.data = {}
       }
+
+      const response = new Response(res, request)
 
       await handler({
         request,
@@ -55,7 +55,12 @@ export class FastifyHandler {
   public static intercept(handler: InterceptHandler) {
     return async (req: FastifyRequest, res: FastifyReply, payload: any) => {
       const request = new Request(req)
-      const response = new Response(res)
+
+      if (!req.data) {
+        req.data = {}
+      }
+
+      const response = new Response(res, request)
 
       if (Is.Json(payload)) {
         payload = JSON.parse(payload)
@@ -90,7 +95,12 @@ export class FastifyHandler {
   public static terminate(handler: TerminateHandler) {
     return async (req: FastifyRequest, res: FastifyReply) => {
       const request = new Request(req)
-      const response = new Response(res)
+
+      if (!req.data) {
+        req.data = {}
+      }
+
+      const response = new Response(res, request)
 
       await handler({
         request,
@@ -101,7 +111,7 @@ export class FastifyHandler {
         body: res.body || req.body,
         headers: res.getHeaders(),
         status: res.statusCode,
-        responseTime: res.getResponseTime()
+        responseTime: res.elapsedTime
       })
     }
   }
@@ -112,7 +122,12 @@ export class FastifyHandler {
   public static error(handler: ErrorHandler) {
     return async (error: any, req: FastifyRequest, res: FastifyReply) => {
       const request = new Request(req)
-      const response = new Response(res)
+
+      if (!req.data) {
+        req.data = {}
+      }
+
+      const response = new Response(res, request)
 
       await handler({
         request,

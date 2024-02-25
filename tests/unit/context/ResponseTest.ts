@@ -7,9 +7,12 @@
  * file that was distributed with this source code.
  */
 
+import fastifyStatic from '@fastify/static'
+
 import { fastify } from 'fastify'
 import { Response } from '#src/context/Response'
 import { Test, type Context } from '@athenna/test'
+import { View, ViewProvider } from '@athenna/view'
 
 export default class ResponseTest {
   @Test()
@@ -225,5 +228,79 @@ export default class ResponseTest {
       response.headers['content-security-policy'],
       "default-src 'self';base-uri 'self';font-src 'self' https: data:;form-action 'self';frame-ancestors 'self';img-src 'self' data:;object-src 'none';script-src 'self';script-src-attr 'none';style-src 'self' https: 'unsafe-inline';upgrade-insecure-requests"
     )
+  }
+
+  @Test()
+  public async shouldBeAbleToReturnAViewInTheResponse({ assert }: Context) {
+    assert.plan(2)
+
+    const server = fastify()
+
+    new ViewProvider().register()
+
+    View.createComponent('head', '<h1>{{ name }}</h1>')
+
+    server.get('/test/:id', async (_, res) => {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      const response = new Response(res, {})
+
+      response.view('head', { name: 'lenon' }).then(() => {
+        assert.deepEqual(response.body, '<h1>lenon</h1>')
+        assert.deepEqual(response.headers, { 'content-length': '0', 'content-type': 'text/html; charset=utf-8' })
+      })
+    })
+
+    await server.inject().get('/test/1')
+    ioc.reconstruct()
+  }
+
+  @Test()
+  public async shouldBeAbleToAFileInTheResponseUsingSendFileMethod({ assert }: Context) {
+    assert.plan(1)
+
+    const server = fastify()
+
+    server.register(fastifyStatic, {
+      root: Path.fixtures('config')
+    })
+
+    server.get('/test', async (_, res) => {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      const response = new Response(res, {})
+
+      response.sendFile('app.ts').then(() => {
+        assert.deepEqual(response.headers, { 'content-length': '0' })
+      })
+    })
+
+    await server.inject().get('/test')
+  }
+
+  @Test()
+  public async shouldBeAbleToAFileInTheResponseUsingDownloadMethod({ assert }: Context) {
+    assert.plan(1)
+
+    const server = fastify()
+
+    server.register(fastifyStatic, {
+      root: Path.fixtures('config')
+    })
+
+    server.get('/test', async (_, res) => {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      const response = new Response(res, {})
+
+      response.download('app.ts', 'a.ts').then(() => {
+        assert.deepEqual(response.headers, {
+          'content-length': '0',
+          'content-disposition': 'attachment; filename="app.ts"'
+        })
+      })
+    })
+
+    await server.inject().get('/test')
   }
 }

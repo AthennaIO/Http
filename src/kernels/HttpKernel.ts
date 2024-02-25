@@ -23,6 +23,7 @@ const helmetPlugin = await Module.safeImport('@fastify/helmet')
 const swaggerPlugin = await Module.safeImport('@fastify/swagger')
 const swaggerUiPlugin = await Module.safeImport('@fastify/swagger-ui')
 const rateLimitPlugin = await Module.safeImport('@fastify/rate-limit')
+const staticPlugin = await Module.safeImport('@fastify/static')
 const rTracerPlugin = await Module.safeImport('cls-rtracer')
 
 export class HttpKernel {
@@ -144,6 +145,29 @@ export class HttpKernel {
     }
 
     await Server.plugin(rateLimitPlugin, this.getConfig('http.rateLimit'))
+  }
+
+  /**
+   * Register the @fastify/static plugin in the Http server.
+   */
+  public async registerStatic(): Promise<void> {
+    if (Config.is('http.static.enabled', false)) {
+      debug(
+        'Not able to register static plugin. Set the http.static.enabled configuration as true.'
+      )
+
+      return
+    }
+
+    if (!staticPlugin) {
+      debug(
+        'Not able to register static plugin. Install @fastify/static package.'
+      )
+
+      return
+    }
+
+    await Server.plugin(staticPlugin, this.getConfig('http.static'))
   }
 
   /**

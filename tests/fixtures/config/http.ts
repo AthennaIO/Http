@@ -51,6 +51,11 @@ export default {
     continueExceeding: false,
     enableDraftSpec: false
   },
+  static: {
+    enabled: true,
+    root: Path.fixtures('config'),
+    prefix: '/static'
+  },
   rTracer: {
     echoHeader: false,
     useHeader: false,
