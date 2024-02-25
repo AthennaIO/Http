@@ -51,13 +51,13 @@ export default class ServerTest {
   }
 
   @Test()
-  public async shouldReturnNormalyIfTheHttpServerIsNotRunningOnCloseMethod({ assert }: Context) {
+  public async shouldReturnNormallyIfTheHttpServerIsNotRunningOnCloseMethod({ assert }: Context) {
     assert.isUndefined(await Server.close())
   }
 
   @Test()
   public async shouldBeAbleToGetTheFastifyVersionFromTheHttpServer({ assert }: Context) {
-    assert.equal(Server.getFastifyVersion(), '4.25.2')
+    assert.equal(Server.getFastifyVersion(), '4.26.1')
   }
 
   @Test()

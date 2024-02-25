@@ -90,6 +90,19 @@ export default class HttpKernelTest {
   }
 
   @Test()
+  public async shouldBeAbleToRegisterTheFastifyStaticPluginInTheHttpServer({ assert }: Context) {
+    const kernel = new HttpKernel()
+    await kernel.registerStatic()
+    Server.get({ url: '/hello', handler: ctx => ctx.response.sendFile('app.ts') })
+
+    const response = await Server.request().get('hello')
+
+    assert.deepEqual(response.headers['accept-ranges'], 'bytes')
+    assert.deepEqual(response.headers['content-type'], 'video/mp2t')
+    assert.deepEqual(response.headers['cache-control'], 'public, max-age=0')
+  }
+
+  @Test()
   public async shouldBeAbleToRegisterTheFastifyRTTracerPluginInTheHttpServer({ assert }: Context) {
     const kernel = new HttpKernel()
     await kernel.registerRTracer()
@@ -199,6 +212,21 @@ export default class HttpKernelTest {
   }
 
   @Test()
+  public async shouldNotRegisterTheFastifyStaticPluginIfThePackageIsNotInstalled({ assert }: Context) {
+    Mock.when(Module, 'safeImport').resolve(null)
+
+    const { HttpKernel } = await import(`../../../src/kernels/HttpKernel.js?v=${Math.random()}`)
+    const kernel = new HttpKernel()
+    await kernel.registerStatic()
+    Server.get({ url: '/hello', handler: ctx => ctx.response.send({ hello: true }) })
+
+    const response = await Server.request().get('hello')
+
+    assert.deepEqual(response.json(), { hello: true })
+    assert.isFalse(Server.fastify.hasPlugin('@fastify/rate-limit'))
+  }
+
+  @Test()
   @Cleanup(() => Config.set('http.rateLimit.enabled', true))
   public async shouldNotRegisterTheFastifyRateLimitPluginIfTheConfigurationIsDisabled({ assert }: Context) {
     Config.set('http.rateLimit.enabled', false)
@@ -208,6 +236,18 @@ export default class HttpKernelTest {
     await kernel.registerRateLimit()
 
     assert.isFalse(Server.fastify.hasPlugin('@fastify/rate-limit'))
+  }
+
+  @Test()
+  @Cleanup(() => Config.set('http.static.enabled', true))
+  public async shouldNotRegisterTheFastifyStaticPluginIfTheConfigurationIsDisabled({ assert }: Context) {
+    Config.set('http.static.enabled', false)
+
+    const { HttpKernel } = await import(`../../../src/kernels/HttpKernel.js?v=${Math.random()}`)
+    const kernel = new HttpKernel()
+    await kernel.registerStatic()
+
+    assert.isFalse(Server.fastify.hasPlugin('@fastify/static'))
   }
 
   @Test()

@@ -7,7 +7,10 @@
  * file that was distributed with this source code.
  */
 
+import { View } from '@athenna/view'
 import type { FastifyReply } from 'fastify'
+import type { SendOptions } from '@fastify/static'
+import type { Request } from '#src/context/Request'
 import type { FastifyHelmetOptions } from '@fastify/helmet'
 
 export class Response {
@@ -16,8 +19,14 @@ export class Response {
    */
   public response: FastifyReply
 
-  public constructor(response: FastifyReply) {
+  /**
+   * The request object from request context.
+   */
+  public request: Request
+
+  public constructor(response: FastifyReply, request?: Request) {
     this.response = response
+    this.request = request
   }
 
   /**
@@ -52,7 +61,23 @@ export class Response {
    * Get the time in MS of how much the request has taken to response.
    */
   public get responseTime(): number {
-    return this.response.getResponseTime()
+    return this.response.elapsedTime
+  }
+
+  /**
+   * Terminated the request sending a view to be rendered.
+   */
+  public async view(view: string, data?: any): Promise<Response> {
+    const content = await View.render(view, { ...data, request: this.request })
+
+    await this.safeHeader(
+      'Content-Type',
+      'text/html; charset=utf-8'
+    ).response.send(content)
+
+    this.response.body = content
+
+    return this
   }
 
   /**
@@ -62,6 +87,53 @@ export class Response {
     await this.response.send(data)
 
     this.response.body = data
+
+    return this
+  }
+
+  public sendFile(filename: string, filepath?: string): Promise<Response>
+  public sendFile(
+    filename: string,
+    options?: string | SendOptions
+  ): Promise<Response>
+
+  public sendFile(
+    filename: string,
+    filepath?: string,
+    options?: SendOptions
+  ): Promise<Response>
+
+  /**
+   * Terminated the request sending a file.
+   */
+  public async sendFile(
+    filename: string,
+    filepath?: string,
+    options?: SendOptions
+  ): Promise<Response> {
+    await this.response.sendFile(filename, filepath, options)
+
+    return this
+  }
+
+  public download(filepath: string, filename?: string): Promise<Response>
+  public download(
+    filepath: string,
+    options?: string | SendOptions
+  ): Promise<Response>
+
+  public download(
+    filename: string,
+    filepath?: string,
+    options?: SendOptions
+  ): Promise<Response>
+
+  public async download(
+    filepath: string,
+    filename?: string,
+    options?: SendOptions
+  ): Promise<Response> {
+    await this.response.download(filename, filepath, options)
 
     return this
   }
@@ -92,7 +164,7 @@ export class Response {
   }
 
   /**
-   * Add some header safelly to the response. This means that the header is not
+   * Add some header safely to the response. This means that the header is not
    * going to be added if is already set.
    */
   public safeHeader(header: string, value: any): Response {
