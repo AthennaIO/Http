@@ -10,6 +10,7 @@
 import fastify from 'fastify'
 
 import type {
+  RouteOptions,
   InjectOptions,
   FastifyInstance,
   PrintRoutesOptions,
@@ -229,23 +230,27 @@ export class ServerImpl {
       return
     }
 
-    this.fastify.route({
+    const { middlewares, interceptors, terminators } = options.middlewares
+
+    const route: RouteOptions = {
       url: options.url,
       method: options.methods,
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      handler: FastifyHandler.request(options.handler),
-      preHandler: options.middlewares.middlewares.map(m =>
-        FastifyHandler.handle(m)
-      ),
-      onSend: options.middlewares.interceptors.map(m =>
-        FastifyHandler.intercept(m)
-      ),
-      onResponse: options.middlewares.terminators.map(m =>
-        FastifyHandler.terminate(m)
-      ),
-      ...options.fastify
-    })
+      handler: FastifyHandler.request(options.handler)
+    }
+
+    if (middlewares.length) {
+      route.preHandler = middlewares.map(m => FastifyHandler.handle(m))
+    }
+
+    if (interceptors.length) {
+      route.onSend = interceptors.map(i => FastifyHandler.intercept(i))
+    }
+
+    if (terminators.length) {
+      route.onResponse = terminators.map(t => FastifyHandler.terminate(t))
+    }
+
+    this.fastify.route({ ...route, ...options.fastify })
   }
 
   /**

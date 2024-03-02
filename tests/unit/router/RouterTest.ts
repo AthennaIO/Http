@@ -203,9 +203,9 @@ export default class RouterTest {
     Route.get('test', ctx => {
       ctx.response.send({ hello: 'world', handled: ctx.data.handled })
     }).interceptor(ctx => {
-      ctx.body.intercepted = true
+      ctx.response.body.intercepted = true
 
-      return ctx.body
+      return ctx.response.body
     })
 
     Route.register()

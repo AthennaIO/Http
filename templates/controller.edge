@@ -14,8 +14,8 @@ export class {{ namePascal }} {
       return response.status(200).send({})
     }
 
-    public async update({ response, params }: Context) {
-      return response.status(200).send({ id: params.id })
+    public async update({ request, response }: Context) {
+      return response.status(200).send({ id: request.param('id') })
     }
 
     public async delete({ response }: Context) {

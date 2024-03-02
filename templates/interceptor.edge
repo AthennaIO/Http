@@ -4,6 +4,6 @@ import type { InterceptorContract, InterceptContext } from '@athenna/http'
 @Interceptor()
 export class {{ namePascal }} implements InterceptorContract {
     public async intercept(ctx: InterceptContext): Promise<unknown> {
-      return ctx.body
+      return ctx.response.body
     }
 }

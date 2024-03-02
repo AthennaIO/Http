@@ -11,8 +11,8 @@ import type { InterceptContext, InterceptorContract } from '#src/types'
 
 export class MyInterceptor implements InterceptorContract {
   public intercept(ctx: InterceptContext): unknown {
-    ctx.body.intercepted = true
+    ctx.response.body.intercepted = true
 
-    return ctx.body
+    return ctx.response.body
   }
 }

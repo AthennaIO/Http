@@ -12,7 +12,7 @@ import type { Context, MiddlewareContract } from '#src/types'
 
 @Middleware({ name: 'middleware', type: 'singleton', alias: 'decoratedMiddleware', isGlobal: false })
 export class AnnotatedMiddleware implements MiddlewareContract {
-  public handle(ctx: Context): any {
+  public handle(ctx: Context) {
     ctx.data.handled = true
   }
 }
