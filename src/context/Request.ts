@@ -24,7 +24,10 @@ export class Request {
   /**
    * Get the request id.
    *
-   * @example 12345
+   * @example
+   * ```ts
+   * console.log(request.id) // '12345'
+   * ```
    */
   public get id(): string {
     return this.request.id
@@ -33,7 +36,10 @@ export class Request {
   /**
    * Get the request ip.
    *
-   * @example 192.168.0.1
+   * @example
+   * ```ts
+   * console.log(request.ip) // '192.168.0.1'
+   * ```
    */
   public get ip(): string {
     return this.request.ip
@@ -42,16 +48,46 @@ export class Request {
   /**
    * Get the request hostname.
    *
-   * @example localhost
+   * @example
+   * ```ts
+   * console.log(request.hostname) // 'localhost'
+   * ```
    */
   public get hostname(): string {
     return this.request.hostname
   }
 
   /**
+   * Get the server port.
+   *
+   * @example
+   * ```ts
+   * console.log(request.port) // 3000
+   * ```
+   */
+  public get port(): number {
+    return this.getAddressInfo().port
+  }
+
+  /**
+   * Get the http version.
+   *
+   * @example
+   * ```ts
+   * console.log(request.version) // 1
+   * ```
+   */
+  public get version(): string {
+    return this.request.raw.httpVersion
+  }
+
+  /**
    * Get the request protocol.
    *
-   * @example http
+   * @example
+   * ```ts
+   * console.log(request.protocol) // 'http'
+   * ```
    */
   public get protocol(): 'http' | 'https' {
     return this.request.protocol
@@ -60,7 +96,10 @@ export class Request {
   /**
    * Get the request method.
    *
-   * @example GET
+   * @example
+   * ```ts
+   * console.log(request.method) // 'GET'
+   * ```
    */
   public get method(): string {
     return this.request.method
@@ -69,7 +108,10 @@ export class Request {
   /**
    * Get the base url from request.
    *
-   * @example /users/1
+   * @example
+   * ```ts
+   * console.log(request.baseUrl) // '/users/1'
+   * ```
    */
   public get baseUrl(): string {
     return this.request.url.split('?')[0]
@@ -78,7 +120,10 @@ export class Request {
   /**
    * Get the base url with host and port info from request.
    *
-   * @example http://localhost:3030/users/1
+   * @example
+   * ```ts
+   * console.log(request.baseHostUrl) // 'http://localhost:3030/users/1'
+   * ```
    */
   public get baseHostUrl(): string {
     return this.getHostUrlFor(this.baseUrl)
@@ -87,7 +132,10 @@ export class Request {
   /**
    * Get the route url from request.
    *
-   * @example /users/:id
+   * @example
+   * ```ts
+   * console.log(request.routeUrl) // '/users/:id'
+   * ```
    */
   public get routeUrl(): string {
     return this.request.routeOptions.url
@@ -96,7 +144,10 @@ export class Request {
   /**
    * Get the route url with host and port info from request.
    *
-   * @example http://localhost:3030/users/:id
+   * @example
+   * ```ts
+   * console.log(request.routeHostUrl) // 'http://localhost:3030/users/:id'
+   * ```
    */
   public get routeHostUrl(): string {
     return this.getHostUrlFor(this.routeUrl)
@@ -105,7 +156,10 @@ export class Request {
   /**
    * Get the original url from request.
    *
-   * @example /users/1?query=true
+   * @example
+   * ```ts
+   * console.log(request.originalUrl) // '/users/1?query=true'
+   * ```
    */
   public get originalUrl(): string {
     return this.request.url
@@ -114,7 +168,10 @@ export class Request {
   /**
    * Get the original url with host and port info from request.
    *
-   * @example /users/1?query=true
+   * @example
+   * ```ts
+   * console.log(request.originalHostUrl) // 'http://localhost:3000/users/1?query=true'
+   * ```
    */
   public get originalHostUrl(): string {
     return this.getHostUrlFor(this.originalUrl)
@@ -122,6 +179,11 @@ export class Request {
 
   /**
    * Get all body from request.
+   *
+   * @example
+   * ```ts
+   * const { name, email } = request.body
+   * ```
    */
   public get body(): any | any[] {
     return this.request.body || {}
@@ -129,6 +191,11 @@ export class Request {
 
   /**
    * Get all params from request.
+   *
+   * @example
+   * ```ts
+   * const { id } = request.params
+   * ```
    */
   public get params(): any {
     return this.request.params || {}
@@ -136,6 +203,11 @@ export class Request {
 
   /**
    * Get all queries from request.
+   *
+   * @example
+   * ```ts
+   * const { page, limit } = request.queries
+   * ```
    */
   public get queries(): any {
     return this.request.query || {}
@@ -143,48 +215,88 @@ export class Request {
 
   /**
    * Get all headers from request.
+   *
+   * @example
+   * ```ts
+   * const { accept } = request.headers
+   * ```
    */
   public get headers(): any {
     return this.request.headers || {}
   }
 
   /**
-   * Get the server port.
-   */
-  public get port(): number {
-    return this.getAddressInfo().port
-  }
-
-  /**
-   * Get the http version.
-   */
-  public get version(): string {
-    return this.request.raw.httpVersion
-  }
-
-  /**
-   * Get a value from the request params or the default value.
+   * Get a value from the request params or return
+   * the default value.
+   *
+   * @example
+   * ```ts
+   * const id = request.param('id', '1')
+   * ```
    */
   public param(param: string, defaultValue?: any): any {
-    return this.params[param] || defaultValue
+    return Json.get(this.params, param, defaultValue)
   }
 
   /**
-   * Get a value from the request query param or the default value.
+   * Get a value from the request query param or return
+   * the default value.
+   *
+   * @example
+   * ```ts
+   * const page = request.query('page', '1')
+   * ```
    */
   public query(query: string, defaultValue?: any): any {
-    return this.queries[query] || defaultValue
+    return Json.get(this.queries, query, defaultValue)
   }
 
   /**
-   * Get a value from the request header or the default value.
+   * Get a value from the request header or return
+   * the default value.
+   *
+   * @example
+   * ```ts
+   * const accept = request.header('accept', 'application/json')
+   * ```
    */
   public header(header: string, defaultValue?: any): any {
-    return this.headers[header] || defaultValue
+    return Json.get(this.headers, header, defaultValue)
+  }
+
+  /**
+   * Get a value from the request body or return
+   * the default value.
+   *
+   * @example
+   * ```ts
+   * const name = request.input('name', 'lenon')
+   * ```
+   */
+  public input(key: string, defaultValue?: any): any {
+    return this.payload(key, defaultValue)
+  }
+
+  /**
+   * Get a value from the request body or return
+   * the default value.
+   *
+   * @example
+   * ```ts
+   * const name = request.payload('name', 'lenon')
+   * ```
+   */
+  public payload(key: string, defaultValue?: any) {
+    return Json.get(this.body, key, defaultValue)
   }
 
   /**
    * Get only the selected values from the request body.
+   *
+   * @example
+   * ```ts
+   * const body = request.only(['name', 'email'])
+   * ```
    */
   public only(keys: string[]): any {
     const body = {}
@@ -201,7 +313,13 @@ export class Request {
   }
 
   /**
-   * Get all the values from the request body except the selected ones.
+   * Get all the values from the request body except the
+   * selected ones.
+   *
+   * @example
+   * ```ts
+   * const body = request.except(['name'])
+   * ```
    */
   public except(keys: string[]): any {
     const body = {}
@@ -215,20 +333,6 @@ export class Request {
     })
 
     return body
-  }
-
-  /**
-   * Get a value from the request body or the default value.
-   */
-  public input(key: string, defaultValue?: any): any {
-    return this.payload(key, defaultValue)
-  }
-
-  /**
-   * Get a value from the request body or the default value.
-   */
-  public payload(key: string, defaultValue?: any) {
-    return Json.get(this.body, key, defaultValue)
   }
 
   /**

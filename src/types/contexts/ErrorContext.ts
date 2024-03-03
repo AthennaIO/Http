@@ -7,18 +7,8 @@
  * file that was distributed with this source code.
  */
 
-import { Request } from '#src/context/Request'
-import { Response } from '#src/context/Response'
+import type { Context } from '#src/types/contexts/Context'
 
-export type ErrorContext = {
-  request: Request
-  response: Response
-  data: any
-  body: any
-  error: any
-  params: any
-  queries: any
-  headers: any
-}
+export type ErrorContext = Context & { error: any }
 
 export type ErrorHandler = (ctx: ErrorContext) => Promise<void>

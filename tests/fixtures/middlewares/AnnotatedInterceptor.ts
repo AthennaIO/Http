@@ -13,8 +13,7 @@ import type { InterceptContext, InterceptorContract } from '#src/types'
 @Interceptor({ name: 'interceptor', type: 'singleton', alias: 'decoratedInterceptor', isGlobal: false })
 export class AnnotatedInterceptor implements InterceptorContract {
   public intercept(ctx: InterceptContext): unknown {
-    ctx.body.intercepted = true
-
-    return ctx.body
+    ctx.response.body.intercepted = true
+    return ctx.response.body
   }
 }

@@ -7,9 +7,9 @@
  * file that was distributed with this source code.
  */
 
-import { File, Folder } from '@athenna/common'
-import { AfterEach, BeforeEach } from '@athenna/test'
 import { ArtisanProvider } from '@athenna/artisan'
+import { Path, File, Folder } from '@athenna/common'
+import { AfterEach, BeforeEach } from '@athenna/test'
 import { TestCommand } from '@athenna/artisan/testing/plugins'
 
 export class BaseCommandTest {

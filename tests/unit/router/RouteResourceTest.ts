@@ -179,9 +179,9 @@ export default class RouteResourceTest {
       .resource('test')
       .only(['index'])
       .interceptor(ctx => {
-        ctx.body.intercepted = true
+        ctx.response.body.intercepted = true
 
-        return ctx.body
+        return ctx.response.body
       })
 
     Route.register()

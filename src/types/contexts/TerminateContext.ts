@@ -7,17 +7,9 @@
  * file that was distributed with this source code.
  */
 
-import { Request } from '#src/context/Request'
-import { Response } from '#src/context/Response'
+import type { Context } from '#src/types/contexts/Context'
 
-export type TerminateContext = {
-  request: Request
-  response: Response
-  data: any
-  body: any
-  params: any
-  queries: any
-  headers: any
+export type TerminateContext = Context & {
   status: number
   responseTime: number
 }

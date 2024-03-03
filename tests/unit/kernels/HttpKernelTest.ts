@@ -8,7 +8,7 @@
  */
 
 import { Config } from '@athenna/config'
-import { Module } from '@athenna/common'
+import { Path, Module } from '@athenna/common'
 import { Log, LoggerProvider } from '@athenna/logger'
 import { HttpKernel, HttpServerProvider, HttpRouteProvider, Server, Route } from '#src'
 import { Test, Mock, AfterEach, BeforeEach, type Context, Cleanup } from '@athenna/test'

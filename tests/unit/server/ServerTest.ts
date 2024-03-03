@@ -164,9 +164,9 @@ export default class ServerTest {
   @Test()
   public async shouldBeAbleToExecuteAnInterceptMiddlewareBeforeReturningTheRequest({ assert }: Context) {
     Server.intercept(ctx => {
-      ctx.body.intercepted = true
+      ctx.response.body.intercepted = true
 
-      return ctx.body
+      return ctx.response.body
     }).get({
       url: '/test',
       handler: async ctx => ctx.response.send({ hello: 'world' })
