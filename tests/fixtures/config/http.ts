@@ -7,6 +7,8 @@
  * file that was distributed with this source code.
  */
 
+import { Path } from '@athenna/common'
+
 export default {
   logger: {
     enabled: true

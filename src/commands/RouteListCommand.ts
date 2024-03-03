@@ -9,8 +9,8 @@
 
 import { sep } from 'node:path'
 import { Config } from '@athenna/config'
-import { Module } from '@athenna/common'
 import { BaseCommand } from '@athenna/artisan'
+import { Path, Module } from '@athenna/common'
 import { Route, HttpKernel, HttpRouteProvider, HttpServerProvider } from '#src'
 
 export class RouteListCommand extends BaseCommand {

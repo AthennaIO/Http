@@ -10,6 +10,7 @@
 import fastifyStatic from '@fastify/static'
 
 import { fastify } from 'fastify'
+import { Path } from '@athenna/common'
 import { Response } from '#src/context/Response'
 import { Test, type Context } from '@athenna/test'
 import { View, ViewProvider } from '@athenna/view'

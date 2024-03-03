@@ -15,7 +15,7 @@ import { Log } from '@athenna/logger'
 import { Config } from '@athenna/config'
 import { sep, isAbsolute, resolve } from 'node:path'
 import { Annotation, type ServiceMeta } from '@athenna/ioc'
-import { File, Exec, Module, String } from '@athenna/common'
+import { File, Path, Exec, Module, String } from '@athenna/common'
 import { HttpExceptionHandler } from '#src/handlers/HttpExceptionHandler'
 
 const corsPlugin = await Module.safeImport('@fastify/cors')

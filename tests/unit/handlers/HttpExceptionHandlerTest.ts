@@ -7,7 +7,7 @@
  * file that was distributed with this source code.
  */
 
-import { Exception } from '@athenna/common'
+import { Path, Exception } from '@athenna/common'
 import { Log, LoggerProvider } from '@athenna/logger'
 import { HttpKernel, HttpServerProvider, Server } from '#src'
 import { Test, AfterEach, BeforeEach, type Context, Mock } from '@athenna/test'

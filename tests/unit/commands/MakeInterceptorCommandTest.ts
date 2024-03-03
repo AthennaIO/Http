@@ -7,7 +7,7 @@
  * file that was distributed with this source code.
  */
 
-import { File } from '@athenna/common'
+import { Path, File } from '@athenna/common'
 import { Test, type Context } from '@athenna/test'
 import { BaseCommandTest } from '#tests/helpers/BaseCommandTest'
 

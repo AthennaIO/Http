@@ -8,6 +8,7 @@
  */
 
 import { sep } from 'node:path'
+import { Path } from '@athenna/common'
 import { Config, Rc } from '@athenna/config'
 import { ViewProvider } from '@athenna/view'
 import { LoggerProvider } from '@athenna/logger'
