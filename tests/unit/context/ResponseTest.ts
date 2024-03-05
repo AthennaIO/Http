@@ -11,7 +11,7 @@ import fastifyStatic from '@fastify/static'
 
 import { fastify } from 'fastify'
 import { Path } from '@athenna/common'
-import { Response } from '#src/context/Response'
+import { response as ctxResponse } from '#src/context/Response'
 import { Test, type Context } from '@athenna/test'
 import { View, ViewProvider } from '@athenna/view'
 
@@ -23,7 +23,7 @@ export default class ResponseTest {
     const server = fastify()
 
     server.get('/test/:id', async (_, res) => {
-      const response = new Response(res)
+      const response = ctxResponse(res)
 
       response.header('key', 'value').removeHeader('key').safeHeader('key', 'value')
       response
@@ -47,7 +47,7 @@ export default class ResponseTest {
     const server = fastify()
 
     server.get('/test/:id', async (_, res) => {
-      const response = new Response(res)
+      const response = ctxResponse(res)
 
       assert.isFalse(response.sent)
 
@@ -69,7 +69,7 @@ export default class ResponseTest {
     const server = fastify()
 
     server.get('/test/:id', async (_, res) => {
-      const response = new Response(res)
+      const response = ctxResponse(res)
 
       await response.status(200).send()
 
@@ -88,7 +88,7 @@ export default class ResponseTest {
     const server = fastify()
 
     server.get('/test/:id', async (_, res) => {
-      const response = new Response(res)
+      const response = ctxResponse(res)
 
       response
         .status(200)
@@ -108,7 +108,7 @@ export default class ResponseTest {
     const server = fastify()
 
     server.get('/test/:id', async (_, res) => {
-      const response = new Response(res)
+      const response = ctxResponse(res)
 
       response
         .status(200)
@@ -129,7 +129,7 @@ export default class ResponseTest {
     const server = fastify()
 
     server.get('/test/:id', async (_, res) => {
-      const response = new Response(res)
+      const response = ctxResponse(res)
 
       response
         .status(200)
@@ -149,7 +149,7 @@ export default class ResponseTest {
     const server = fastify()
 
     server.get('/test/:id', async (_, res) => {
-      const response = new Response(res)
+      const response = ctxResponse(res)
 
       response
         .status(200)
@@ -174,7 +174,7 @@ export default class ResponseTest {
         await res.status(200).send()
       })
       .get('/test/:id', async (_, res) => {
-        const response = new Response(res)
+        const response = ctxResponse(res)
 
         await response.redirectTo('/home')
       })
@@ -194,7 +194,7 @@ export default class ResponseTest {
         await res.status(200).send()
       })
       .get('/test/:id', async (_, res) => {
-        const response = new Response(res)
+        const response = ctxResponse(res)
 
         response.redirectTo('/home', 303)
       })
@@ -212,7 +212,7 @@ export default class ResponseTest {
     const server = fastify().register(import('@fastify/helmet'), { global: false })
 
     server.post('/test', async (_, res) => {
-      const response = new Response(res)
+      const response = ctxResponse(res)
 
       await response
         .status(200)
@@ -244,7 +244,7 @@ export default class ResponseTest {
     server.get('/test/:id', async (_, res) => {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
-      const response = new Response(res, {})
+      const response = ctxResponse(res, {})
 
       response.view('head', { name: 'lenon' }).then(() => {
         assert.deepEqual(response.body, '<h1>lenon</h1>')
@@ -269,7 +269,7 @@ export default class ResponseTest {
     server.get('/test', async (_, res) => {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
-      const response = new Response(res, {})
+      const response = ctxResponse(res, {})
 
       response.sendFile('app.ts').then(() => {
         assert.deepEqual(response.headers, { 'content-length': '0' })
@@ -292,7 +292,7 @@ export default class ResponseTest {
     server.get('/test', async (_, res) => {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
-      const response = new Response(res, {})
+      const response = ctxResponse(res, {})
 
       response.download('app.ts', 'a.ts').then(() => {
         assert.deepEqual(response.headers, {

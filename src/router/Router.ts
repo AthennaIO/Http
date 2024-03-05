@@ -110,6 +110,26 @@ export class Router {
   }
 
   /**
+   * This method is a convenient shortcut to render a view without
+   * defining an explicit handler.
+   */
+  public view(pattern: string, view: string, data?: any): Route {
+    return this.route(pattern, ['GET', 'HEAD'], ctx => {
+      return ctx.response.view(view, data)
+    })
+  }
+
+  /**
+   * This method is a convenient shortcut to redirect a route without
+   * defining an explicit handler.
+   */
+  public redirect(pattern: string, url: string, status?: number): Route {
+    return this.route(pattern, ['GET', 'HEAD'], ctx => {
+      return ctx.response.redirectTo(url, status)
+    })
+  }
+
+  /**
    * Define a route that handles all common HTTP methods.
    */
   public any(pattern: string, handler: RequestHandler): Route {
