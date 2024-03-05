@@ -11,353 +11,92 @@ import { Is, Json } from '@athenna/common'
 import type { AddressInfo } from 'node:net'
 import type { FastifyRequest } from 'fastify'
 
-export class Request {
-  /**
-   * The fastify request object.
-   */
-  public request: FastifyRequest
+export function request(req: FastifyRequest) {
+  const request = {
+    request: req,
+    id: req.id,
+    ip: req.ip,
+    hostname: req.hostname,
+    get port() {
+      return request.getAddressInfo().port
+    },
+    version: req.raw.httpVersion,
+    protocol: req.protocol,
+    method: req.method,
+    baseUrl: req.url.split('?')[0],
+    get baseHostUrl() {
+      return request.getHostUrlFor(request.baseUrl)
+    },
+    routeUrl: req.routeOptions.url,
+    get routeHostUrl() {
+      return request.getHostUrlFor(request.routeUrl)
+    },
+    originalUrl: req.url,
+    get originalHostUrl() {
+      return request.getHostUrlFor(request.originalUrl)
+    },
+    body: req.body || {},
+    params: req.params || {},
+    queries: req.query || {},
+    headers: req.headers || {},
+    param(param: string, defaultValue?: any) {
+      return Json.get(request.params, param, defaultValue)
+    },
+    query(query: string, defaultValue?: any) {
+      return Json.get(request.queries, query, defaultValue)
+    },
+    header(header: string, defaultValue?: any) {
+      return Json.get(request.headers, header, defaultValue)
+    },
+    input(key: string, defaultValue?: any) {
+      return request.payload(key, defaultValue)
+    },
+    payload(key: string, defaultValue?: any) {
+      return Json.get(request.body, key, defaultValue)
+    },
+    only(keys: string[]) {
+      const body = {}
 
-  public constructor(request: FastifyRequest) {
-    this.request = request
-  }
+      Object.keys(request.body).forEach(key => {
+        if (!keys.includes(key)) {
+          return
+        }
 
-  /**
-   * Get the request id.
-   *
-   * @example
-   * ```ts
-   * console.log(request.id) // '12345'
-   * ```
-   */
-  public get id(): string {
-    return this.request.id
-  }
+        body[key] = request.body[key]
+      })
 
-  /**
-   * Get the request ip.
-   *
-   * @example
-   * ```ts
-   * console.log(request.ip) // '192.168.0.1'
-   * ```
-   */
-  public get ip(): string {
-    return this.request.ip
-  }
+      return body
+    },
+    except(keys: string[]) {
+      const body = {}
 
-  /**
-   * Get the request hostname.
-   *
-   * @example
-   * ```ts
-   * console.log(request.hostname) // 'localhost'
-   * ```
-   */
-  public get hostname(): string {
-    return this.request.hostname
-  }
+      Object.keys(request.body).forEach(key => {
+        if (keys.includes(key)) {
+          return
+        }
 
-  /**
-   * Get the server port.
-   *
-   * @example
-   * ```ts
-   * console.log(request.port) // 3000
-   * ```
-   */
-  public get port(): number {
-    return this.getAddressInfo().port
-  }
+        body[key] = request.body[key]
+      })
 
-  /**
-   * Get the http version.
-   *
-   * @example
-   * ```ts
-   * console.log(request.version) // 1
-   * ```
-   */
-  public get version(): string {
-    return this.request.raw.httpVersion
-  }
+      return body
+    },
+    getHostUrlFor(url: string) {
+      let { address, port } = request.getAddressInfo()
 
-  /**
-   * Get the request protocol.
-   *
-   * @example
-   * ```ts
-   * console.log(request.protocol) // 'http'
-   * ```
-   */
-  public get protocol(): 'http' | 'https' {
-    return this.request.protocol
-  }
-
-  /**
-   * Get the request method.
-   *
-   * @example
-   * ```ts
-   * console.log(request.method) // 'GET'
-   * ```
-   */
-  public get method(): string {
-    return this.request.method
-  }
-
-  /**
-   * Get the base url from request.
-   *
-   * @example
-   * ```ts
-   * console.log(request.baseUrl) // '/users/1'
-   * ```
-   */
-  public get baseUrl(): string {
-    return this.request.url.split('?')[0]
-  }
-
-  /**
-   * Get the base url with host and port info from request.
-   *
-   * @example
-   * ```ts
-   * console.log(request.baseHostUrl) // 'http://localhost:3030/users/1'
-   * ```
-   */
-  public get baseHostUrl(): string {
-    return this.getHostUrlFor(this.baseUrl)
-  }
-
-  /**
-   * Get the route url from request.
-   *
-   * @example
-   * ```ts
-   * console.log(request.routeUrl) // '/users/:id'
-   * ```
-   */
-  public get routeUrl(): string {
-    return this.request.routeOptions.url
-  }
-
-  /**
-   * Get the route url with host and port info from request.
-   *
-   * @example
-   * ```ts
-   * console.log(request.routeHostUrl) // 'http://localhost:3030/users/:id'
-   * ```
-   */
-  public get routeHostUrl(): string {
-    return this.getHostUrlFor(this.routeUrl)
-  }
-
-  /**
-   * Get the original url from request.
-   *
-   * @example
-   * ```ts
-   * console.log(request.originalUrl) // '/users/1?query=true'
-   * ```
-   */
-  public get originalUrl(): string {
-    return this.request.url
-  }
-
-  /**
-   * Get the original url with host and port info from request.
-   *
-   * @example
-   * ```ts
-   * console.log(request.originalHostUrl) // 'http://localhost:3000/users/1?query=true'
-   * ```
-   */
-  public get originalHostUrl(): string {
-    return this.getHostUrlFor(this.originalUrl)
-  }
-
-  /**
-   * Get all body from request.
-   *
-   * @example
-   * ```ts
-   * const { name, email } = request.body
-   * ```
-   */
-  public get body(): any | any[] {
-    return this.request.body || {}
-  }
-
-  /**
-   * Get all params from request.
-   *
-   * @example
-   * ```ts
-   * const { id } = request.params
-   * ```
-   */
-  public get params(): any {
-    return this.request.params || {}
-  }
-
-  /**
-   * Get all queries from request.
-   *
-   * @example
-   * ```ts
-   * const { page, limit } = request.queries
-   * ```
-   */
-  public get queries(): any {
-    return this.request.query || {}
-  }
-
-  /**
-   * Get all headers from request.
-   *
-   * @example
-   * ```ts
-   * const { accept } = request.headers
-   * ```
-   */
-  public get headers(): any {
-    return this.request.headers || {}
-  }
-
-  /**
-   * Get a value from the request params or return
-   * the default value.
-   *
-   * @example
-   * ```ts
-   * const id = request.param('id', '1')
-   * ```
-   */
-  public param(param: string, defaultValue?: any): any {
-    return Json.get(this.params, param, defaultValue)
-  }
-
-  /**
-   * Get a value from the request query param or return
-   * the default value.
-   *
-   * @example
-   * ```ts
-   * const page = request.query('page', '1')
-   * ```
-   */
-  public query(query: string, defaultValue?: any): any {
-    return Json.get(this.queries, query, defaultValue)
-  }
-
-  /**
-   * Get a value from the request header or return
-   * the default value.
-   *
-   * @example
-   * ```ts
-   * const accept = request.header('accept', 'application/json')
-   * ```
-   */
-  public header(header: string, defaultValue?: any): any {
-    return Json.get(this.headers, header, defaultValue)
-  }
-
-  /**
-   * Get a value from the request body or return
-   * the default value.
-   *
-   * @example
-   * ```ts
-   * const name = request.input('name', 'lenon')
-   * ```
-   */
-  public input(key: string, defaultValue?: any): any {
-    return this.payload(key, defaultValue)
-  }
-
-  /**
-   * Get a value from the request body or return
-   * the default value.
-   *
-   * @example
-   * ```ts
-   * const name = request.payload('name', 'lenon')
-   * ```
-   */
-  public payload(key: string, defaultValue?: any) {
-    return Json.get(this.body, key, defaultValue)
-  }
-
-  /**
-   * Get only the selected values from the request body.
-   *
-   * @example
-   * ```ts
-   * const body = request.only(['name', 'email'])
-   * ```
-   */
-  public only(keys: string[]): any {
-    const body = {}
-
-    Object.keys(this.body).forEach(key => {
-      if (!keys.includes(key)) {
-        return
+      if (address === '::1') {
+        address = '127.0.0.1'
       }
 
-      body[key] = this.body[key]
-    })
-
-    return body
-  }
-
-  /**
-   * Get all the values from the request body except the
-   * selected ones.
-   *
-   * @example
-   * ```ts
-   * const body = request.except(['name'])
-   * ```
-   */
-  public except(keys: string[]): any {
-    const body = {}
-
-    Object.keys(this.body).forEach(key => {
-      if (keys.includes(key)) {
-        return
+      if (!Is.Ip(address) && address !== 'localhost') {
+        return `${request.protocol}://${address}${url}`
       }
 
-      body[key] = this.body[key]
-    })
-
-    return body
-  }
-
-  /**
-   * Add the hostname and port to the url.
-   */
-  private getHostUrlFor(url: string): string {
-    let { address, port } = this.getAddressInfo()
-
-    if (address === '::1') {
-      address = '127.0.0.1'
+      return `${request.protocol}://${address}:${port}${url}`
+    },
+    getAddressInfo() {
+      return req.server.server.address() as AddressInfo
     }
-
-    if (!Is.Ip(address) && address !== 'localhost') {
-      return `${this.protocol}://${address}${url}`
-    }
-
-    return `${this.protocol}://${address}:${port}${url}`
   }
 
-  /**
-   * Get the address info of the server. This method will return the
-   * port used to listen the server, the family (IPv4, IPv6) and the
-   * server address (127.0.0.1).
-   */
-  private getAddressInfo(): AddressInfo {
-    return this.request.server.server.address() as AddressInfo
-  }
+  return request
 }

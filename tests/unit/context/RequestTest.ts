@@ -7,7 +7,7 @@
  * file that was distributed with this source code.
  */
 
-import { Request } from '#src/context/Request'
+import { request } from '#src/context/Request'
 import { Test, BeforeEach, type Context } from '@athenna/test'
 import { fastify, type FastifyInstance, type FastifyRequest } from 'fastify'
 
@@ -28,35 +28,35 @@ export default class RequestTest {
 
   @Test()
   public async shouldBeAbleToGetTheRequestId({ assert }: Context) {
-    const ctx = { request: new Request(this.request) }
+    const ctx = { request: request(this.request) }
 
     assert.equal(ctx.request.id, 'req-1')
   }
 
   @Test()
   public async shouldBeAbleToGetTheRequestIp({ assert }: Context) {
-    const ctx = { request: new Request(this.request) }
+    const ctx = { request: request(this.request) }
 
     assert.equal(ctx.request.ip, '127.0.0.1')
   }
 
   @Test()
   public async shouldBeAbleToGetTheRequestHostname({ assert }: Context) {
-    const ctx = { request: new Request(this.request) }
+    const ctx = { request: request(this.request) }
 
     assert.equal(ctx.request.hostname, 'localhost:80')
   }
 
   @Test()
   public async shouldBeAbleToGetTheRequestProtocol({ assert }: Context) {
-    const ctx = { request: new Request(this.request) }
+    const ctx = { request: request(this.request) }
 
     assert.equal(ctx.request.protocol, 'http')
   }
 
   @Test()
   public async shouldBeAbleToGetTheRequestMethod({ assert }: Context) {
-    const ctx = { request: new Request(this.request) }
+    const ctx = { request: request(this.request) }
 
     assert.equal(ctx.request.method, 'POST')
   }
@@ -64,7 +64,7 @@ export default class RequestTest {
   @Test()
   public async shouldBeAbleToGetAllTypesOfUrlsFromTheRequest({ assert }: Context) {
     await this.server.listen({ port: 9999 })
-    const ctx = { request: new Request(this.request) }
+    const ctx = { request: request(this.request) }
 
     assert.equal(ctx.request.baseUrl, '/test/1')
     assert.equal(ctx.request.baseHostUrl, 'http://127.0.0.1:9999/test/1')
@@ -77,7 +77,7 @@ export default class RequestTest {
 
   @Test()
   public async shouldBeAbleToGetTheRequestBody({ assert }: Context) {
-    const ctx = { request: new Request(this.request) }
+    const ctx = { request: request(this.request) }
 
     assert.deepEqual(ctx.request.body, {
       email: 'lenon@athenna.io',
@@ -88,7 +88,7 @@ export default class RequestTest {
 
   @Test()
   public async shouldBeAbleToGetTheRequestParams({ assert }: Context) {
-    const ctx = { request: new Request(this.request) }
+    const ctx = { request: request(this.request) }
 
     assert.deepEqual(ctx.request.params, {
       id: '1'
@@ -97,7 +97,7 @@ export default class RequestTest {
 
   @Test()
   public async shouldBeAbleToGetTheRequestQueries({ assert }: Context) {
-    const ctx = { request: new Request(this.request) }
+    const ctx = { request: request(this.request) }
 
     assert.deepEqual(ctx.request.queries, {
       query: 'true'
@@ -106,7 +106,7 @@ export default class RequestTest {
 
   @Test()
   public async shouldBeAbleToGetTheRequestHeaders({ assert }: Context) {
-    const ctx = { request: new Request(this.request) }
+    const ctx = { request: request(this.request) }
 
     assert.deepEqual(ctx.request.headers, {
       'content-length': '59',
@@ -119,7 +119,7 @@ export default class RequestTest {
   @Test()
   public async shouldBeAbleToGetTheServerPortFromRequest({ assert }: Context) {
     await this.server.listen({ port: 9999 })
-    const ctx = { request: new Request(this.request) }
+    const ctx = { request: request(this.request) }
 
     assert.equal(ctx.request.port, 9999)
     await this.server.close()
@@ -127,14 +127,14 @@ export default class RequestTest {
 
   @Test()
   public async shouldBeAbleToGetTheServerVersionFromRequest({ assert }: Context) {
-    const ctx = { request: new Request(this.request) }
+    const ctx = { request: request(this.request) }
 
     assert.equal(ctx.request.version, '1.1')
   }
 
   @Test()
   public async shouldBeAbleToGetTheSeparatedValuesFromRequestBody({ assert }: Context) {
-    const ctx = { request: new Request(this.request) }
+    const ctx = { request: request(this.request) }
 
     assert.equal(ctx.request.input('name', 'test'), 'João')
     assert.equal(ctx.request.input('not-found.name', 'test'), 'test')
@@ -142,7 +142,7 @@ export default class RequestTest {
 
   @Test()
   public async shouldBeAbleToGetTheSeparatedValuesFromRequestParams({ assert }: Context) {
-    const ctx = { request: new Request(this.request) }
+    const ctx = { request: request(this.request) }
 
     assert.equal(ctx.request.param('id', 'test'), '1')
     assert.equal(ctx.request.param('not-found', 'test'), 'test')
@@ -150,7 +150,7 @@ export default class RequestTest {
 
   @Test()
   public async shouldBeAbleToGetTheSeparatedValuesFromRequestQueries({ assert }: Context) {
-    const ctx = { request: new Request(this.request) }
+    const ctx = { request: request(this.request) }
 
     assert.equal(ctx.request.query('query', 'test'), 'true')
     assert.equal(ctx.request.query('not-found', 'test'), 'test')
@@ -158,7 +158,7 @@ export default class RequestTest {
 
   @Test()
   public async shouldBeAbleToGetTheSeparatedValuesFromRequestHeaders({ assert }: Context) {
-    const ctx = { request: new Request(this.request) }
+    const ctx = { request: request(this.request) }
 
     assert.equal(ctx.request.header('content-type', 'test'), 'application/json')
     assert.equal(ctx.request.header('not-found', 'test'), 'test')
@@ -166,14 +166,14 @@ export default class RequestTest {
 
   @Test()
   public async shouldBeAbleToGetOnlyTheSelectedValuesFromRequestBody({ assert }: Context) {
-    const ctx = { request: new Request(this.request) }
+    const ctx = { request: request(this.request) }
 
     assert.deepEqual(ctx.request.only(['name', 'email']), { name: 'João', email: 'lenon@athenna.io' })
   }
 
   @Test()
   public async shouldBeAbleToGetAllTheRequestBodyExceptNameAndEmail({ assert }: Context) {
-    const ctx = { request: new Request(this.request) }
+    const ctx = { request: request(this.request) }
 
     assert.deepEqual(ctx.request.except(['name', 'email']), { other: 'other' })
   }

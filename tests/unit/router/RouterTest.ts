@@ -7,6 +7,7 @@
  * file that was distributed with this source code.
  */
 
+import { View, ViewProvider } from '@athenna/view'
 import { MyMiddleware } from '#tests/fixtures/middlewares/MyMiddleware'
 import { MyTerminator } from '#tests/fixtures/middlewares/MyTerminator'
 import { MyInterceptor } from '#tests/fixtures/middlewares/MyInterceptor'
@@ -20,12 +21,14 @@ export default class RouterTest {
   public async beforeEach() {
     ioc.reconstruct()
 
+    new ViewProvider().register()
     new HttpServerProvider().register()
     new HttpRouteProvider().register()
   }
 
   @AfterEach()
   public async afterEach() {
+    View.removeComponent('test')
     await new HttpServerProvider().shutdown()
   }
 
@@ -122,6 +125,45 @@ export default class RouterTest {
     const response = await Server.request({ path: '/test', method: 'options' })
 
     assert.deepEqual(response.json(), { hello: 'world' })
+  }
+
+  @Test()
+  public async shouldBeAbleToRegistryARouteThatWillAutomaticallyRenderAView({ assert }: Context) {
+    View.createComponent('test', '<h1>{{ name }}</h1>')
+    Route.view('/test', 'test', { name: 'lenon' })
+    Route.register()
+
+    assert.deepEqual((await Server.request({ path: '/test', method: 'get' })).body, '<h1>lenon</h1>')
+  }
+
+  @Test()
+  public async shouldBeAbleToRegisterARouteThatWillAutomaticallyRedirectToOtherRoute({ assert }: Context) {
+    Route.get('/redirected-test/:id', ({ request, response }) => {
+      return response.status(200).send({ id: request.param('id'), name: request.query('name') })
+    })
+    Route.redirect('/test/:id', '/redirected-test/:id')
+    Route.register()
+
+    const redirectRes = await Server.request({ path: '/test/1', method: 'get', query: { name: 'lenon' } })
+
+    /**
+     * Light my request does not have follow redirects feature,
+     * so we have to implement it here. But there is a feature
+     * request for it:
+     *
+     * https://github.com/fastify/light-my-request/issues/209
+     */
+    const location = redirectRes.headers.location as string
+    const response = await Server.request({
+      path: location.replace(':id', '1'),
+      method: 'get',
+      query: { name: 'lenon' }
+    })
+
+    assert.deepEqual(response.json(), {
+      id: '1',
+      name: 'lenon'
+    })
   }
 
   @Test()

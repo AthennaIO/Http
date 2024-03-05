@@ -8,8 +8,8 @@
  */
 
 import { Is } from '@athenna/common'
-import { Request } from '#src/context/Request'
-import { Response } from '#src/context/Response'
+import { request } from '#src/context/Request'
+import { response } from '#src/context/Response'
 import type { RequestHandler } from '#src/types/contexts/Context'
 import type { ErrorHandler } from '#src/types/contexts/ErrorContext'
 import type { InterceptHandler, TerminateHandler } from '#src/types'
@@ -26,10 +26,13 @@ export class FastifyHandler {
         req.data = {}
       }
 
-      const request = new Request(req)
-      const response = new Response(res, request)
+      const ctx: any = {}
 
-      return handler({ request, response, data: req.data })
+      ctx.data = req.data
+      ctx.request = request(req)
+      ctx.response = response(res, ctx.request)
+
+      return handler(ctx)
     }
   }
 
@@ -49,23 +52,22 @@ export class FastifyHandler {
         req.data = {}
       }
 
-      const request = new Request(req)
-      const response = new Response(res, request)
-
       if (Is.Json(payload)) {
         payload = JSON.parse(payload)
       }
 
       res.body = payload
 
-      payload = await handler({
-        request,
-        response,
-        status: response.statusCode,
-        data: req.data
-      })
+      const ctx: any = {}
 
-      res.body = payload
+      ctx.data = req.data
+      ctx.request = request(req)
+      ctx.response = response(res, ctx.request)
+      ctx.status = ctx.response.statusCode
+
+      payload = await handler(ctx)
+
+      ctx.response.response.body = payload
 
       if (Is.Object(payload)) {
         payload = JSON.stringify(payload)
@@ -84,16 +86,15 @@ export class FastifyHandler {
         req.data = {}
       }
 
-      const request = new Request(req)
-      const response = new Response(res, request)
+      const ctx: any = {}
 
-      await handler({
-        request,
-        response,
-        data: req.data,
-        status: res.statusCode,
-        responseTime: res.elapsedTime
-      })
+      ctx.data = req.data
+      ctx.request = request(req)
+      ctx.response = response(res, ctx.request)
+      ctx.status = ctx.response.statusCode
+      ctx.responseTime = ctx.response.elapsedTime
+
+      await handler(ctx)
     }
   }
 
@@ -106,15 +107,14 @@ export class FastifyHandler {
         req.data = {}
       }
 
-      const request = new Request(req)
-      const response = new Response(res, request)
+      const ctx: any = {}
 
-      await handler({
-        request,
-        response,
-        data: req.data,
-        error
-      })
+      ctx.data = req.data
+      ctx.request = request(req)
+      ctx.response = response(res, ctx.request)
+      ctx.error = error
+
+      await handler(ctx)
     }
   }
 }
