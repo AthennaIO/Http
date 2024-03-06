@@ -84,21 +84,17 @@ export class HttpKernel {
     }
 
     if (swaggerPlugin) {
-      debug(
-        'Not able to register swagger plugin. Install @fastify/swagger package.'
-      )
-
       await Server.plugin(
         swaggerPlugin,
         Config.get('http.swagger.configurations')
       )
+    } else {
+      debug(
+        'Not able to register swagger plugin. Install @fastify/swagger package.'
+      )
     }
 
     if (swaggerUiPlugin) {
-      debug(
-        'Not able to register swagger-ui plugin. Install @fastify/swagger-ui package.'
-      )
-
       const swaggerUiConfig = Config.get('http.swagger.ui', {})
 
       if (!swaggerUiConfig.logo) {
@@ -121,6 +117,10 @@ export class HttpKernel {
       }
 
       await Server.plugin(swaggerUiPlugin, swaggerUiConfig)
+    } else {
+      debug(
+        'Not able to register swagger-ui plugin. Install @fastify/swagger-ui package.'
+      )
     }
   }
 
