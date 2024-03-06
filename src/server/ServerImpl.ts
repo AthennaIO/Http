@@ -199,7 +199,7 @@ export class ServerImpl {
       return
     }
 
-    await this.fastify.close().then(() => (this.isListening = true))
+    await this.fastify.close().then(() => (this.isListening = false))
   }
 
   /**
