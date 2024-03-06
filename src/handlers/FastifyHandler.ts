@@ -8,8 +8,8 @@
  */
 
 import { Is } from '@athenna/common'
-import { request } from '#src/context/Request'
-import { response } from '#src/context/Response'
+import { Request } from '#src/context/Request'
+import { Response } from '#src/context/Response'
 import type { RequestHandler } from '#src/types/contexts/Context'
 import type { ErrorHandler } from '#src/types/contexts/ErrorContext'
 import type { InterceptHandler, TerminateHandler } from '#src/types'
@@ -29,10 +29,10 @@ export class FastifyHandler {
       const ctx: any = {}
 
       ctx.data = req.data
-      ctx.request = request(req)
-      ctx.response = response(res, ctx.request)
+      ctx.request = new Request(req)
+      ctx.response = new Response(res, ctx.request)
 
-      return handler(ctx)
+      await handler(ctx)
     }
   }
 
@@ -61,13 +61,13 @@ export class FastifyHandler {
       const ctx: any = {}
 
       ctx.data = req.data
-      ctx.request = request(req)
-      ctx.response = response(res, ctx.request)
+      ctx.request = new Request(req)
+      ctx.response = new Response(res, ctx.request)
       ctx.status = ctx.response.statusCode
 
       payload = await handler(ctx)
 
-      ctx.response.response.body = payload
+      req.body = payload
 
       if (Is.Object(payload)) {
         payload = JSON.stringify(payload)
@@ -89,8 +89,8 @@ export class FastifyHandler {
       const ctx: any = {}
 
       ctx.data = req.data
-      ctx.request = request(req)
-      ctx.response = response(res, ctx.request)
+      ctx.request = new Request(req)
+      ctx.response = new Response(res, ctx.request)
       ctx.status = ctx.response.statusCode
       ctx.responseTime = ctx.response.elapsedTime
 
@@ -110,8 +110,8 @@ export class FastifyHandler {
       const ctx: any = {}
 
       ctx.data = req.data
-      ctx.request = request(req)
-      ctx.response = response(res, ctx.request)
+      ctx.request = new Request(req)
+      ctx.response = new Response(res, ctx.request)
       ctx.error = error
 
       await handler(ctx)
