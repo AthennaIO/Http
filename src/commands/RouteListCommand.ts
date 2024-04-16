@@ -46,7 +46,7 @@ export class RouteListCommand extends BaseCommand {
       }
 
       table.row([
-        route.methods.join('|'),
+        route.methods.map(m => this.paintMethod(m)).join('|'),
         route.url,
         route.name || 'Not found',
         route.handler.name || 'closure'
@@ -57,13 +57,32 @@ export class RouteListCommand extends BaseCommand {
   }
 
   /**
+   * Paint a method by its name.
+   */
+  private paintMethod(method: string) {
+    const colors = {
+      GET: this.paint.GET.bold(method),
+      POST: this.paint.POST.bold(method),
+      PUT: this.paint.PUT.bold(method),
+      PATCH: this.paint.PATCH.bold(method),
+      DELETE: this.paint.DELETE.bold(method),
+      OPTIONS: this.paint.OPTIONS.bold(method),
+      HEAD: this.paint.HEAD.bold(method)
+    }
+
+    return colors[method]
+  }
+
+  /**
    * Resolve the http routes file.
    */
   private async resolveRoute() {
-    await Module.resolve(
-      Config.get('rc.commands.route:list.route', '#routes/http'),
-      this.getParentURL()
+    const path = Config.get(
+      'rc.commands.route:list.route',
+      `http.${Path.ext()}`
     )
+
+    await Module.resolve(path, this.getParentURL())
   }
 
   /**
