@@ -61,13 +61,13 @@ export class RouteListCommand extends BaseCommand {
    */
   private paintMethod(method: string) {
     const colors = {
-      GET: this.paint.GET.bold(method),
-      POST: this.paint.POST.bold(method),
-      PUT: this.paint.PUT.bold(method),
-      PATCH: this.paint.PATCH.bold(method),
-      DELETE: this.paint.DELETE.bold(method),
-      OPTIONS: this.paint.OPTIONS.bold(method),
-      HEAD: this.paint.HEAD.bold(method)
+      GET: this.paint.purple.bold(method),
+      POST: this.paint.green.bold(method),
+      PUT: this.paint.orange.bold(method),
+      PATCH: this.paint.yellow.bold(method),
+      DELETE: this.paint.red.bold(method),
+      OPTIONS: this.paint.cyan.bold(method),
+      HEAD: this.paint.cyan.bold(method)
     }
 
     return colors[method]
@@ -79,7 +79,7 @@ export class RouteListCommand extends BaseCommand {
   private async resolveRoute() {
     const path = Config.get(
       'rc.commands.route:list.route',
-      `http.${Path.ext()}`
+      Path.routes(`http.${Path.ext()}`)
     )
 
     await Module.resolve(path, this.getParentURL())
