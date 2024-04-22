@@ -8,8 +8,8 @@
  */
 
 import { Log } from '@athenna/logger'
-import { Is, Json, String } from '@athenna/common'
 import type { ErrorContext } from '#src/types'
+import { Is, Json, String } from '@athenna/common'
 
 export class HttpExceptionHandler {
   /**
@@ -35,6 +35,7 @@ export class HttpExceptionHandler {
       code: String.toSnakeCase(error.code || error.name).toUpperCase(),
       name: Json.copy(error.name),
       message: Json.copy(error.message),
+      details: Json.copy(error.details),
       stack: Json.copy(error.stack)
     }
 
@@ -51,6 +52,7 @@ export class HttpExceptionHandler {
       body.message = 'An internal server exception has occurred.'
 
       delete body.stack
+      delete body.details
     }
 
     response.status(body.statusCode).send(body)
