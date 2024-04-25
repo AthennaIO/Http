@@ -52,7 +52,7 @@ export class Route {
         terminators: [],
         interceptors: []
       },
-      fastify: { schema: {} }
+      fastify: { schema: {}, config: {} }
     }
 
     if (Is.String(handler)) {
@@ -90,6 +90,9 @@ export class Route {
    */
   public name(name: string): Route {
     this.route.name = name
+    // eslint-disable-next-line
+    // @ts-ignore
+    this.route.fastify.config.name = name
 
     return this
   }
@@ -292,10 +295,6 @@ export class Route {
   public rateLimit(
     options: import('@fastify/rate-limit').RateLimitOptions
   ): Route {
-    if (!this.route.fastify.config) {
-      this.route.fastify.config = {}
-    }
-
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     this.route.fastify.config.rateLimit = options

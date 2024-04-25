@@ -28,7 +28,7 @@ export class RouteGroup {
   }
 
   /**
-   * Define prefix all the routes in the group.
+   * Define prefix for all the routes in the group.
    *
    * @example
    * ```ts
@@ -39,6 +39,22 @@ export class RouteGroup {
    */
   public prefix(prefix: string): RouteGroup {
     this.routes.forEach(route => this.invoke(route, 'prefix', [prefix]))
+
+    return this
+  }
+
+  /**
+   * Define a name for all the routes in the group.
+   *
+   * @example
+   * ```ts
+   * Route.group(() => {
+   *
+   * }).name('users')
+   * ```
+   */
+  public name(name: string): RouteGroup {
+    this.routes.forEach(route => this.invoke(route, 'name', [name]))
 
     return this
   }
