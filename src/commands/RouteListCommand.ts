@@ -48,7 +48,7 @@ export class RouteListCommand extends BaseCommand {
       table.row([
         route.methods.map(m => this.paintMethod(m)).join('|'),
         route.url,
-        route.name || 'Not found',
+        route.name || 'Not defined',
         route.handler.name || 'closure'
       ])
     })

@@ -79,6 +79,19 @@ export default class RouteGroupTest {
   }
 
   @Test()
+  public async shouldBeAbleToDefineRouteNameForEachRouteInTheGroup({ assert }: Context) {
+    Route.group(() => {
+      Route.get('/test', ctx => ctx.response.send({ name: ctx.request.routeName }))
+    }).name('test')
+
+    Route.register()
+
+    const response = await Server.request({ path: '/test', method: 'get' })
+
+    assert.deepEqual(response.json(), { name: 'test' })
+  }
+
+  @Test()
   public async shouldBeAbleToCreateARouteGroupThatAddsRateLimitOptionsUsingRouteClass({ assert }: Context) {
     await Server.plugin(import('@fastify/rate-limit'))
 

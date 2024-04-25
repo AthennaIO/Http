@@ -106,6 +106,20 @@ export class Request {
   }
 
   /**
+   * Get the route name defined in your route file.
+   *
+   * @example
+   * ```ts
+   * console.log(request.routeName) // 'users'
+   * ```
+   */
+  public get routeName(): string {
+    // eslint-disable-next-line
+    // @ts-ignore
+    return this.request.routeOptions.config.name
+  }
+
+  /**
    * Get the base url from request.
    *
    * @example

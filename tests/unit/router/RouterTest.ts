@@ -45,7 +45,7 @@ export default class RouterTest {
       terminators: [],
       interceptors: []
     })
-    assert.deepEqual(route.fastify, { schema: {} })
+    assert.deepEqual(route.fastify, { schema: {}, config: {} })
   }
 
   @Test()

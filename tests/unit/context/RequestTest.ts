@@ -19,7 +19,9 @@ export default class RequestTest {
   public async beforeEach() {
     this.server = fastify()
 
-    await this.server.post('/test/:id', req => (this.request = req))
+    // eslint-disable-next-line
+    // @ts-ignore
+    this.server.post('/test/:id', { config: { name: 'test' } }, req => (this.request = req))
     await this.server
       .inject()
       .post('/test/1?query=true')
@@ -59,6 +61,13 @@ export default class RequestTest {
     const ctx = { request: new Request(this.request) }
 
     assert.equal(ctx.request.method, 'POST')
+  }
+
+  @Test()
+  public async shouldBeAbleToGetTheRouteName({ assert }: Context) {
+    const ctx = { request: new Request(this.request) }
+
+    assert.equal(ctx.request.routeName, 'test')
   }
 
   @Test()
