@@ -8,6 +8,7 @@
  */
 
 import { View, ViewProvider } from '@athenna/view'
+import { MyValidator } from '#tests/fixtures/validators/MyValidator'
 import { MyMiddleware } from '#tests/fixtures/middlewares/MyMiddleware'
 import { MyTerminator } from '#tests/fixtures/middlewares/MyTerminator'
 import { MyInterceptor } from '#tests/fixtures/middlewares/MyInterceptor'
@@ -277,6 +278,17 @@ export default class RouterTest {
   }
 
   @Test()
+  public async shouldBeAbleToRegisterAValidatorClassInRouteUsingRouter({ assert }: Context) {
+    Route.get('test', ctx => {
+      ctx.response.send({ hello: 'world', handled: ctx.data.handled })
+    }).validator(new MyValidator())
+
+    Route.register()
+
+    assert.deepEqual((await Server.request({ path: '/test', method: 'get' })).json(), { hello: 'world', handled: true })
+  }
+
+  @Test()
   public async shouldBeAbleToRegisterAMiddlewareClassInRouteUsingRouter({ assert }: Context) {
     Route.get('test', ctx => {
       ctx.response.send({ hello: 'world', handled: ctx.data.handled })
@@ -312,6 +324,19 @@ export default class RouterTest {
     assert.deepEqual((await Server.request({ path: '/test', method: 'get' })).json(), {
       hello: 'world'
     })
+  }
+
+  @Test()
+  public async shouldBeAbleToRegisterAValidatorDependencyInRouteUsingRouter({ assert }: Context) {
+    ioc.bind('App/Validators/Validator', MyValidator)
+
+    Route.get('test', ctx => {
+      ctx.response.send({ hello: 'world', handled: ctx.data.handled })
+    }).validator('Validator')
+
+    Route.register()
+
+    assert.deepEqual((await Server.request({ path: '/test', method: 'get' })).json(), { hello: 'world', handled: true })
   }
 
   @Test()
@@ -359,6 +384,19 @@ export default class RouterTest {
   }
 
   @Test()
+  public async shouldBeAbleToRegisterANamedValidatorDependencyInRouteUsingRouter({ assert }: Context) {
+    ioc.bind('App/Validators/Names/validator', MyValidator)
+
+    Route.get('test', ctx => {
+      ctx.response.send({ hello: 'world', handled: ctx.data.handled })
+    }).validator('validator')
+
+    Route.register()
+
+    assert.deepEqual((await Server.request({ path: '/test', method: 'get' })).json(), { hello: 'world', handled: true })
+  }
+
+  @Test()
   public async shouldBeAbleToRegisterANamedMiddlewareDependencyInRouteUsingRouter({ assert }: Context) {
     ioc.bind('App/Http/Middlewares/Names/middleware', MyMiddleware)
 
@@ -400,6 +438,11 @@ export default class RouterTest {
     assert.deepEqual((await Server.request({ path: '/test', method: 'get' })).json(), {
       hello: 'world'
     })
+  }
+
+  @Test()
+  public async shouldThrowAnExceptionWhenTryingToRegisterAValidatorThatDoesNotExist({ assert }: Context) {
+    assert.throws(() => Route.get('test', () => {}).validator('not-found'))
   }
 
   @Test()

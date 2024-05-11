@@ -7,6 +7,7 @@
  * file that was distributed with this source code.
  */
 
+import { MyValidator } from '#tests/fixtures/validators/MyValidator'
 import { MyMiddleware } from '#tests/fixtures/middlewares/MyMiddleware'
 import { MyTerminator } from '#tests/fixtures/middlewares/MyTerminator'
 import { MyInterceptor } from '#tests/fixtures/middlewares/MyInterceptor'
@@ -213,6 +214,17 @@ export default class RouteResourceTest {
   }
 
   @Test()
+  public async shouldBeAbleToRegisterAValidatorClassInRouteResourceUsingRouter({ assert }: Context) {
+    ioc.bind('App/Http/Controllers/HelloController', HelloController)
+
+    Route.controller('HelloController').resource('test').only(['index']).validator(new MyValidator())
+
+    Route.register()
+
+    assert.deepEqual((await Server.request({ path: '/test', method: 'get' })).json(), { hello: 'world', handled: true })
+  }
+
+  @Test()
   public async shouldBeAbleToRegisterAMiddlewareClassInRouteResourceUsingRouter({ assert }: Context) {
     ioc.bind('App/Http/Controllers/HelloController', HelloController)
 
@@ -248,6 +260,18 @@ export default class RouteResourceTest {
     assert.deepEqual((await Server.request({ path: '/test', method: 'get' })).json(), {
       hello: 'world'
     })
+  }
+
+  @Test()
+  public async shouldBeAbleToRegisterAValidatorDependencyInRouteResourceUsingRouter({ assert }: Context) {
+    ioc.bind('App/Http/Controllers/HelloController', HelloController)
+    ioc.bind('App/Validators/Validator', MyValidator)
+
+    Route.controller('HelloController').resource('test').only(['index']).validator('Validator')
+
+    Route.register()
+
+    assert.deepEqual((await Server.request({ path: '/test', method: 'get' })).json(), { hello: 'world', handled: true })
   }
 
   @Test()
@@ -289,6 +313,18 @@ export default class RouteResourceTest {
     assert.deepEqual((await Server.request({ path: '/test', method: 'get' })).json(), {
       hello: 'world'
     })
+  }
+
+  @Test()
+  public async shouldBeAbleToRegisterANamedValidatorDependencyInRouteResourceUsingRouter({ assert }: Context) {
+    ioc.bind('App/Http/Controllers/HelloController', HelloController)
+    ioc.bind('App/Validators/Names/my-validator', MyValidator)
+
+    Route.controller('HelloController').resource('test').only(['index']).validator('my-validator')
+
+    Route.register()
+
+    assert.deepEqual((await Server.request({ path: '/test', method: 'get' })).json(), { hello: 'world', handled: true })
   }
 
   @Test()
@@ -334,6 +370,13 @@ export default class RouteResourceTest {
     assert.deepEqual((await Server.request({ path: '/test', method: 'get' })).json(), {
       hello: 'world'
     })
+  }
+
+  @Test()
+  public async shouldThrowAnExceptionWhenValidatorNameAndDependencyDoesNotExists({ assert }: Context) {
+    ioc.bind('App/Http/Controllers/HelloController', HelloController)
+
+    assert.throws(() => Route.resource('test', 'HelloController').validator('not-found'))
   }
 
   @Test()

@@ -42,6 +42,23 @@ export class RouteResource {
   }
 
   /**
+   * Set a validator for the route resource.
+   *
+   * @example
+   * ```ts
+   * Route.resource('/test', 'TestController').validator('auth')
+   * ```
+   */
+  public validator(
+    validator: MiddlewareRouteType,
+    prepend?: boolean
+  ): RouteResource {
+    this.routes.forEach(route => route.validator(validator, prepend))
+
+    return this
+  }
+
+  /**
    * Set a middleware for the route resource.
    *
    * @example
