@@ -7,6 +7,7 @@
  * file that was distributed with this source code.
  */
 
+import { MyValidator } from '#tests/fixtures/validators/MyValidator'
 import { MyMiddleware } from '#tests/fixtures/middlewares/MyMiddleware'
 import { MyTerminator } from '#tests/fixtures/middlewares/MyTerminator'
 import { MyInterceptor } from '#tests/fixtures/middlewares/MyInterceptor'
@@ -168,6 +169,19 @@ export default class RouteGroupTest {
   }
 
   @Test()
+  public async shouldBeAbleToRegisterAValidatorClassInRouteGroupUsingRouter({ assert }: Context) {
+    Route.group(() => {
+      Route.get('test', ctx => {
+        ctx.response.send({ hello: 'world', handled: ctx.data.handled })
+      })
+    }).validator(new MyValidator())
+
+    Route.register()
+
+    assert.deepEqual((await Server.request({ path: '/test', method: 'get' })).json(), { hello: 'world', handled: true })
+  }
+
+  @Test()
   public async shouldBeAbleToRegisterAMiddlewareClassInRouteGroupUsingRouter({ assert }: Context) {
     Route.group(() => {
       Route.get('test', ctx => {
@@ -212,6 +226,21 @@ export default class RouteGroupTest {
   }
 
   @Test()
+  public async shouldBeAbleToRegisterAValidatorDependencyInRouteGroupUsingRouter({ assert }: Context) {
+    ioc.bind('App/Validators/Validator', MyValidator)
+
+    Route.group(() => {
+      Route.get('test', ctx => {
+        ctx.response.send({ hello: 'world', handled: ctx.data.handled })
+      })
+    }).validator('Validator')
+
+    Route.register()
+
+    assert.deepEqual((await Server.request({ path: '/test', method: 'get' })).json(), { hello: 'world', handled: true })
+  }
+
+  @Test()
   public async shouldBeAbleToRegisterAMiddlewareDependencyInRouteGroupUsingRouter({ assert }: Context) {
     ioc.bind('App/Http/Middlewares/Middleware', MyMiddleware)
 
@@ -227,7 +256,7 @@ export default class RouteGroupTest {
   }
 
   @Test()
-  public async shouldBeAbleToRegisterAnInterceptMiddlewareDepedencyInRouteGroupUsingRouter({ assert }: Context) {
+  public async shouldBeAbleToRegisterAnInterceptMiddlewareDependencyInRouteGroupUsingRouter({ assert }: Context) {
     ioc.bind('App/Http/Interceptors/Interceptor', MyInterceptor)
 
     Route.group(() => {
@@ -259,6 +288,21 @@ export default class RouteGroupTest {
     assert.deepEqual((await Server.request({ path: '/test', method: 'get' })).json(), {
       hello: 'world'
     })
+  }
+
+  @Test()
+  public async shouldBeAbleToRegisterANamedValidatorInRouteGroupUsingRouter({ assert }: Context) {
+    ioc.bind('App/Validators/Names/validator', MyValidator)
+
+    Route.group(() => {
+      Route.get('test', ctx => {
+        ctx.response.send({ hello: 'world', handled: ctx.data.handled })
+      })
+    }).validator('validator')
+
+    Route.register()
+
+    assert.deepEqual((await Server.request({ path: '/test', method: 'get' })).json(), { hello: 'world', handled: true })
   }
 
   @Test()
@@ -309,6 +353,11 @@ export default class RouteGroupTest {
     assert.deepEqual((await Server.request({ path: '/test', method: 'get' })).json(), {
       hello: 'world'
     })
+  }
+
+  @Test()
+  public async shouldThrowAnExceptionWhenValidatorNameAndDependencyDoesNotExists({ assert }: Context) {
+    assert.throws(() => Route.group(() => Route.get('test', () => {})).validator('not-found'))
   }
 
   @Test()

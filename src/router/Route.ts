@@ -20,6 +20,7 @@ import type {
 import { Is, Options, Route as RouteHelper } from '@athenna/common'
 import type { HTTPMethods, FastifySchema, RouteOptions } from 'fastify'
 import { UndefinedMethodException } from '#src/exceptions/UndefinedMethodException'
+import { NotFoundValidatorException } from '#src/exceptions/NotFoundValidatorException'
 import { NotFoundMiddlewareException } from '#src/exceptions/NotFoundMiddlewareException'
 
 export class Route {
@@ -124,6 +125,43 @@ export class Route {
    */
   public prefix(prefix: string): Route {
     this.route.prefixes.push(prefix)
+
+    return this
+  }
+
+  /**
+   * Set a named validator, validator closure or a MiddlewareContract implementation
+   * in the route.
+   */
+  public validator(validator: MiddlewareRouteType, prepend = false): Route {
+    const insertionType = prepend ? 'unshift' : 'push'
+
+    if (Is.String(validator)) {
+      const namedAlias = `App/Validators/Names/${validator}`
+      const alias = `App/Validators/${validator}`
+
+      if (!ioc.has(namedAlias) && !ioc.has(alias)) {
+        throw new NotFoundValidatorException(alias, namedAlias)
+      }
+
+      this.route.middlewares.middlewares[insertionType]((...args: any[]) => {
+        const mid = ioc.use(namedAlias) || ioc.safeUse(alias)
+
+        return mid.handle.bind(mid)(...args)
+      })
+
+      return this
+    }
+
+    if (Is.Function(validator)) {
+      this.route.middlewares.middlewares[insertionType](validator)
+
+      return this
+    }
+
+    this.route.middlewares.middlewares[insertionType](
+      validator.handle.bind(validator)
+    )
 
     return this
   }

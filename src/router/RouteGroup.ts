@@ -60,6 +60,24 @@ export class RouteGroup {
   }
 
   /**
+   * Add a validator to all routes in the group.
+   *
+   * @example
+   * ```ts
+   * Route.group(() => {
+   *
+   * }).validator('auth')
+   * ```
+   */
+  public validator(validator: MiddlewareRouteType): RouteGroup {
+    this.routes.forEach(route =>
+      this.invoke(route, 'validator', [validator, true])
+    )
+
+    return this
+  }
+
+  /**
    * Add a middleware to all routes in the group.
    *
    * @example
