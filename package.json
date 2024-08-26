@@ -1,6 +1,6 @@
 {
   "name": "@athenna/http",
-  "version": "5.0.0",
+  "version": "5.1.0",
   "description": "The Athenna Http server. Built on top of fastify.",
   "license": "MIT",
   "author": "João Lenon <lenon@athenna.io>",
@@ -73,7 +73,7 @@
     "#tests": "./tests/index.js"
   },
   "devDependencies": {
-    "@athenna/artisan": "^5.0.0",
+    "@athenna/artisan": "^5.1.0",
     "@athenna/common": "^5.0.0",
     "@athenna/config": "^5.0.0",
     "@athenna/ioc": "^5.0.0",
@@ -102,7 +102,7 @@
     "foreground-child": "^2.0.0",
     "husky": "^3.1.0",
     "lint-staged": "^12.5.0",
-    "ora": "^8.0.1",
+    "ora": "^8.1.0",
     "prettier": "^2.8.8"
   },
   "c8": {
