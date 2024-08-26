@@ -19,12 +19,12 @@ export default class MakeTerminatorCommandTest extends BaseCommandTest {
     output.assertSucceeded()
     output.assertLogged('[ MAKING TERMINATOR ]')
     output.assertLogged('[  success  ] Terminator "TestTerminator" successfully created.')
-    output.assertLogged('[  success  ] Athenna RC updated: [ middlewares += "#app/http/terminators/TestTerminator" ]')
+    output.assertLogged('[  success  ] Athenna RC updated: [ middlewares += "#src/http/terminators/TestTerminator" ]')
 
     const { athenna } = await new File(Path.pwd('package.json')).getContentAsJson()
 
     assert.isTrue(await File.exists(Path.terminators('TestTerminator.ts')))
-    assert.containsSubset(athenna.middlewares, ['#app/http/terminators/TestTerminator'])
+    assert.containsSubset(athenna.middlewares, ['#src/http/terminators/TestTerminator'])
   }
 
   @Test()

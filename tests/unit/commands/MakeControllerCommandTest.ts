@@ -19,12 +19,12 @@ export default class MakeControllerCommandTest extends BaseCommandTest {
     output.assertSucceeded()
     output.assertLogged('[ MAKING CONTROLLER ]')
     output.assertLogged('[  success  ] Controller "TestController" successfully created.')
-    output.assertLogged('[  success  ] Athenna RC updated: [ controllers += "#app/http/controllers/TestController" ]')
+    output.assertLogged('[  success  ] Athenna RC updated: [ controllers += "#src/http/controllers/TestController" ]')
 
     const { athenna } = await new File(Path.pwd('package.json')).getContentAsJson()
 
     assert.isTrue(await File.exists(Path.controllers('TestController.ts')))
-    assert.containsSubset(athenna.controllers, ['#app/http/controllers/TestController'])
+    assert.containsSubset(athenna.controllers, ['#src/http/controllers/TestController'])
   }
 
   @Test()
