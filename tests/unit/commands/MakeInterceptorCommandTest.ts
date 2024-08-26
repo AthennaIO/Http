@@ -19,12 +19,12 @@ export default class MakeInterceptorCommandTest extends BaseCommandTest {
     output.assertSucceeded()
     output.assertLogged('[ MAKING INTERCEPTOR ]')
     output.assertLogged('[  success  ] Interceptor "TestInterceptor" successfully created.')
-    output.assertLogged('[  success  ] Athenna RC updated: [ middlewares += "#app/http/interceptors/TestInterceptor" ]')
+    output.assertLogged('[  success  ] Athenna RC updated: [ middlewares += "#src/http/interceptors/TestInterceptor" ]')
 
     const { athenna } = await new File(Path.pwd('package.json')).getContentAsJson()
 
     assert.isTrue(await File.exists(Path.interceptors('TestInterceptor.ts')))
-    assert.containsSubset(athenna.middlewares, ['#app/http/interceptors/TestInterceptor'])
+    assert.containsSubset(athenna.middlewares, ['#src/http/interceptors/TestInterceptor'])
   }
 
   @Test()

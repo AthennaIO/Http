@@ -19,12 +19,12 @@ export default class MakeMiddlewareCommandTest extends BaseCommandTest {
     output.assertSucceeded()
     output.assertLogged('[ MAKING MIDDLEWARE ]')
     output.assertLogged('[  success  ] Middleware "TestMiddleware" successfully created.')
-    output.assertLogged('[  success  ] Athenna RC updated: [ middlewares += "#app/http/middlewares/TestMiddleware" ]')
+    output.assertLogged('[  success  ] Athenna RC updated: [ middlewares += "#src/http/middlewares/TestMiddleware" ]')
 
     const { athenna } = await new File(Path.pwd('package.json')).getContentAsJson()
 
     assert.isTrue(await File.exists(Path.middlewares('TestMiddleware.ts')))
-    assert.containsSubset(athenna.middlewares, ['#app/http/middlewares/TestMiddleware'])
+    assert.containsSubset(athenna.middlewares, ['#src/http/middlewares/TestMiddleware'])
   }
 
   @Test()
