@@ -117,9 +117,10 @@ export class Response {
    * ```
    */
   public async view(view: string, data?: any): Promise<Response> {
-    View.edge.share({ request: this.request })
-
-    const content = await View.render(view, data)
+    const content = await View.edge
+      .createRenderer()
+      .share({ request: this.request })
+      .render(view, data)
 
     await this.safeHeader('Content-Type', 'text/html; charset=utf-8').send(
       content
