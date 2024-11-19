@@ -120,6 +120,7 @@ export class ServerImpl {
    */
   public setErrorHandler(handler: ErrorHandler): ServerImpl {
     this.fastify.setErrorHandler(FastifyHandler.error(handler))
+    this.fastify.setNotFoundHandler(FastifyHandler.notFoundError(handler))
 
     return this
   }
