@@ -32,7 +32,9 @@ export class HttpExceptionHandler {
   public async handle({ error, response }: ErrorContext): Promise<void> {
     const body: any = {
       statusCode: Json.copy(error.statusCode) || Json.copy(error.status) || 500,
-      code: String.toSnakeCase(error.code || error.name).toUpperCase(),
+      code: String.toSnakeCase(
+        error.code || error.name || 'E_INTERNAL_SERVER'
+      ).toUpperCase(),
       name: Json.copy(error.name),
       message: Json.copy(error.message),
       details: Json.copy(error.details),
