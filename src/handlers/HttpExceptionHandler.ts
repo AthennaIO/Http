@@ -33,7 +33,7 @@ export class HttpExceptionHandler {
     const body: any = {
       statusCode: Json.copy(error.statusCode) || Json.copy(error.status) || 500,
       code: String.toSnakeCase(
-        error.code || error.name || 'E_INTERNAL_SERVER'
+        `${error.code}` || error.name || 'E_INTERNAL_SERVER'
       ).toUpperCase(),
       name: Json.copy(error.name),
       message: Json.copy(error.message),
