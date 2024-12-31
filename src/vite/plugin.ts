@@ -18,14 +18,7 @@ export function athenna(options: PluginOptions): PluginOption[] {
     {
       assetsUrl: '/assets',
       buildDirectory: 'public/assets',
-      reload: ['./src/resources/views/**/*.edge'],
-      css: {
-        preprocessorOptions: {
-          scss: {
-            api: 'modern'
-          }
-        }
-      }
+      reload: ['./src/resources/views/**/*.edge']
     },
     options
   )
