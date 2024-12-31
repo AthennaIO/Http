@@ -30,11 +30,15 @@ export class HttpExceptionHandler {
    * The exception handler of all request handlers.
    */
   public async handle({ error, response }: ErrorContext): Promise<void> {
+    let code = error.code
+
+    if (error.code === undefined) {
+      code = error.name || 'E_INTERNAL_SERVER'
+    }
+
     const body: any = {
       statusCode: Json.copy(error.statusCode) || Json.copy(error.status) || 500,
-      code: String.toSnakeCase(
-        `${error.code}` || error.name || 'E_INTERNAL_SERVER'
-      ).toUpperCase(),
+      code: String.toSnakeCase(code).toUpperCase(),
       name: Json.copy(error.name),
       message: Json.copy(error.message),
       details: Json.copy(error.details),

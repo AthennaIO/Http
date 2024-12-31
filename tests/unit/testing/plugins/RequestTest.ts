@@ -10,7 +10,7 @@
 import { Server, HttpServerProvider } from '#src'
 import { Test, AfterAll, BeforeAll, type Context } from '@athenna/test'
 
-export default class TestRequestTest {
+export default class RequestTest {
   @BeforeAll()
   public async beforeEach() {
     ioc.reconstruct()
@@ -18,6 +18,17 @@ export default class TestRequestTest {
     new HttpServerProvider().register()
 
     Server.get({
+      url: '/test',
+      handler: ctx =>
+        ctx.response
+          .status(200)
+          .header('hello', 'world')
+          .header('helloo', 'worldd')
+          .header('hellooo', 'worlddd')
+          .send({ hello: 'world', helloo: 'worldd', hellooo: 'worlddd' })
+    })
+
+    Server.head({
       url: '/test',
       handler: ctx =>
         ctx.response
@@ -37,17 +48,6 @@ export default class TestRequestTest {
           .header('helloo', 'worldd')
           .header('hellooo', 'worlddd')
           .send([{ hello: 'world', helloo: 'worldd', hellooo: 'worlddd' }])
-    })
-
-    Server.head({
-      url: '/test',
-      handler: ctx =>
-        ctx.response
-          .status(200)
-          .header('hello', 'world')
-          .header('helloo', 'worldd')
-          .header('hellooo', 'worlddd')
-          .send({ hello: 'world', helloo: 'worldd', hellooo: 'worlddd' })
     })
 
     Server.options({

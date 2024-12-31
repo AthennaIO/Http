@@ -129,7 +129,7 @@ export default class RouterTest {
   }
 
   @Test()
-  public async shouldBeAbleToRegistryARouteThatWillAutomaticallyRenderAView({ assert }: Context) {
+  public async shouldBeAbleToRegisterARouteThatWillAutomaticallyRenderAView({ assert }: Context) {
     View.createComponent('test', '<h1>{{ name }}</h1>')
     Route.view('/test', 'test', { name: 'lenon' })
     Route.register()
