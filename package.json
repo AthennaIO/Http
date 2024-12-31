@@ -1,6 +1,6 @@
 {
   "name": "@athenna/http",
-  "version": "5.10.0",
+  "version": "5.11.0",
   "description": "The Athenna Http server. Built on top of fastify.",
   "license": "MIT",
   "author": "João Lenon <lenon@athenna.io>",
@@ -51,7 +51,7 @@
     "./types": "./src/types/index.js",
     "./package": "./package.json",
     "./package.json": "./package.json",
-    "./vite": "./src/vite/index.js",
+    "./vite/plugin": "./src/vite/plugin.js",
     "./testing/plugins": "./src/testing/plugins/index.js",
     "./kernels/HttpKernel": "./src/kernels/HttpKernel.js",
     "./handlers/HttpExceptionHandler": "./src/handlers/HttpExceptionHandler.js",
