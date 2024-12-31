@@ -115,6 +115,14 @@ export default class HttpKernelTest {
   }
 
   @Test()
+  public async shouldBeAbleToRegisterTheFastifyVitePluginInTheHttpServer({ assert }: Context) {
+    const kernel = new HttpKernel()
+    await kernel.registerVite()
+
+    assert.isTrue(Server.fastify.hasPlugin('@fastify/vite'))
+  }
+
+  @Test()
   public async shouldBeAbleToRegisterTheLoggerTerminatorInTheHttpServer({ assert }: Context) {
     const kernel = new HttpKernel()
     await kernel.registerLoggerTerminator()
@@ -194,6 +202,18 @@ export default class HttpKernelTest {
     await kernel.registerSwagger()
 
     assert.isFalse(Server.fastify.hasPlugin('@fastify/swagger'))
+  }
+
+  @Test()
+  @Cleanup(() => Config.set('http.vite.enabled', true))
+  public async shouldNotRegisterTheFastifyVitePluginIfTheConfigurationIsDisabled({ assert }: Context) {
+    Config.set('http.vite.enabled', false)
+
+    const { HttpKernel } = await import(`../../../src/kernels/HttpKernel.js?v=${Math.random()}`)
+    const kernel = new HttpKernel()
+    await kernel.registerVite()
+
+    assert.isFalse(Server.fastify.hasPlugin('@fastify/vite'))
   }
 
   @Test()

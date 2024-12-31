@@ -25,6 +25,7 @@ const swaggerUiPlugin = await Module.safeImport('@fastify/swagger-ui')
 const rateLimitPlugin = await Module.safeImport('@fastify/rate-limit')
 const staticPlugin = await Module.safeImport('@fastify/static')
 const rTracerPlugin = await Module.safeImport('cls-rtracer')
+const vitePlugin = await Module.safeImport('@fastify/vite')
 
 export class HttpKernel {
   /**
@@ -202,6 +203,35 @@ export class HttpKernel {
       rTracerPlugin.fastifyPlugin,
       this.getConfig('http.rTracer')
     )
+  }
+
+  /**
+   * Register the @fastify/vite plugin in the Http server.
+   */
+  public async registerVite(trace?: boolean): Promise<void> {
+    if (trace === false) {
+      debug(
+        'Not able to register vite plugin. Set the trace option as true in your http server options.'
+      )
+
+      return
+    }
+
+    if (trace === undefined && Config.is('http.vite.enabled', false)) {
+      debug(
+        'Not able to register vite plugin. Set the http.vite.enabled configuration as true.'
+      )
+
+      return
+    }
+
+    if (!vitePlugin) {
+      debug('Not able to register vite plugin. Install @fastify/vite package.')
+
+      return
+    }
+
+    await Server.plugin(vitePlugin, this.getConfig('http.vite'))
   }
 
   /**

@@ -193,6 +193,21 @@ export class ServerImpl {
   }
 
   /**
+   * Start vite server.
+   */
+  public async viteReady() {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    if (!this.fastify.vite) {
+      return
+    }
+
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    return this.fastify.vite.ready()
+  }
+
+  /**
    * Close the server,
    */
   public async close(): Promise<void> {
