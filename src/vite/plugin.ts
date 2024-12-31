@@ -13,7 +13,7 @@ import { config } from '#src/vite/config'
 import type { PluginOption } from 'vite'
 import type { PluginOptions } from '#src/types/vite/PluginOptions'
 
-export default function athenna(options: PluginOptions): PluginOption[] {
+export function athenna(options: PluginOptions): PluginOption[] {
   const fullOptions = Object.assign(
     {
       assetsUrl: '/assets',
