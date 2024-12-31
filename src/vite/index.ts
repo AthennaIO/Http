@@ -71,10 +71,12 @@ export class Vite {
    * Generates a JSON element with a custom toString implementation.
    */
   public generateElement(element: any) {
+    const makeAttributes = this.makeAttributes
+
     return {
       ...element,
       toString() {
-        const attributes = `${this.makeAttributes(element.attributes)}`
+        const attributes = `${makeAttributes(element.attributes)}`
         if (element.tag === 'link') {
           return `<${element.tag} ${attributes}/>`
         }
