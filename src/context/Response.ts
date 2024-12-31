@@ -322,7 +322,7 @@ export class Response {
    */
   public async redirectTo(url: string, status?: number): Promise<Response> {
     if (status) {
-      await this.response.redirect(status, url)
+      await this.response.redirect(url, status)
 
       return this
     }

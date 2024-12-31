@@ -29,7 +29,7 @@ export default class ServerTest {
 
     const routes = Server.getRoutes()
 
-    assert.equal(routes, '└── /\n' + '    └── test (GET, HEAD)\n')
+    assert.equal(routes, '└── /\n' + '    └── test (GET)\n')
   }
 
   @Test()
@@ -57,7 +57,7 @@ export default class ServerTest {
 
   @Test()
   public async shouldBeAbleToGetTheFastifyVersionFromTheHttpServer({ assert }: Context) {
-    assert.equal(Server.getFastifyVersion(), '4.28.1')
+    assert.equal(Server.getFastifyVersion(), '5.2.0')
   }
 
   @Test()

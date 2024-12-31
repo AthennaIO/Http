@@ -39,7 +39,6 @@ export default class HttpKernelTest {
 
     assert.deepEqual(response.json(), { hello: true })
     assert.containsSubset(response.headers, {
-      vary: 'Origin',
       'access-control-expose-headers': '*'
     })
     assert.isTrue(Server.fastify.hasPlugin('@fastify/cors'))
@@ -55,11 +54,9 @@ export default class HttpKernelTest {
 
     assert.deepEqual(response.json(), { hello: true })
     assert.containsSubset(response.headers, {
-      'x-frame-options': 'SAMEORIGIN',
-      'x-dns-prefetch-control': 'off',
-      'cross-origin-opener-policy': 'same-origin',
-      'cross-origin-resource-policy': 'same-origin',
-      'strict-transport-security': 'max-age=15552000; includeSubDomains'
+      'x-content-type-options': 'nosniff',
+      'x-download-options': 'noopen',
+      'x-xss-protection': '0'
     })
     assert.isTrue(Server.fastify.hasPlugin('@fastify/helmet'))
   }
@@ -71,7 +68,7 @@ export default class HttpKernelTest {
 
     const response = await Server.request().get('documentation')
 
-    assert.equal(response.statusCode, 302)
+    assert.equal(response.statusCode, 200)
     assert.isTrue(Server.fastify.hasPlugin('@fastify/swagger'))
   }
 

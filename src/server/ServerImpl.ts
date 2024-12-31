@@ -45,7 +45,7 @@ export class ServerImpl {
   public isListening: boolean
 
   public constructor(options?: FastifyServerOptions) {
-    this.fastify = fastify.fastify(options)
+    this.fastify = fastify.fastify({ ...options, exposeHeadRoutes: false })
     this.isListening = false
 
     this.fastify.decorateReply('body', null)

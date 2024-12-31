@@ -12,7 +12,10 @@ import { ServerImpl } from '#src/server/ServerImpl'
 
 export class HttpServerProvider extends ServiceProvider {
   public register() {
-    this.container.instance('Athenna/Core/HttpServer', new ServerImpl())
+    this.container.instance(
+      'Athenna/Core/HttpServer',
+      new ServerImpl(Config.get('http.fastify'))
+    )
   }
 
   public async shutdown() {

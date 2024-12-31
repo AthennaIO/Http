@@ -46,7 +46,7 @@ export default class RequestTest {
   public async shouldBeAbleToGetTheRequestHostname({ assert }: Context) {
     const ctx = { request: new Request(this.request) }
 
-    assert.equal(ctx.request.hostname, 'localhost:80')
+    assert.equal(ctx.request.hostname, 'localhost')
   }
 
   @Test()
