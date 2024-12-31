@@ -1,6 +1,6 @@
 {
   "name": "@athenna/http",
-  "version": "5.6.0",
+  "version": "5.7.0",
   "description": "The Athenna Http server. Built on top of fastify.",
   "license": "MIT",
   "author": "João Lenon <lenon@athenna.io>",
@@ -87,6 +87,7 @@
     "@fastify/static": "^7.0.4",
     "@fastify/swagger": "^8.15.0",
     "@fastify/swagger-ui": "^3.1.0",
+    "@fastify/vite": "^7.0.1",
     "@typescript-eslint/eslint-plugin": "^7.18.0",
     "@typescript-eslint/parser": "^7.18.0",
     "autocannon": "^7.15.0",
