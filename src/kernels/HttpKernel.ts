@@ -25,7 +25,7 @@ const swaggerUiPlugin = await Module.safeImport('@fastify/swagger-ui')
 const rateLimitPlugin = await Module.safeImport('@fastify/rate-limit')
 const staticPlugin = await Module.safeImport('@fastify/static')
 const rTracerPlugin = await Module.safeImport('cls-rtracer')
-const vitePlugin = await Module.safeImport('@fastify/vite')
+const vitePlugin = await Module.safeImport('@athenna/vite/plugins/fastify')
 
 export class HttpKernel {
   /**
@@ -206,7 +206,7 @@ export class HttpKernel {
   }
 
   /**
-   * Register the @fastify/vite plugin in the Http server.
+   * Register the @athenna/vite plugin in the Http server.
    */
   public async registerVite(trace?: boolean): Promise<void> {
     if (trace === false) {
@@ -226,7 +226,7 @@ export class HttpKernel {
     }
 
     if (!vitePlugin) {
-      debug('Not able to register vite plugin. Install @fastify/vite package.')
+      debug('Not able to register vite plugin. Install @athenna/vite package.')
 
       return
     }

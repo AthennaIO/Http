@@ -116,7 +116,7 @@ export default class HttpKernelTest {
     const kernel = new HttpKernel()
     await kernel.registerVite()
 
-    assert.isTrue(Server.fastify.hasPlugin('@fastify/vite'))
+    assert.isTrue(Server.fastify.hasPlugin('@athenna/vite'))
   }
 
   @Test()
@@ -210,7 +210,7 @@ export default class HttpKernelTest {
     const kernel = new HttpKernel()
     await kernel.registerVite()
 
-    assert.isFalse(Server.fastify.hasPlugin('@fastify/vite'))
+    assert.isFalse(Server.fastify.hasPlugin('@athenna/vite'))
   }
 
   @Test()
