@@ -122,9 +122,12 @@ export class Response {
       .share({ request: this.request })
       .render(view, data)
 
-    await this.safeHeader('Content-Type', 'text/html; charset=utf-8').send(
-      content
+    await this.header(
+      'Content-Security-Policy',
+      "default-src 'self' 'unsafe-inline'"
     )
+      .safeHeader('Content-Type', 'text/html; charset=utf-8')
+      .send(content)
 
     this.response.body = content
 
