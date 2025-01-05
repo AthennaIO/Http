@@ -124,7 +124,7 @@ export class Response {
 
     await this.header(
       'Content-Security-Policy',
-      "default-src 'self' 'unsafe-inline'"
+      "default-src 'self' 'unsafe-inline' 'unsafe-eval' 'img-src' 'style-src-elem' 'script-src-elem'"
     )
       .safeHeader('Content-Type', 'text/html; charset=utf-8')
       .send(content)
