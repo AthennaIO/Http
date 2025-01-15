@@ -30,6 +30,7 @@ import type {
 } from '#src/types'
 
 import { Options } from '@athenna/common'
+import type { FastifyVite } from '@athenna/vite'
 import type { AddressInfo } from 'node:net'
 import { FastifyHandler } from '#src/handlers/FastifyHandler'
 
@@ -193,9 +194,9 @@ export class ServerImpl {
   }
 
   /**
-   * Start vite server.
+   * Return the FastifyVite instance if it exists.
    */
-  public async viteReady() {
+  public getVitePlugin(): FastifyVite {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     if (!this.fastify.vite) {
@@ -204,7 +205,33 @@ export class ServerImpl {
 
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
-    return this.fastify.vite.ready()
+    return this.fastify.vite
+  }
+
+  /**
+   * Return ViteDevServer instance if it exists.
+   */
+  public getViteDevServer() {
+    const vite = this.getVitePlugin()
+
+    if (!vite) {
+      return
+    }
+
+    return vite.getServer()
+  }
+
+  /**
+   * Start vite server.
+   */
+  public async viteReady() {
+    const vite = this.getVitePlugin()
+
+    if (!vite) {
+      return
+    }
+
+    return vite.ready()
   }
 
   /**
