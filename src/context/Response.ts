@@ -15,7 +15,7 @@ import type { SendOptions } from '@fastify/static'
 import type { Request } from '#src/context/Request'
 import type { FastifyHelmetOptions } from '@fastify/helmet'
 
-const react = Module.safeImport('react') as any
+let reactDom = Module.safeImport('react-dom/server') as any
 
 export class Response {
   /**
@@ -169,9 +169,13 @@ export class Response {
       beforeComponentRender?: (componentModule: any) => any
     }
   ) {
-    if (!react) {
-      throw new Error('React is not installed, please run "npm i react".')
+    if (!reactDom) {
+      throw new Error(
+        'React is not installed, please run "npm i react react-dom".'
+      )
     }
+
+    reactDom = await reactDom
 
     options = Options.create(options, {
       viewData: {},
@@ -191,7 +195,7 @@ export class Response {
     }
 
     return this.view(view, {
-      element: react.renderToString(component),
+      element: reactDom.renderToString(component),
       ...options.viewData
     })
   }
