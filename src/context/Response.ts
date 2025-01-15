@@ -180,7 +180,7 @@ export class Response {
     options = Options.create(options, {
       viewData: {},
       component: Config.get('http.vite.ssrEntrypoint'),
-      beforeComponentRender: options.component
+      beforeComponentRender: options?.component
         ? null
         : component => {
             return component.createApp(this.request.baseUrl)
