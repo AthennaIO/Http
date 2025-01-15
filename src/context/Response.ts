@@ -9,8 +9,13 @@
 
 import { View } from '@athenna/view'
 import type { FastifyReply } from 'fastify'
+import { Server } from '#src/facades/Server'
+import { Module, Options } from '@athenna/common'
 import type { SendOptions } from '@fastify/static'
+import type { Request } from '#src/context/Request'
 import type { FastifyHelmetOptions } from '@fastify/helmet'
+
+const react = Module.safeImport('react') as any
 
 export class Response {
   /**
@@ -109,6 +114,22 @@ export class Response {
   }
 
   /**
+   * Terminate the request sending an HTML content to be rendered.
+   *
+   * @example
+   * ```ts
+   * return response.html('<h1>Hello World!</h1>')
+   * ```
+   */
+  public async html(html: string) {
+    await this.safeHeader('Content-Type', 'text/html; charset=utf-8').send(html)
+
+    this.response.body = html
+
+    return this
+  }
+
+  /**
    * Terminate the request sending a view to be rendered.
    *
    * @example
@@ -116,19 +137,63 @@ export class Response {
    * return response.view('welcome', { name: 'lenon' })
    * ```
    */
-  public async view(view: string, data?: any): Promise<Response> {
+  public async view(view: string, data?: any) {
     const content = await View.edge
       .createRenderer()
       .share({ request: this.request })
       .render(view, data)
 
-    await this.safeHeader('Content-Type', 'text/html; charset=utf-8').send(
-      content
-    )
+    return this.html(content)
+  }
 
-    this.response.body = content
+  /**
+   * Terminate the request sending a React component to be rendered.
+   *
+   * @example
+   * ```ts
+   * return response.render('index')
+   * return response.render('index', {
+   *  component: 'src/resources/app/app.tsx',
+   *  viewData: {},
+   *  beforeComponentRender: (component) => {
+   *    return component.createApp()
+   *  }
+   * })
+   * ```
+   */
+  public async render(
+    view: string,
+    options?: {
+      component?: string
+      viewData?: any
+      beforeComponentRender?: (componentModule: any) => any
+    }
+  ) {
+    if (!react) {
+      throw new Error('React is not installed, please run "npm i react".')
+    }
 
-    return this
+    options = Options.create(options, {
+      viewData: {},
+      component: Config.get('http.vite.ssrEntrypoint'),
+      beforeComponentRender: options.component
+        ? null
+        : component => {
+            return component.createApp(this.request.baseUrl)
+          }
+    })
+
+    const vite = Server.getVitePlugin().getVite()
+    let component = await vite.ssrLoadModule(options.component)
+
+    if (options.beforeComponentRender) {
+      component = options.beforeComponentRender(component)
+    }
+
+    return this.view(view, {
+      element: react.renderToString(component),
+      ...options.viewData
+    })
   }
 
   /**
