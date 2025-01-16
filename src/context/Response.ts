@@ -9,13 +9,9 @@
 
 import { View } from '@athenna/view'
 import type { FastifyReply } from 'fastify'
-import { Server } from '#src/facades/Server'
-import { Module, Options } from '@athenna/common'
 import type { SendOptions } from '@fastify/static'
 import type { Request } from '#src/context/Request'
 import type { FastifyHelmetOptions } from '@fastify/helmet'
-
-let reactDom = Module.safeImport('react-dom/server') as any
 
 export class Response {
   /**
@@ -144,60 +140,6 @@ export class Response {
       .render(view, data)
 
     return this.html(content)
-  }
-
-  /**
-   * Terminate the request sending a React component to be rendered.
-   *
-   * @example
-   * ```ts
-   * return response.render('index')
-   * return response.render('index', {
-   *  component: 'src/resources/app/app.tsx',
-   *  viewData: {},
-   *  beforeComponentRender: (component) => {
-   *    return component.createApp()
-   *  }
-   * })
-   * ```
-   */
-  public async render(
-    view: string,
-    options?: {
-      component?: string
-      viewData?: any
-      beforeComponentRender?: (componentModule: any) => any
-    }
-  ) {
-    if (!reactDom) {
-      throw new Error(
-        'React is not installed, please run "npm i react react-dom".'
-      )
-    }
-
-    reactDom = await reactDom
-
-    options = Options.create(options, {
-      viewData: {},
-      component: Config.get('http.vite.ssrEntrypoint'),
-      beforeComponentRender: options?.component
-        ? null
-        : component => {
-            return component.createApp(this.request.baseUrl)
-          }
-    })
-
-    const vite = Server.getVitePlugin().getVite()
-    let component = await vite.ssrLoadModule(options.component)
-
-    if (options.beforeComponentRender) {
-      component = options.beforeComponentRender(component)
-    }
-
-    return this.view(view, {
-      element: reactDom.renderToString(component),
-      ...options.viewData
-    })
   }
 
   /**

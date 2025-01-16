@@ -1,6 +1,6 @@
 {
   "name": "@athenna/http",
-  "version": "5.22.0",
+  "version": "5.23.0",
   "description": "The Athenna Http server. Built on top of fastify.",
   "license": "MIT",
   "author": "João Lenon <lenon@athenna.io>",
@@ -82,7 +82,7 @@
     "@athenna/test": "^5.2.0",
     "@athenna/tsconfig": "^5.0.0",
     "@athenna/view": "^5.1.0",
-    "@athenna/vite": "^5.9.0",
+    "@athenna/vite": "^5.10.0",
     "@fastify/cors": "^10.0.1",
     "@fastify/helmet": "^13.0.0",
     "@fastify/rate-limit": "^10.2.1",
