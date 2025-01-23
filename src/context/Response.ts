@@ -26,6 +26,8 @@ export class Response extends Macroable {
   private request: Request
 
   public constructor(response: FastifyReply, request?: Request) {
+    super()
+
     this.response = response
     this.request = request
   }
