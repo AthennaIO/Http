@@ -15,7 +15,7 @@ import { Log } from '@athenna/logger'
 import { Config } from '@athenna/config'
 import { sep, isAbsolute, resolve } from 'node:path'
 import { Annotation, type ServiceMeta } from '@athenna/ioc'
-import { File, Path, Exec, Module, String } from '@athenna/common'
+import { File, Path, Module, String } from '@athenna/common'
 import { HttpExceptionHandler } from '#src/handlers/HttpExceptionHandler'
 
 const corsPlugin = await Module.safeImport('@fastify/cors')
@@ -256,7 +256,7 @@ export class HttpKernel {
   public async registerControllers(): Promise<void> {
     const controllers = Config.get<string[]>('rc.controllers', [])
 
-    await Exec.concurrently(controllers, async path => {
+    await controllers.athenna.concurrently(async path => {
       const Controller = await Module.resolve(path, this.getMeta())
 
       if (Annotation.isAnnotated(Controller)) {
@@ -277,7 +277,7 @@ export class HttpKernel {
   public async registerMiddlewares(): Promise<void> {
     const middlewares = Config.get<string[]>('rc.middlewares', [])
 
-    await Exec.concurrently(middlewares, async path => {
+    await middlewares.athenna.concurrently(async path => {
       const Middleware = await Module.resolve(path, this.getMeta())
 
       if (Annotation.isAnnotated(Middleware)) {
@@ -308,7 +308,7 @@ export class HttpKernel {
       {}
     )
 
-    await Exec.concurrently(Object.keys(namedMiddlewares), async key => {
+    await Object.keys(namedMiddlewares).athenna.concurrently(async key => {
       const Middleware = await Module.resolve(
         namedMiddlewares[key],
         this.getMeta()
@@ -336,7 +336,7 @@ export class HttpKernel {
   public async registerGlobalMiddlewares(): Promise<void> {
     const globalMiddlewares = Config.get<string[]>('rc.globalMiddlewares', [])
 
-    await Exec.concurrently(globalMiddlewares, async path => {
+    await globalMiddlewares.athenna.concurrently(async path => {
       const Middleware = await Module.resolve(path, this.getMeta())
 
       if (Annotation.isAnnotated(Middleware)) {
