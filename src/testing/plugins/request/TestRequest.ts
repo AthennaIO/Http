@@ -9,10 +9,11 @@
 
 import { Server } from '#src'
 import { Assert } from '@japa/assert'
+import { Macroable } from '@athenna/common'
 import type { InjectOptions } from '#src/types'
 import { TestResponse } from '#src/testing/plugins/request/TestResponse'
 
-export class TestRequest {
+export class TestRequest extends Macroable {
   /**
    * Japa assert class instance.
    */

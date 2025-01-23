@@ -14,9 +14,10 @@ import type {
 } from '#src/types'
 
 import { Route } from '#src/router/Route'
+import { Macroable } from '@athenna/common'
 import { RouteResource } from '#src/router/RouteResource'
 
-export class RouteGroup {
+export class RouteGroup extends Macroable {
   /**
    * All routes registered in the group.
    */
@@ -24,6 +25,8 @@ export class RouteGroup {
   public routes: (Route | RouteGroup | RouteResource)[]
 
   public constructor(routes: (Route | RouteGroup | RouteResource)[]) {
+    super()
+
     this.routes = routes
   }
 

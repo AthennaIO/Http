@@ -29,12 +29,12 @@ import type {
   SwaggerDocument
 } from '#src/types'
 
-import { Options } from '@athenna/common'
-import type { FastifyVite } from '@athenna/vite'
 import type { AddressInfo } from 'node:net'
+import type { FastifyVite } from '@athenna/vite'
+import { Options, Macroable } from '@athenna/common'
 import { FastifyHandler } from '#src/handlers/FastifyHandler'
 
-export class ServerImpl {
+export class ServerImpl extends Macroable {
   /**
    * Holds the fastify server instance.
    */
@@ -46,6 +46,8 @@ export class ServerImpl {
   public isListening: boolean
 
   public constructor(options?: FastifyServerOptions) {
+    super()
+
     this.fastify = fastify.fastify({ ...options, exposeHeadRoutes: false })
     this.isListening = false
 

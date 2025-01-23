@@ -8,9 +8,10 @@
  */
 
 import { Assert } from '@japa/assert'
+import { Macroable } from '@athenna/common'
 import type { Response } from 'light-my-request'
 
-export class TestResponse {
+export class TestResponse extends Macroable {
   /**
    * Japa assert class instance.
    */
@@ -22,6 +23,8 @@ export class TestResponse {
   public response: Response
 
   public constructor(assert: Assert, response: Response) {
+    super()
+
     this.assert = assert
     this.response = response
   }

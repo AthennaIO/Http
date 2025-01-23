@@ -13,8 +13,8 @@ import { Response } from '#src/context/Response'
 import type { RequestHandler } from '#src/types/contexts/Context'
 import type { ErrorHandler } from '#src/types/contexts/ErrorContext'
 import type { InterceptHandler, TerminateHandler } from '#src/types'
-import type { FastifyReply, FastifyRequest, RouteHandlerMethod } from 'fastify'
 import { NotFoundException } from '#src/exceptions/NotFoundException'
+import type { FastifyReply, FastifyRequest, RouteHandlerMethod } from 'fastify'
 
 export class FastifyHandler {
   /**
