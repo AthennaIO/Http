@@ -17,13 +17,13 @@ import type {
   InterceptorRouteType
 } from '#src/types'
 
-import { Is, Options, Route as RouteHelper } from '@athenna/common'
 import type { HTTPMethods, FastifySchema, RouteOptions } from 'fastify'
+import { Is, Options, Macroable, Route as RouteHelper } from '@athenna/common'
 import { UndefinedMethodException } from '#src/exceptions/UndefinedMethodException'
 import { NotFoundValidatorException } from '#src/exceptions/NotFoundValidatorException'
 import { NotFoundMiddlewareException } from '#src/exceptions/NotFoundMiddlewareException'
 
-export class Route {
+export class Route extends Macroable {
   /**
    * Holds all the route implementations to be registered in the Server.
    */
@@ -43,6 +43,8 @@ export class Route {
     methods: HTTPMethods[],
     handler: RouteHandler
   ) {
+    super()
+
     this.route = {
       url,
       methods,

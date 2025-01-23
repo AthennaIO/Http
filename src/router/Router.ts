@@ -7,16 +7,16 @@
  * file that was distributed with this source code.
  */
 
-import { Is } from '@athenna/common'
 import { Route } from '#src/router/Route'
 import { Server } from '#src/facades/Server'
+import { Is, Macroable } from '@athenna/common'
 import { RouteGroup } from '#src/router/RouteGroup'
 import { RouteResource } from '#src/router/RouteResource'
 import type { RouteJson, RequestHandler, RouteHandler } from '#src/types'
 import type { HTTPMethods, FastifyInstance, RouteOptions } from 'fastify'
 import { UndefinedMethodException } from '#src/exceptions/UndefinedMethodException'
 
-export class Router {
+export class Router extends Macroable {
   /**
    * All routes registered.
    */

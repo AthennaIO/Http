@@ -7,17 +7,19 @@
  * file that was distributed with this source code.
  */
 
-import { Is, Json } from '@athenna/common'
 import type { AddressInfo } from 'node:net'
 import type { FastifyRequest } from 'fastify'
+import { Is, Json, Macroable } from '@athenna/common'
 
-export class Request {
+export class Request extends Macroable {
   /**
    * The fastify request object.
    */
   private request: FastifyRequest
 
   public constructor(request: FastifyRequest) {
+    super()
+
     this.request = request
   }
 

@@ -16,9 +16,9 @@ import type {
 
 import type { HTTPMethods } from 'fastify'
 import { Route } from '#src/router/Route'
-import { Is, String } from '@athenna/common'
+import { Is, String, Macroable } from '@athenna/common'
 
-export class RouteResource {
+export class RouteResource extends Macroable {
   /**
    * All routes registered in the resource.
    */
@@ -35,6 +35,8 @@ export class RouteResource {
   public controller: any
 
   public constructor(resource: string, controller: any) {
+    super()
+
     this.resource = resource
     this.controller = controller
 

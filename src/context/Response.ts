@@ -8,12 +8,13 @@
  */
 
 import { View } from '@athenna/view'
+import { Macroable } from '@athenna/common'
 import type { FastifyReply } from 'fastify'
 import type { SendOptions } from '@fastify/static'
 import type { Request } from '#src/context/Request'
 import type { FastifyHelmetOptions } from '@fastify/helmet'
 
-export class Response {
+export class Response extends Macroable {
   /**
    * The fastify response object.
    */
