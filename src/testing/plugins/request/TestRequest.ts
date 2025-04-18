@@ -45,10 +45,14 @@ export class TestRequest extends Macroable {
     url: string,
     options: InjectOptions = {}
   ): Promise<TestResponse> {
+    options.headers = {
+      ...this.headers,
+      ...options.headers
+    }
+
     return Server.request({
       url,
       method: 'GET',
-      ...this.headers,
       ...options
     }).then(res => this.createResponse(res))
   }
@@ -67,10 +71,14 @@ export class TestRequest extends Macroable {
     url: string,
     options: InjectOptions = {}
   ): Promise<TestResponse> {
+    options.headers = {
+      ...this.headers,
+      ...options.headers
+    }
+
     return Server.request({
       url,
       method: 'HEAD',
-      ...this.headers,
       ...options
     }).then(res => this.createResponse(res))
   }
@@ -89,10 +97,14 @@ export class TestRequest extends Macroable {
     url: string,
     options: InjectOptions = {}
   ): Promise<TestResponse> {
+    options.headers = {
+      ...this.headers,
+      ...options.headers
+    }
+
     return Server.request({
       url,
       method: 'OPTIONS',
-      ...this.headers,
       ...options
     }).then(res => this.createResponse(res))
   }
@@ -111,10 +123,14 @@ export class TestRequest extends Macroable {
     url: string,
     options: InjectOptions = {}
   ): Promise<TestResponse> {
+    options.headers = {
+      ...this.headers,
+      ...options.headers
+    }
+
     return Server.request({
       url,
       method: 'POST',
-      ...this.headers,
       ...options
     }).then(res => this.createResponse(res))
   }
@@ -133,10 +149,14 @@ export class TestRequest extends Macroable {
     url: string,
     options: InjectOptions = {}
   ): Promise<TestResponse> {
+    options.headers = {
+      ...this.headers,
+      ...options.headers
+    }
+
     return Server.request({
       url,
       method: 'PUT',
-      ...this.headers,
       ...options
     }).then(res => this.createResponse(res))
   }
@@ -155,10 +175,14 @@ export class TestRequest extends Macroable {
     url: string,
     options: InjectOptions = {}
   ): Promise<TestResponse> {
+    options.headers = {
+      ...this.headers,
+      ...options.headers
+    }
+
     return Server.request({
       url,
       method: 'PATCH',
-      ...this.headers,
       ...options
     }).then(res => this.createResponse(res))
   }
@@ -177,10 +201,14 @@ export class TestRequest extends Macroable {
     url: string,
     options: InjectOptions = {}
   ): Promise<TestResponse> {
+    options.headers = {
+      ...this.headers,
+      ...options.headers
+    }
+
     return Server.request({
       url,
       method: 'DELETE',
-      ...this.headers,
       ...options
     }).then(res => this.createResponse(res))
   }
