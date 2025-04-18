@@ -15,6 +15,11 @@ import { TestResponse } from '#src/testing/plugins/request/TestResponse'
 
 export class TestRequest extends Macroable {
   /**
+   * Headers that will be defined in all requests.
+   */
+  private headers: Record<string, string> = {}
+
+  /**
    * Japa assert class instance.
    */
   public assert = new Assert()
@@ -40,9 +45,12 @@ export class TestRequest extends Macroable {
     url: string,
     options: InjectOptions = {}
   ): Promise<TestResponse> {
-    return Server.request({ url, method: 'GET', ...options }).then(res =>
-      this.createResponse(res)
-    )
+    return Server.request({
+      url,
+      method: 'GET',
+      ...this.headers,
+      ...options
+    }).then(res => this.createResponse(res))
   }
 
   /**
@@ -59,9 +67,12 @@ export class TestRequest extends Macroable {
     url: string,
     options: InjectOptions = {}
   ): Promise<TestResponse> {
-    return Server.request({ url, method: 'HEAD', ...options }).then(res =>
-      this.createResponse(res)
-    )
+    return Server.request({
+      url,
+      method: 'HEAD',
+      ...this.headers,
+      ...options
+    }).then(res => this.createResponse(res))
   }
 
   /**
@@ -78,9 +89,12 @@ export class TestRequest extends Macroable {
     url: string,
     options: InjectOptions = {}
   ): Promise<TestResponse> {
-    return Server.request({ url, method: 'OPTIONS', ...options }).then(res =>
-      this.createResponse(res)
-    )
+    return Server.request({
+      url,
+      method: 'OPTIONS',
+      ...this.headers,
+      ...options
+    }).then(res => this.createResponse(res))
   }
 
   /**
@@ -97,9 +111,12 @@ export class TestRequest extends Macroable {
     url: string,
     options: InjectOptions = {}
   ): Promise<TestResponse> {
-    return Server.request({ url, method: 'POST', ...options }).then(res =>
-      this.createResponse(res)
-    )
+    return Server.request({
+      url,
+      method: 'POST',
+      ...this.headers,
+      ...options
+    }).then(res => this.createResponse(res))
   }
 
   /**
@@ -116,9 +133,12 @@ export class TestRequest extends Macroable {
     url: string,
     options: InjectOptions = {}
   ): Promise<TestResponse> {
-    return Server.request({ url, method: 'PUT', ...options }).then(res =>
-      this.createResponse(res)
-    )
+    return Server.request({
+      url,
+      method: 'PUT',
+      ...this.headers,
+      ...options
+    }).then(res => this.createResponse(res))
   }
 
   /**
@@ -135,9 +155,12 @@ export class TestRequest extends Macroable {
     url: string,
     options: InjectOptions = {}
   ): Promise<TestResponse> {
-    return Server.request({ url, method: 'PATCH', ...options }).then(res =>
-      this.createResponse(res)
-    )
+    return Server.request({
+      url,
+      method: 'PATCH',
+      ...this.headers,
+      ...options
+    }).then(res => this.createResponse(res))
   }
 
   /**
@@ -154,8 +177,28 @@ export class TestRequest extends Macroable {
     url: string,
     options: InjectOptions = {}
   ): Promise<TestResponse> {
-    return Server.request({ url, method: 'DELETE', ...options }).then(res =>
-      this.createResponse(res)
-    )
+    return Server.request({
+      url,
+      method: 'DELETE',
+      ...this.headers,
+      ...options
+    }).then(res => this.createResponse(res))
+  }
+
+  /**
+   * Define the authorization access token into all requests.
+   *
+   * @example
+   * ```js
+   * const token ='Bearer ...'
+   * const response = await request.authorize(token).get('/users')
+   *
+   * response.assertStatusCode(200)
+   * ```
+   */
+  public authorize(accessToken: string) {
+    this.headers.authorization = accessToken
+
+    return this
   }
 }
