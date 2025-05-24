@@ -62,6 +62,14 @@ export default class HttpKernelTest {
   }
 
   @Test()
+  public async shouldBeAbleToRegisterTheFastifyMultipartPluginInTheHttpServer({ assert }: Context) {
+    const kernel = new HttpKernel()
+    await kernel.registerMultipart()
+
+    assert.isTrue(Server.fastify.hasPlugin('@fastify/multipart'))
+  }
+
+  @Test()
   public async shouldBeAbleToRegisterTheFastifySwaggerPluginInTheHttpServer({ assert }: Context) {
     const kernel = new HttpKernel()
     await kernel.registerSwagger()
@@ -176,6 +184,18 @@ export default class HttpKernelTest {
     await kernel.registerHelmet()
 
     assert.isFalse(Server.fastify.hasPlugin('@fastify/helmet'))
+  }
+
+  @Test()
+  @Cleanup(() => Config.set('http.multipart.enabled', true))
+  public async shouldNotRegisterTheFastifyMultipartPluginIfTheConfigurationIsDisabled({ assert }: Context) {
+    Config.set('http.multipart.enabled', false)
+
+    const { HttpKernel } = await import(`../../../src/kernels/HttpKernel.js?v=${Math.random()}`)
+    const kernel = new HttpKernel()
+    await kernel.registerMultipart()
+
+    assert.isFalse(Server.fastify.hasPlugin('@fastify/multipart'))
   }
 
   @Test()

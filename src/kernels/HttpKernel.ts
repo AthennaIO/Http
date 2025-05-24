@@ -18,20 +18,13 @@ import { Annotation, type ServiceMeta } from '@athenna/ioc'
 import { File, Path, Module, String } from '@athenna/common'
 import { HttpExceptionHandler } from '#src/handlers/HttpExceptionHandler'
 
-const corsPlugin = await Module.safeImport('@fastify/cors')
-const helmetPlugin = await Module.safeImport('@fastify/helmet')
-const swaggerPlugin = await Module.safeImport('@fastify/swagger')
-const swaggerUiPlugin = await Module.safeImport('@fastify/swagger-ui')
-const rateLimitPlugin = await Module.safeImport('@fastify/rate-limit')
-const staticPlugin = await Module.safeImport('@fastify/static')
-const rTracerPlugin = await Module.safeImport('cls-rtracer')
-const vitePlugin = await Module.safeImport('@athenna/vite/plugins/fastify')
-
 export class HttpKernel {
   /**
    * Register the @fastify/cors plugin in the Http server.
    */
   public async registerCors(): Promise<void> {
+    const corsPlugin = await Module.safeImport('@fastify/cors')
+
     if (Config.is('http.cors.enabled', false)) {
       debug(
         'Not able to register cors plugin. Set the http.cors.enabled configuration as true.'
@@ -53,6 +46,8 @@ export class HttpKernel {
    * Register the @fastify/helmet plugin in the Http server.
    */
   public async registerHelmet(): Promise<void> {
+    const helmetPlugin = await Module.safeImport('@fastify/helmet')
+
     if (Config.is('http.helmet.enabled', false)) {
       debug(
         'Not able to register helmet plugin. Set the http.helmet.enabled configuration as true.'
@@ -76,6 +71,9 @@ export class HttpKernel {
    * Register the @fastify/swagger plugin in the Http server.
    */
   public async registerSwagger(): Promise<void> {
+    const swaggerPlugin = await Module.safeImport('@fastify/swagger')
+    const swaggerUiPlugin = await Module.safeImport('@fastify/swagger-ui')
+
     if (Config.is('http.swagger.enabled', false)) {
       debug(
         'Not able to register swagger plugin. Set the http.swagger.enabled configuration as true.'
@@ -129,6 +127,8 @@ export class HttpKernel {
    * Register the @fastify/rate-limit plugin in the Http server.
    */
   public async registerRateLimit(): Promise<void> {
+    const rateLimitPlugin = await Module.safeImport('@fastify/rate-limit')
+
     if (Config.is('http.rateLimit.enabled', false)) {
       debug(
         'Not able to register rate limit plugin. Set the http.rateLimit.enabled configuration as true.'
@@ -152,6 +152,8 @@ export class HttpKernel {
    * Register the @fastify/static plugin in the Http server.
    */
   public async registerStatic(): Promise<void> {
+    const staticPlugin = await Module.safeImport('@fastify/static')
+
     if (Config.is('http.static.enabled', false)) {
       debug(
         'Not able to register static plugin. Set the http.static.enabled configuration as true.'
@@ -175,6 +177,8 @@ export class HttpKernel {
    * Register the cls-rtracer plugin in the Http server.
    */
   public async registerRTracer(trace?: boolean): Promise<void> {
+    const rTracerPlugin = await Module.safeImport('cls-rtracer')
+
     if (trace === false) {
       debug(
         'Not able to register rTracer plugin. Set the trace option as true in your http server options.'
@@ -209,6 +213,8 @@ export class HttpKernel {
    * Register the @athenna/vite plugin in the Http server.
    */
   public async registerVite(trace?: boolean): Promise<void> {
+    const vitePlugin = await Module.safeImport('@athenna/vite/plugins/fastify')
+
     if (trace === false) {
       debug(
         'Not able to register vite plugin. Set the trace option as true in your http server options.'
@@ -232,6 +238,31 @@ export class HttpKernel {
     }
 
     await Server.plugin(vitePlugin, this.getConfig('http.vite'))
+  }
+
+  /**
+   * Register the @fastify/multipart plugin in the Http server.
+   */
+  public async registerMultipart(): Promise<void> {
+    const multipartPlugin = await Module.safeImport('@fastify/multipart')
+
+    if (Config.is('http.multipart.enabled', false)) {
+      debug(
+        'Not able to register multipart plugin. Set the http.multipart.enabled configuration as true.'
+      )
+
+      return
+    }
+
+    if (!multipartPlugin) {
+      debug(
+        'Not able to register multipart plugin. Install @fastify/multipart package.'
+      )
+
+      return
+    }
+
+    await Server.plugin(multipartPlugin, this.getConfig('http.multipart'))
   }
 
   /**

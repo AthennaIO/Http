@@ -7,9 +7,15 @@
  * file that was distributed with this source code.
  */
 
+import type {
+  SavedMultipartFile,
+  FastifyMultipartBaseOptions
+} from '@fastify/multipart'
+
 import type { AddressInfo } from 'node:net'
 import type { FastifyRequest } from 'fastify'
 import { Is, Json, Macroable } from '@athenna/common'
+import type { BusboyConfig } from '@fastify/busboy'
 
 export class Request extends Macroable {
   /**
@@ -349,6 +355,69 @@ export class Request extends Macroable {
     })
 
     return body
+  }
+
+  /**
+   * Check if the request is multipart.
+   */
+  public isMultipart() {
+    return this.request.isMultipart()
+  }
+
+  /**
+   * Get the form data from the request.
+   */
+  public formData(): Promise<FormData> {
+    return this.request.formData()
+  }
+
+  /**
+   * Get the parts from the request.
+   */
+  public parts(options?: Omit<BusboyConfig, 'headers'>) {
+    return this.request.parts(options)
+  }
+
+  /**
+   * Get the file from the request.
+   */
+  public file(
+    options?: Omit<BusboyConfig, 'headers'> | FastifyMultipartBaseOptions
+  ) {
+    return this.request.file(options)
+  }
+
+  /**
+   * Get the files from the request.
+   */
+  public files(
+    options?: Omit<BusboyConfig, 'headers'> | FastifyMultipartBaseOptions
+  ) {
+    return this.request.files(options)
+  }
+
+  /**
+   * Save the files from the request.
+   */
+  public saveRequestFiles(
+    options?: Omit<BusboyConfig, 'headers'> & { tmpdir?: string }
+  ) {
+    return this.request.saveRequestFiles(options)
+  }
+
+  /**
+   * Clean the files from the request.
+   */
+  public cleanRequestFiles() {
+    return this.request.cleanRequestFiles()
+  }
+
+  /**
+   * This will get populated as soon as a call to `saveRequestFiles` gets resolved.
+   * Avoiding any future duplicate work
+   */
+  public get savedRequestFiles(): SavedMultipartFile[] | null {
+    return this.request.savedRequestFiles
   }
 
   /**
