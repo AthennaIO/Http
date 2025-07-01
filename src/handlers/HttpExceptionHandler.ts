@@ -71,6 +71,17 @@ export class HttpExceptionHandler {
       error = error.toAthennaException()
     }
 
+    const isUsingJsonFormatter = Config.is(
+      'logging.channels.exception.formatter',
+      'json'
+    )
+
+    if (isUsingJsonFormatter) {
+      Log.channelOrVanilla('exception').error(error)
+
+      return
+    }
+
     Log.channelOrVanilla('exception').error(await error.prettify())
   }
 
