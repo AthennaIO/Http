@@ -277,7 +277,17 @@ export class HttpKernel {
       return
     }
 
-    Server.terminate(ctx => Log.channelOrVanilla('request').info(ctx))
+    const { channel, isToLogRequest } = Config.get('http.logger')
+
+    Server.terminate(ctx => {
+      if (!isToLogRequest) {
+        return Log.channelOrVanilla(channel).info(ctx)
+      }
+
+      if (isToLogRequest(ctx)) {
+        return Log.channelOrVanilla(channel).info(ctx)
+      }
+    })
   }
 
   /**
