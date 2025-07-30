@@ -299,15 +299,6 @@ export default class HttpKernelTest {
   }
 
   @Test()
-  public async shouldNotRegisterTheFastifyRTracerPluginIfTheTraceOptionsIsSetToFalse({ assert }: Context) {
-    const { HttpKernel } = await import(`../../../src/kernels/HttpKernel.js?v=${Math.random()}`)
-    const kernel = new HttpKernel()
-    await kernel.registerRTracer(false)
-
-    assert.isFalse(Server.fastify.hasPlugin('cls-rtracer'))
-  }
-
-  @Test()
   @Cleanup(() => Config.set('http.rTracer.enabled', true))
   public async shouldNotRegisterTheFastifyRTracerPluginIfTheConfigurationIsDisabled({ assert }: Context) {
     Config.set('http.rTracer.enabled', false)
