@@ -176,18 +176,10 @@ export class HttpKernel {
   /**
    * Register the cls-rtracer plugin in the Http server.
    */
-  public async registerRTracer(trace?: boolean): Promise<void> {
+  public async registerRTracer(): Promise<void> {
     const rTracerPlugin = await Module.safeImport('cls-rtracer')
 
-    if (trace === false) {
-      debug(
-        'Not able to register rTracer plugin. Set the trace option as true in your http server options.'
-      )
-
-      return
-    }
-
-    if (trace === undefined && Config.is('http.rTracer.enabled', false)) {
+    if (Config.is('http.rTracer.enabled', false)) {
       debug(
         'Not able to register rTracer plugin. Set the http.rTracer.enabled configuration as true.'
       )
@@ -212,18 +204,10 @@ export class HttpKernel {
   /**
    * Register the @athenna/vite plugin in the Http server.
    */
-  public async registerVite(trace?: boolean): Promise<void> {
+  public async registerVite(): Promise<void> {
     const vitePlugin = await Module.safeImport('@athenna/vite/plugins/fastify')
 
-    if (trace === false) {
-      debug(
-        'Not able to register vite plugin. Set the trace option as true in your http server options.'
-      )
-
-      return
-    }
-
-    if (trace === undefined && Config.is('http.vite.enabled', false)) {
+    if (Config.is('http.vite.enabled', false)) {
       debug(
         'Not able to register vite plugin. Set the http.vite.enabled configuration as true.'
       )
@@ -281,11 +265,11 @@ export class HttpKernel {
 
     Server.terminate(ctx => {
       if (!isToLogRequest) {
-        return Log.channelOrVanilla(channel).info(ctx)
+        return Log.channelOrVanilla(channel || 'request').info(ctx)
       }
 
       if (isToLogRequest(ctx)) {
-        return Log.channelOrVanilla(channel).info(ctx)
+        return Log.channelOrVanilla(channel || 'request').info(ctx)
       }
     })
   }
