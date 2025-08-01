@@ -20,12 +20,13 @@ await Config.loadAll(Path.fixtures('config'))
 
 Config.set('rc.parentURL', Path.toHref(Path.pwd() + sep))
 
+Config.set('rc.http', {
+  route: './tests/fixtures/routes/http.js',
+  kernel: './tests/fixtures/kernels/HttpKernel.js'
+})
+
 Config.set('rc.commands', {
-  'route:list': {
-    path: '#src/commands/RouteListCommand',
-    route: './tests/fixtures/routes/http.js',
-    kernel: './tests/fixtures/kernels/HttpKernel.js'
-  },
+  'route:list': '#src/commands/RouteListCommand',
   'make:controller': {
     path: '#src/commands/MakeControllerCommand',
     destination: './tests/fixtures/storage/controllers'

@@ -77,10 +77,7 @@ export class RouteListCommand extends BaseCommand {
    * Resolve the http routes file.
    */
   private async resolveRoute() {
-    const path = Config.get(
-      'rc.commands.route:list.route',
-      Path.routes(`http.${Path.ext()}`)
-    )
+    const path = Config.get('rc.http.route', Path.routes(`http.${Path.ext()}`))
 
     await Module.resolve(path, this.getParentURL())
   }
@@ -89,14 +86,11 @@ export class RouteListCommand extends BaseCommand {
    * Get the http kernel module from RC file or resolve the default one.
    */
   private async getHttpKernel() {
-    if (!Config.exists('rc.commands.route:list.kernel')) {
+    if (!Config.exists('rc.http.kernel')) {
       return HttpKernel
     }
 
-    return Module.resolve(
-      Config.get('rc.commands.route:list.kernel'),
-      this.getParentURL()
-    )
+    return Module.resolve(Config.get('rc.http.kernel'), this.getParentURL())
   }
 
   /**
