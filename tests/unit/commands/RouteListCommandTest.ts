@@ -15,6 +15,8 @@ export default class RouteListCommandTest extends BaseCommandTest {
   public async shouldBeAbleToListAllRoutesRegisteredInTheHttpServer({ command }: Context) {
     const output = await command.run('route:list')
 
+    console.log(output.output.stderr)
+
     output.assertSucceeded()
     output.assertLogged('[ LISTING ROUTES ]')
     output.assertLogged('GET|HEAD')
