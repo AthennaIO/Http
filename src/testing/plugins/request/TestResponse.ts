@@ -194,8 +194,8 @@ export class TestResponse extends Macroable {
     }
 
     this.assert.assert(
-      seenKeys.size,
-      `The body contains keys: ${keys.join(', ')}`
+      !seenKeys.size,
+      `The body contains keys: ${Array.from(seenKeys).join(', ')}`
     )
   }
 
