@@ -8,7 +8,7 @@
  */
 
 import { Assert } from '@japa/assert'
-import { Macroable } from '@athenna/common'
+import { Json, Macroable } from '@athenna/common'
 import type { Response } from 'light-my-request'
 
 export class TestResponse extends Macroable {
@@ -104,7 +104,13 @@ export class TestResponse extends Macroable {
    * ```
    */
   public assertBodyContainsKey(key: string) {
-    this.assert.property(this.response.json(), key)
+    const body = this.response.json()
+    const value = Json.get(body, key)
+
+    this.assert.assert(
+      value !== undefined,
+      `The body does not contain the key ${key}`
+    )
   }
 
   /**
@@ -124,7 +130,10 @@ export class TestResponse extends Macroable {
    * ```
    */
   public assertBodyNotContainsKey(key: string) {
-    this.assert.notProperty(this.response.json(), key)
+    const body = this.response.json()
+    const value = Json.get(body, key)
+
+    this.assert.assert(value === undefined, `The body contains the key ${key}`)
   }
 
   /**
@@ -138,7 +147,22 @@ export class TestResponse extends Macroable {
    * ```
    */
   public assertBodyContainsAllKeys(keys: string[]) {
-    this.assert.properties(this.response.json(), keys)
+    const body = this.response.json()
+    const seenKeys = new Set()
+
+    for (const key of keys) {
+      const value = Json.get(body, key)
+
+      if (value !== undefined) {
+        seenKeys.add(key)
+      }
+    }
+
+    if (seenKeys.size !== keys.length) {
+      return this.assert.fail(
+        `The body does not contain all keys: ${keys.join(', ')}`
+      )
+    }
   }
 
   /**
@@ -158,7 +182,21 @@ export class TestResponse extends Macroable {
    * ```
    */
   public assertBodyNotContainsAllKeys(keys: string[]) {
-    this.assert.notAllProperties(this.response.json(), keys)
+    const body = this.response.json()
+    const seenKeys = new Set()
+
+    for (const key of keys) {
+      const value = Json.get(body, key)
+
+      if (value !== undefined) {
+        seenKeys.add(key)
+      }
+    }
+
+    this.assert.assert(
+      seenKeys.size,
+      `The body contains keys: ${keys.join(', ')}`
+    )
   }
 
   /**
