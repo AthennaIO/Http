@@ -57,8 +57,11 @@ export class HttpExceptionHandler {
       body.name = 'InternalServerException'
       body.message = 'An internal server exception has occurred.'
 
-      delete body.stack
       delete body.details
+    }
+
+    if (!isDebugMode) {
+      delete body.stack
     }
 
     response.status(body.statusCode).send(body)
