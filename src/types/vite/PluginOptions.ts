@@ -19,7 +19,7 @@ export interface PluginOptions {
   /**
    * Files that should trigger a page reload when changed.
    *
-   * @default ['./src/resources/views/** /*.edge']
+   * @default ['./resources/views/** /*.edge']
    */
   reload?: string[]
 
