@@ -32,7 +32,7 @@ export class HttpExceptionHandler {
   public async handle({ error, response }: ErrorContext): Promise<void> {
     let code = error.code
 
-    if (error.code === undefined) {
+    if (!Is.String(code) || Is.Undefined(code)) {
       code = error.name || 'E_INTERNAL_SERVER'
     }
 
