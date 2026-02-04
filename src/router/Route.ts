@@ -29,6 +29,7 @@ export class Route extends Macroable {
    */
   public route: {
     url?: string
+    data?: Record<string, any>
     methods: HTTPMethods[]
     handler?: RequestHandler
     name?: string
@@ -48,6 +49,7 @@ export class Route extends Macroable {
     this.route = {
       url,
       methods,
+      data: {},
       deleted: false,
       prefixes: [],
       middlewares: {
@@ -113,6 +115,30 @@ export class Route extends Macroable {
       ...this.route.fastify,
       ...options
     }
+
+    return this
+  }
+
+  /**
+   * Define data values for the route. Data values will be available in the
+   * request context.
+   *
+   * @example
+   * ```ts
+   * Route.data({ permission: 'post:create' }).post('/posts', ({ data }) => {
+   *  console.log(data.permission)
+   * })
+   * ```
+   *
+   */
+  public data(data: Record<string, any> | string, value?: any): Route {
+    if (Is.String(data)) {
+      this.route.data[data] = value
+
+      return this
+    }
+
+    this.route.data = data
 
     return this
   }
@@ -608,6 +634,7 @@ export class Route extends Macroable {
   public toJSON(): RouteJson {
     return {
       url: this.getUrl(),
+      data: this.route.data,
       methods: this.route.methods,
       name: this.route.name,
       deleted: this.route.deleted,

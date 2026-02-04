@@ -53,4 +53,8 @@ export class HelloController {
   async vanillaError() {
     throw new Error('error')
   }
+
+  async data(ctx: Context) {
+    return ctx.response.send({ data: ctx.data })
+  }
 }
