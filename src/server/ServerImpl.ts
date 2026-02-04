@@ -31,7 +31,7 @@ import type {
 
 import type { AddressInfo } from 'node:net'
 import type { FastifyVite } from '@athenna/vite'
-import { Options, Macroable } from '@athenna/common'
+import { Options, Macroable, Is } from '@athenna/common'
 import { FastifyHandler } from '#src/handlers/FastifyHandler'
 
 export class ServerImpl extends Macroable {
@@ -278,6 +278,9 @@ export class ServerImpl extends Macroable {
     const { middlewares, interceptors, terminators } = options.middlewares
 
     const route: RouteOptions = {
+      onSend: [],
+      preHandler: [],
+      onResponse: [],
       url: options.url,
       method: options.methods,
       handler: FastifyHandler.request(options.handler)
@@ -293,6 +296,13 @@ export class ServerImpl extends Macroable {
 
     if (terminators.length) {
       route.onResponse = terminators.map(t => FastifyHandler.terminate(t))
+    }
+
+    if (options.data && Is.Array(route.preHandler)) {
+      route.preHandler?.unshift((req, _, done) => {
+        req.data = options.data
+        done()
+      })
     }
 
     this.fastify.route({ ...route, ...options.fastify })

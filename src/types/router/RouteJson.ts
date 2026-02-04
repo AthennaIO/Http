@@ -12,6 +12,7 @@ import type { RequestHandler, MiddlewareRecord } from '#src/types'
 
 export type RouteJson = {
   url: string
+  data?: Record<string, any>
   methods?: HTTPMethods[]
   name?: string
   deleted?: boolean

@@ -175,7 +175,7 @@ export default class RouteTest {
 
     const swagger = await Server.getSwagger()
 
-    assert.containsSubset(swagger.paths['/test'], {
+    assert.containSubset(swagger.paths['/test'], {
       post: {
         responses: { '200': { description: 'Default Response' } },
         parameters: [
@@ -202,7 +202,7 @@ export default class RouteTest {
 
     const swagger = await Server.getSwagger()
 
-    assert.containsSubset(swagger.paths['/test'], {
+    assert.containSubset(swagger.paths['/test'], {
       post: {
         responses: { '200': { description: 'Default Response' } },
         parameters: [
@@ -227,7 +227,7 @@ export default class RouteTest {
 
     const swagger = await Server.getSwagger()
 
-    assert.containsSubset(swagger.paths['/test'], {
+    assert.containSubset(swagger.paths['/test'], {
       post: {
         responses: {
           '200': {
@@ -261,7 +261,7 @@ export default class RouteTest {
 
     const swagger = await Server.getSwagger()
 
-    assert.containsSubset(swagger.paths['/test'], {
+    assert.containSubset(swagger.paths['/test'], {
       post: {
         responses: {
           '200': {
@@ -295,7 +295,7 @@ export default class RouteTest {
 
     const swagger = await Server.getSwagger()
 
-    assert.containsSubset(swagger.paths['/test'], {
+    assert.containSubset(swagger.paths['/test'], {
       post: {
         responses: {
           '200': {
@@ -335,7 +335,7 @@ export default class RouteTest {
 
     const swagger = await Server.getSwagger()
 
-    assert.containsSubset(swagger.paths['/test'], {
+    assert.containSubset(swagger.paths['/test'], {
       post: {
         responses: {
           '200': {
@@ -367,7 +367,7 @@ export default class RouteTest {
 
     const swagger = await Server.getSwagger()
 
-    assert.containsSubset(swagger.paths['/test'], {
+    assert.containSubset(swagger.paths['/test'], {
       post: {
         security: [{ apiKey: ['123', '321'] }],
         responses: { '200': { description: 'Default Response' } }
@@ -383,7 +383,7 @@ export default class RouteTest {
 
     const swagger = await Server.getSwagger()
 
-    assert.containsSubset(swagger.paths['/test'], {
+    assert.containSubset(swagger.paths['/test'], {
       post: {
         responses: { '200': { description: 'Default Response' } },
         externalDocs: { url: 'https://athenna.io', description: 'Athenna documentation' }
@@ -399,7 +399,7 @@ export default class RouteTest {
 
     const swagger = await Server.getSwagger()
 
-    assert.containsSubset(swagger.paths['/test'], {
+    assert.containSubset(swagger.paths['/test'], {
       post: {
         consumes: ['json', 'yaml'],
         responses: { '200': { description: 'Default Response' } }
@@ -415,11 +415,22 @@ export default class RouteTest {
 
     const swagger = await Server.getSwagger()
 
-    assert.containsSubset(swagger.paths['/test'], {
+    assert.containSubset(swagger.paths['/test'], {
       post: {
         produces: ['json', 'yaml'],
         responses: { '200': { description: 'Default Response' } }
       }
     })
+  }
+
+  @Test()
+  public async shouldBeAbleToSetDataInTheRoute({ assert }: Context) {
+    Route.post('test', new HelloController().data).data({ permission: 'post:create' })
+
+    Route.register()
+
+    const response = await Server.request({ path: '/test', method: 'post' })
+
+    assert.deepEqual(await response.json(), { data: { permission: 'post:create' } })
   }
 }
