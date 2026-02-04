@@ -39,7 +39,7 @@ jobs:
         id: release
 
       - name: Publish to NPM Registry
-        run: cd build && npm login && npm publish --provenance --access public
+        run: cd build && npm publish --provenance --access public
         if: steps.release.outputs.released == 'true'
         env:
           name: Deploy
