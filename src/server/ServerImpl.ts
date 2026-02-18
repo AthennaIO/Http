@@ -300,7 +300,11 @@ export class ServerImpl extends Macroable {
 
     if (options.data && Is.Array(route.preHandler)) {
       route.preHandler?.unshift((req, _, done) => {
-        req.data = options.data
+        req.data = {
+          ...options.data,
+          ...req.data
+        }
+
         done()
       })
     }
