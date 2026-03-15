@@ -49,7 +49,7 @@ export class Route extends Macroable {
     this.route = {
       url,
       methods,
-      data: {},
+      data: null,
       deleted: false,
       prefixes: [],
       middlewares: {
