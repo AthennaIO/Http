@@ -67,6 +67,10 @@ export class HttpExceptionHandler extends ExceptionHandler {
 
     response.status(body.statusCode).send(body)
 
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    await super.handle({ error, response })
+
     if (!this.canBeLogged(error)) {
       return
     }
