@@ -287,7 +287,7 @@ export class ServerImpl extends Macroable {
     }
 
     if (middlewares.length) {
-      route.preHandler = middlewares.map(m => FastifyHandler.handle(m))
+      route.preHandler = middlewares.map(m => FastifyHandler.handle(m)) as any[]
     }
 
     if (interceptors.length) {

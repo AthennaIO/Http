@@ -7,11 +7,12 @@
  * file that was distributed with this source code.
  */
 
+import { Is, Json, String, ExceptionHandler } from '@athenna/common'
+
 import { Log } from '@athenna/logger'
 import type { ErrorContext } from '#src/types'
-import { Is, Json, String } from '@athenna/common'
 
-export class HttpExceptionHandler {
+export class HttpExceptionHandler extends ExceptionHandler {
   /**
    * Error codes that should be ignored from logging.
    */
