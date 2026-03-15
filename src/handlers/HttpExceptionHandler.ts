@@ -67,6 +67,9 @@ export class HttpExceptionHandler extends ExceptionHandler {
 
     response.status(body.statusCode).send(body)
 
+    // @ts-ignore
+    await super.handle({ error, response })
+
     if (!this.canBeLogged(error)) {
       return
     }
