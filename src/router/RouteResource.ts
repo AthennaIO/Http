@@ -37,7 +37,7 @@ export class RouteResource extends Macroable {
   public constructor(resource: string, controller: any) {
     super()
 
-    this.resource = resource
+    this.resource = resource.replace(/^\/|\/$/g, '')
     this.controller = controller
 
     this.buildRoutes()
@@ -89,7 +89,7 @@ export class RouteResource extends Macroable {
 
       return this
     }
-    
+
     if (options.except.length) {
       this.filter(options.except, true).forEach(route => {
         route.middleware(middleware, options.prepend)
@@ -97,7 +97,7 @@ export class RouteResource extends Macroable {
 
       return this
     }
-    
+
     this.routes.forEach(route => route.middleware(middleware, options.prepend))
 
     return this
@@ -132,7 +132,7 @@ export class RouteResource extends Macroable {
 
       return this
     }
-    
+
     if (options.except.length) {
       this.filter(options.except, true).forEach(route => {
         route.interceptor(interceptor, options.prepend)
@@ -140,8 +140,10 @@ export class RouteResource extends Macroable {
 
       return this
     }
-    
-    this.routes.forEach(route => route.interceptor(interceptor, options.prepend))
+
+    this.routes.forEach(route =>
+      route.interceptor(interceptor, options.prepend)
+    )
 
     return this
   }
@@ -175,7 +177,7 @@ export class RouteResource extends Macroable {
 
       return this
     }
-    
+
     if (options.except.length) {
       this.filter(options.except, true).forEach(route => {
         route.terminator(terminator, options.prepend)
@@ -183,7 +185,7 @@ export class RouteResource extends Macroable {
 
       return this
     }
-    
+
     this.routes.forEach(route => route.terminator(terminator, options.prepend))
 
     return this
