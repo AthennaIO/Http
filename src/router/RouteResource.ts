@@ -16,6 +16,7 @@ import type {
 
 import type { HTTPMethods } from 'fastify'
 import { Route } from '#src/router/Route'
+import type { RouteSchemaOptions } from '#src/router/RouteSchema'
 import { Is, String, Macroable, Options } from '@athenna/common'
 
 export class RouteResource extends Macroable {
@@ -37,7 +38,7 @@ export class RouteResource extends Macroable {
   public constructor(resource: string, controller: any) {
     super()
 
-    this.resource = resource
+    this.resource = resource.replace(/^\/|\/$/g, '')
     this.controller = controller
 
     this.buildRoutes()
@@ -89,7 +90,7 @@ export class RouteResource extends Macroable {
 
       return this
     }
-    
+
     if (options.except.length) {
       this.filter(options.except, true).forEach(route => {
         route.middleware(middleware, options.prepend)
@@ -97,7 +98,7 @@ export class RouteResource extends Macroable {
 
       return this
     }
-    
+
     this.routes.forEach(route => route.middleware(middleware, options.prepend))
 
     return this
@@ -132,7 +133,7 @@ export class RouteResource extends Macroable {
 
       return this
     }
-    
+
     if (options.except.length) {
       this.filter(options.except, true).forEach(route => {
         route.interceptor(interceptor, options.prepend)
@@ -140,8 +141,10 @@ export class RouteResource extends Macroable {
 
       return this
     }
-    
-    this.routes.forEach(route => route.interceptor(interceptor, options.prepend))
+
+    this.routes.forEach(route =>
+      route.interceptor(interceptor, options.prepend)
+    )
 
     return this
   }
@@ -175,7 +178,7 @@ export class RouteResource extends Macroable {
 
       return this
     }
-    
+
     if (options.except.length) {
       this.filter(options.except, true).forEach(route => {
         route.terminator(terminator, options.prepend)
@@ -183,7 +186,7 @@ export class RouteResource extends Macroable {
 
       return this
     }
-    
+
     this.routes.forEach(route => route.terminator(terminator, options.prepend))
 
     return this
@@ -250,6 +253,31 @@ export class RouteResource extends Macroable {
     options: import('@fastify/rate-limit').RateLimitOptions
   ): RouteResource {
     this.routes.forEach(route => route.rateLimit(options))
+
+    return this
+  }
+
+  /**
+   * Set up schema options for specific route resource methods.
+   *
+   * @example
+   * ```ts
+   * Route.resource('/test', 'TestController').schema({
+   *  index: { response: { 200: { type: 'object' } } },
+   *  store: { body: { type: 'object' } }
+   * })
+   * ```
+   */
+  public schema(
+    options: Partial<Record<RouteResourceTypes, RouteSchemaOptions>>
+  ): RouteResource {
+    Object.entries(options).forEach(([name, schema]) => {
+      if (!schema) {
+        return
+      }
+
+      this.filter([name]).forEach(route => route.schema(schema))
+    })
 
     return this
   }

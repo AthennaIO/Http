@@ -11,9 +11,11 @@ import { MyValidator } from '#tests/fixtures/validators/MyValidator'
 import { MyMiddleware } from '#tests/fixtures/middlewares/MyMiddleware'
 import { MyTerminator } from '#tests/fixtures/middlewares/MyTerminator'
 import { MyInterceptor } from '#tests/fixtures/middlewares/MyInterceptor'
-import { Test, AfterEach, BeforeEach, type Context } from '@athenna/test'
+import { Config } from '@athenna/config'
+import { Test, AfterEach, BeforeEach, type Context, Cleanup } from '@athenna/test'
 import { HelloController } from '#tests/fixtures/controllers/HelloController'
-import { Route, Server, HttpRouteProvider, HttpServerProvider } from '#src'
+import { Route, Server, HttpKernel, HttpRouteProvider, HttpServerProvider } from '#src'
+import z from 'zod'
 
 export default class RouteResourceTest {
   @BeforeEach()
@@ -156,6 +158,37 @@ export default class RouteResourceTest {
     assert.equal(response.headers['x-ratelimit-limit'], '100')
     assert.equal(response.headers['x-ratelimit-remaining'], '99')
     assert.equal(response.headers['x-ratelimit-reset'], '60')
+  }
+
+  @Test()
+  public async shouldBeAbleToSetSchemaForSpecificRouteResourceMethods({ assert }: Context) {
+    await Server.plugin(import('@fastify/swagger'), { swagger: {} })
+
+    Route.resource('test', new HelloController()).schema({
+      index: {
+        summary: 'List tests',
+        response: {
+          200: {
+            properties: { hello: { type: 'string' } }
+          }
+        }
+      },
+      store: {
+        summary: 'Create test',
+        body: {
+          type: 'object',
+          properties: { name: { type: 'string' } }
+        }
+      }
+    })
+
+    Route.register()
+
+    const swagger = await Server.getSwagger()
+
+    assert.equal(swagger.paths['/test'].get.summary, 'List tests')
+    assert.equal(swagger.paths['/test'].post.summary, 'Create test')
+    assert.isUndefined(swagger.paths['/test/{id}'].get.summary)
   }
 
   @Test()
@@ -398,5 +431,77 @@ export default class RouteResourceTest {
     ioc.bind('App/Http/Controllers/HelloController', HelloController)
 
     assert.throws(() => Route.resource('test', 'HelloController').terminator('not-found'))
+  }
+
+  @Test()
+  @Cleanup(() => Config.set('openapi.paths', {}))
+  public async shouldAutomaticallyApplySchemasFromOpenApiConfigInResources({ assert }: Context) {
+    Config.set('openapi.paths', {
+      '/test': {
+        get: {
+          response: {
+            200: z.object({
+              hello: z.string().default('aaaaa'),
+              testing: z.string().default('testing')
+            })
+          }
+        }
+      }
+    })
+
+    Route.resource('test', new HelloController()).only(['index'])
+
+    Route.register()
+
+    const response = await Server.request({
+      path: '/test',
+      method: 'get'
+    })
+
+    assert.equal(response.statusCode, 200)
+    assert.deepEqual(response.json(), { hello: 'world', testing: 'testing' })
+  }
+
+  @Test()
+  @Cleanup(() => Config.set('openapi.paths', {}))
+  public async shouldAutomaticallyThrowValidationExceptionWhenSchemaIsInvalidInResources({ assert }: Context) {
+    await new HttpKernel().registerExceptionHandler()
+
+    Config.set('openapi.paths', {
+      '/test': {
+        get: {
+          response: {
+            200: z.object({
+              hello: z.number().default(10)
+            })
+          }
+        }
+      }
+    })
+
+    Route.resource('test', new HelloController()).only(['index'])
+
+    Route.register()
+
+    const response = await Server.request({
+      path: '/test',
+      method: 'get'
+    })
+
+    assert.equal(response.statusCode, 422)
+    assert.containSubset(response.json(), {
+      name: 'ValidationException',
+      message: 'Validation error happened.',
+      code: 'E_VALIDATION_ERROR',
+      statusCode: 422,
+      details: [
+        {
+          expected: 'number',
+          code: 'invalid_type',
+          path: ['hello'],
+          message: 'Invalid input: expected number, received string'
+        }
+      ]
+    })
   }
 }

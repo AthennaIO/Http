@@ -29,6 +29,13 @@ import type {
   SwaggerDocument
 } from '#src/types'
 
+import {
+  type RouteSchemaOptions,
+  normalizeRouteSchema,
+  parseRequestWithZod,
+  parseResponseWithZod
+} from '#src/router/RouteSchema'
+
 import type { AddressInfo } from 'node:net'
 import type { FastifyVite } from '@athenna/vite'
 import { Options, Macroable, Is } from '@athenna/common'
@@ -276,10 +283,16 @@ export class ServerImpl extends Macroable {
     }
 
     const { middlewares, interceptors, terminators } = options.middlewares
+    const fastifyOptions = this.getFastifyOptionsWithOpenApiSchema(options)
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    const zodSchemas = fastifyOptions?.config?.zod
 
     const route: RouteOptions = {
       onSend: [],
+      preValidation: [],
       preHandler: [],
+      preSerialization: [],
       onResponse: [],
       url: options.url,
       method: options.methods,
@@ -298,6 +311,14 @@ export class ServerImpl extends Macroable {
       route.onResponse = terminators.map(t => FastifyHandler.terminate(t))
     }
 
+    if (zodSchemas) {
+      route.preValidation = [async req => parseRequestWithZod(req, zodSchemas)]
+      route.preSerialization = [
+        async (_, reply, payload) =>
+          parseResponseWithZod(reply, payload, zodSchemas)
+      ]
+    }
+
     if (options.data && Is.Array(route.preHandler)) {
       route.preHandler?.unshift((req, _, done) => {
         req.data = {
@@ -309,7 +330,18 @@ export class ServerImpl extends Macroable {
       })
     }
 
-    this.fastify.route({ ...route, ...options.fastify })
+    if (zodSchemas) {
+      fastifyOptions.preValidation = [
+        ...this.toRouteHooks(route.preValidation),
+        ...this.toRouteHooks(fastifyOptions.preValidation)
+      ]
+      fastifyOptions.preSerialization = [
+        ...this.toRouteHooks(route.preSerialization),
+        ...this.toRouteHooks(fastifyOptions.preSerialization)
+      ]
+    }
+
+    this.fastify.route({ ...route, ...fastifyOptions })
   }
 
   /**
@@ -359,5 +391,122 @@ export class ServerImpl extends Macroable {
    */
   public options(options: Omit<RouteJson, 'methods'>): void {
     this.route({ ...options, methods: ['OPTIONS'] })
+  }
+
+  private toRouteHooks(hooks?: RouteOptions['preValidation']) {
+    if (!hooks) {
+      return []
+    }
+
+    return Array.isArray(hooks) ? hooks : [hooks]
+  }
+
+  private getFastifyOptionsWithOpenApiSchema(options: RouteJson) {
+    const automaticSchema = this.getOpenApiRouteSchema(options)
+    const fastifyOptions = { ...options.fastify }
+
+    if (!automaticSchema) {
+      return fastifyOptions
+    }
+
+    const normalizedSchema = normalizeRouteSchema(automaticSchema)
+    const currentConfig = { ...(fastifyOptions.config || {}) }
+
+    fastifyOptions.schema = this.mergeFastifySchemas(
+      normalizedSchema.schema,
+      fastifyOptions.schema
+    )
+
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    const currentZod = currentConfig.zod
+    const mergedZod = this.mergeZodSchemas(normalizedSchema.zod, currentZod)
+
+    if (mergedZod) {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      currentConfig.zod = mergedZod
+    }
+
+    fastifyOptions.config = currentConfig
+
+    return fastifyOptions
+  }
+
+  private getOpenApiRouteSchema(options: RouteJson): RouteSchemaOptions {
+    const paths = Config.get('openapi.paths', {})
+    const methods = options.methods || []
+
+    if (!Is.Object(paths) || !options.url || !methods.length) {
+      return null
+    }
+
+    const candidates = this.getOpenApiPathCandidates(options.url)
+
+    for (const candidate of candidates) {
+      const pathConfig = paths[candidate]
+
+      if (!Is.Object(pathConfig)) {
+        continue
+      }
+
+      for (const method of methods) {
+        const methodConfig = pathConfig[method.toLowerCase()]
+
+        if (Is.Object(methodConfig)) {
+          return methodConfig
+        }
+      }
+    }
+
+    return null
+  }
+
+  private getOpenApiPathCandidates(url: string) {
+    const normalized = this.normalizePath(url)
+    const openApi = normalized.replace(/:([A-Za-z0-9_]+)/g, '{$1}')
+
+    return Array.from(new Set([normalized, openApi]))
+  }
+
+  private normalizePath(url: string) {
+    if (url === '/') {
+      return url
+    }
+
+    return `/${url.replace(/^\//, '').replace(/\/$/, '')}`
+  }
+
+  private mergeFastifySchemas(base: any, override: any) {
+    const merged = {
+      ...base,
+      ...override
+    }
+
+    if (base?.response || override?.response) {
+      merged.response = {
+        ...(base?.response || {}),
+        ...(override?.response || {})
+      }
+    }
+
+    return merged
+  }
+
+  private mergeZodSchemas(base: any, override: any) {
+    if (!base && !override) {
+      return null
+    }
+
+    return {
+      request: {
+        ...(base?.request || {}),
+        ...(override?.request || {})
+      },
+      response: {
+        ...(base?.response || {}),
+        ...(override?.response || {})
+      }
+    }
   }
 }
