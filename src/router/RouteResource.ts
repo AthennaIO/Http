@@ -16,6 +16,7 @@ import type {
 
 import type { HTTPMethods } from 'fastify'
 import { Route } from '#src/router/Route'
+import type { RouteSchemaOptions } from '#src/router/RouteSchema'
 import { Is, String, Macroable, Options } from '@athenna/common'
 
 export class RouteResource extends Macroable {
@@ -252,6 +253,31 @@ export class RouteResource extends Macroable {
     options: import('@fastify/rate-limit').RateLimitOptions
   ): RouteResource {
     this.routes.forEach(route => route.rateLimit(options))
+
+    return this
+  }
+
+  /**
+   * Set up schema options for specific route resource methods.
+   *
+   * @example
+   * ```ts
+   * Route.resource('/test', 'TestController').schema({
+   *  index: { response: { 200: { type: 'object' } } },
+   *  store: { body: { type: 'object' } }
+   * })
+   * ```
+   */
+  public schema(
+    options: Partial<Record<RouteResourceTypes, RouteSchemaOptions>>
+  ): RouteResource {
+    Object.entries(options).forEach(([name, schema]) => {
+      if (!schema) {
+        return
+      }
+
+      this.filter([name]).forEach(route => route.schema(schema))
+    })
 
     return this
   }

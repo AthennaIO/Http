@@ -296,7 +296,8 @@ export default class ResponseTest {
 
       response.download('app.ts', 'a.ts').then(() => {
         assert.deepEqual(response.headers, {
-          'content-length': '0',
+          'content-length': '76',
+          'content-type': 'application/json; charset=utf-8',
           'content-disposition': 'attachment; filename="app.ts"'
         })
       })

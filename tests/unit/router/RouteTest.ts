@@ -7,10 +7,12 @@
  * file that was distributed with this source code.
  */
 
+import { Config } from '@athenna/config'
 import { MyMiddleware } from '#tests/fixtures/middlewares/MyMiddleware'
-import { Test, AfterEach, BeforeEach, type Context } from '@athenna/test'
+import { Test, AfterEach, BeforeEach, type Context, Cleanup } from '@athenna/test'
 import { HelloController } from '#tests/fixtures/controllers/HelloController'
 import { Route, Server, HttpRouteProvider, HttpServerProvider } from '#src'
+import { z } from 'zod'
 
 export default class RouteTest {
   @BeforeEach()
@@ -75,6 +77,135 @@ export default class RouteTest {
      * The "handled" property of the middleware will not exist.
      */
     assert.deepEqual(response.json(), { hello: 'world' })
+  }
+
+  @Test()
+  public async shouldBeAbleToUseZodSchemasInRouteSchema({ assert }: Context) {
+    Route.post('test/:id', async ctx => {
+      await ctx.response.status(201).send({
+        id: String(ctx.request.param('id')),
+        page: String(ctx.request.query('page')),
+        name: ctx.request.input('name')
+      })
+    }).schema({
+      params: z.object({ id: z.coerce.number() }),
+      querystring: z.object({ page: z.coerce.number() }),
+      body: z.object({ name: z.string() }),
+      response: {
+        201: z.object({
+          id: z.coerce.number(),
+          page: z.coerce.number(),
+          name: z.string()
+        })
+      }
+    })
+
+    Route.register()
+
+    const response = await Server.request({
+      path: '/test/10?page=2',
+      method: 'post',
+      payload: { name: 'lenon' }
+    })
+
+    assert.equal(response.statusCode, 201)
+    assert.deepEqual(response.json(), { id: 10, page: 2, name: 'lenon' })
+
+    const swagger = await Server.getSwagger()
+
+    assert.containSubset(swagger.paths['/test/{id}'], {
+      post: {
+        responses: {
+          '201': {
+            schema: {
+              type: 'object',
+              properties: {
+                id: { type: 'number' },
+                page: { type: 'number' },
+                name: { type: 'string' }
+              }
+            }
+          }
+        },
+        parameters: [
+          { in: 'path', name: 'id', type: 'number' },
+          { in: 'query', name: 'page', type: 'number' },
+          {
+            in: 'body',
+            schema: {
+              type: 'object',
+              properties: { name: { type: 'string' } },
+              required: ['name']
+            }
+          }
+        ]
+      }
+    })
+  }
+
+  @Test()
+  public async shouldAutomaticallyCoerceZodQuerystringAndParams({ assert }: Context) {
+    Route.get('users/:id', async ctx => {
+      await ctx.response.send({
+        id: ctx.request.param('id'),
+        limit: ctx.request.query('limit')
+      })
+    }).schema({
+      params: z.object({ id: z.number() }),
+      querystring: z.object({ limit: z.number() }),
+      response: {
+        200: z.object({
+          id: z.number(),
+          limit: z.number()
+        })
+      }
+    })
+
+    Route.register()
+
+    const response = await Server.request({
+      path: '/users/10?limit=2',
+      method: 'get'
+    })
+
+    assert.equal(response.statusCode, 200)
+    assert.deepEqual(response.json(), { id: 10, limit: 2 })
+  }
+
+  @Test()
+  @Cleanup(() => Config.set('openapi.paths', {}))
+  public async shouldAutomaticallyApplySchemasFromOpenApiConfig({ assert }: Context) {
+    Config.set('openapi.paths', {
+      '/users/{id}': {
+        get: {
+          params: z.object({ id: z.number() }),
+          querystring: z.object({ limit: z.number() }),
+          response: {
+            200: z.object({
+              id: z.number(),
+              limit: z.number()
+            })
+          }
+        }
+      }
+    })
+
+    Route.get('users/:id', async ctx => {
+      await ctx.response.send({
+        id: ctx.request.param('id'),
+        limit: ctx.request.query('limit')
+      })
+    })
+
+    Route.register()
+
+    const response = await Server.request({
+      path: '/users/10?limit=2',
+      method: 'get'
+    })
+
+    assert.equal(response.statusCode, 200)
+    assert.deepEqual(response.json(), { id: 10, limit: 2 })
   }
 
   @Test()

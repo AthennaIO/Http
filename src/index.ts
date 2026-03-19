@@ -37,6 +37,7 @@ declare module 'fastify' {
 
 export * from '#src/types'
 
+export * from '#src/router/RouteSchema'
 export * from '#src/context/Request'
 export * from '#src/context/Response'
 export * from '#src/annotations/Controller'

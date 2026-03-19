@@ -17,10 +17,14 @@ import type {
   InterceptorRouteType
 } from '#src/types'
 
-import type { HTTPMethods, FastifySchema, RouteOptions } from 'fastify'
+import type { HTTPMethods, RouteOptions } from 'fastify'
 import { Is, Options, Macroable, Route as RouteHelper } from '@athenna/common'
 import { UndefinedMethodException } from '#src/exceptions/UndefinedMethodException'
 import { NotFoundValidatorException } from '#src/exceptions/NotFoundValidatorException'
+import {
+  type RouteSchemaOptions,
+  normalizeRouteSchema
+} from '#src/router/RouteSchema'
 import { NotFoundMiddlewareException } from '#src/exceptions/NotFoundMiddlewareException'
 
 export class Route extends Macroable {
@@ -341,8 +345,20 @@ export class Route extends Macroable {
    * })
    * ```
    */
-  public schema(options: FastifySchema): Route {
-    this.route.fastify.schema = options
+  public schema(options: RouteSchemaOptions): Route {
+    const { schema, zod } = normalizeRouteSchema(options)
+
+    this.route.fastify.schema = schema
+
+    if (zod) {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      this.route.fastify.config.zod = zod
+    } else {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      delete this.route.fastify.config.zod
+    }
 
     return this
   }
