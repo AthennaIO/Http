@@ -16,7 +16,7 @@ import type {
 
 import type { HTTPMethods } from 'fastify'
 import { Route } from '#src/router/Route'
-import { Is, String, Macroable } from '@athenna/common'
+import { Is, String, Macroable, Options } from '@athenna/common'
 
 export class RouteResource extends Macroable {
   /**
@@ -70,9 +70,35 @@ export class RouteResource extends Macroable {
    */
   public middleware(
     middleware: MiddlewareRouteType,
-    prepend?: boolean
+    options: {
+      only?: RouteResourceTypes[]
+      except?: RouteResourceTypes[]
+      prepend?: boolean
+    } = {}
   ): RouteResource {
-    this.routes.forEach(route => route.middleware(middleware, prepend))
+    options = Options.create(options, {
+      only: [],
+      except: [],
+      prepend: false
+    })
+
+    if (options.only.length) {
+      this.filter(options.only).forEach(route => {
+        route.middleware(middleware, options.prepend)
+      })
+
+      return this
+    }
+    
+    if (options.except.length) {
+      this.filter(options.except, true).forEach(route => {
+        route.middleware(middleware, options.prepend)
+      })
+
+      return this
+    }
+    
+    this.routes.forEach(route => route.middleware(middleware, options.prepend))
 
     return this
   }
@@ -87,9 +113,35 @@ export class RouteResource extends Macroable {
    */
   public interceptor(
     interceptor: InterceptorRouteType,
-    prepend?: boolean
+    options: {
+      only?: RouteResourceTypes[]
+      except?: RouteResourceTypes[]
+      prepend?: boolean
+    } = {}
   ): RouteResource {
-    this.routes.forEach(route => route.interceptor(interceptor, prepend))
+    options = Options.create(options, {
+      only: [],
+      except: [],
+      prepend: false
+    })
+
+    if (options.only.length) {
+      this.filter(options.only).forEach(route => {
+        route.interceptor(interceptor, options.prepend)
+      })
+
+      return this
+    }
+    
+    if (options.except.length) {
+      this.filter(options.except, true).forEach(route => {
+        route.interceptor(interceptor, options.prepend)
+      })
+
+      return this
+    }
+    
+    this.routes.forEach(route => route.interceptor(interceptor, options.prepend))
 
     return this
   }
@@ -104,9 +156,35 @@ export class RouteResource extends Macroable {
    */
   public terminator(
     terminator: TerminatorRouteType,
-    prepend?: boolean
+    options: {
+      only?: RouteResourceTypes[]
+      except?: RouteResourceTypes[]
+      prepend?: boolean
+    } = {}
   ): RouteResource {
-    this.routes.forEach(route => route.terminator(terminator, prepend))
+    options = Options.create(options, {
+      only: [],
+      except: [],
+      prepend: false
+    })
+
+    if (options.only.length) {
+      this.filter(options.only).forEach(route => {
+        route.terminator(terminator, options.prepend)
+      })
+
+      return this
+    }
+    
+    if (options.except.length) {
+      this.filter(options.except, true).forEach(route => {
+        route.terminator(terminator, options.prepend)
+      })
+
+      return this
+    }
+    
+    this.routes.forEach(route => route.terminator(terminator, options.prepend))
 
     return this
   }
