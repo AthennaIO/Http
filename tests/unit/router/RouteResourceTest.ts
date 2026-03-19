@@ -11,9 +11,10 @@ import { MyValidator } from '#tests/fixtures/validators/MyValidator'
 import { MyMiddleware } from '#tests/fixtures/middlewares/MyMiddleware'
 import { MyTerminator } from '#tests/fixtures/middlewares/MyTerminator'
 import { MyInterceptor } from '#tests/fixtures/middlewares/MyInterceptor'
+import { Config } from '@athenna/config'
 import { Test, AfterEach, BeforeEach, type Context, Cleanup } from '@athenna/test'
 import { HelloController } from '#tests/fixtures/controllers/HelloController'
-import { Route, Server, HttpRouteProvider, HttpServerProvider } from '#src'
+import { Route, Server, HttpKernel, HttpRouteProvider, HttpServerProvider } from '#src'
 import z from 'zod'
 
 export default class RouteResourceTest {
@@ -459,5 +460,48 @@ export default class RouteResourceTest {
 
     assert.equal(response.statusCode, 200)
     assert.deepEqual(response.json(), { hello: 'world', testing: 'testing' })
+  }
+
+  @Test()
+  @Cleanup(() => Config.set('openapi.paths', {}))
+  public async shouldAutomaticallyThrowValidationExceptionWhenSchemaIsInvalidInResources({ assert }: Context) {
+    await new HttpKernel().registerExceptionHandler()
+
+    Config.set('openapi.paths', {
+      '/test': {
+        get: {
+          response: {
+            200: z.object({
+              hello: z.number().default(10)
+            })
+          }
+        }
+      }
+    })
+
+    Route.resource('test', new HelloController()).only(['index'])
+
+    Route.register()
+
+    const response = await Server.request({
+      path: '/test',
+      method: 'get'
+    })
+
+    assert.equal(response.statusCode, 422)
+    assert.containSubset(response.json(), {
+      name: 'ValidationException',
+      message: 'Validation error happened.',
+      code: 'E_VALIDATION_ERROR',
+      statusCode: 422,
+      details: [
+        {
+          expected: 'number',
+          code: 'invalid_type',
+          path: ['hello'],
+          message: 'Invalid input: expected number, received string'
+        }
+      ]
+    })
   }
 }

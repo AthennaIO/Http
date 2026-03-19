@@ -12,11 +12,12 @@ import { HttpException } from '#src/exceptions/HttpException'
 
 export class ZodValidationException extends HttpException {
   public constructor(error: ZodError) {
+    const name = 'ValidationException'
     const code = 'E_VALIDATION_ERROR'
     const status = 422
     const message = 'Validation error happened.'
     const details = error.issues
 
-    super({ message, status, code, details })
+    super({ name, message, status, code, details })
   }
 }
