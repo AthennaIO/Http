@@ -15,7 +15,7 @@ import { Log } from '@athenna/logger'
 import { Config } from '@athenna/config'
 import { sep, isAbsolute, resolve } from 'node:path'
 import { Annotation, type ServiceMeta } from '@athenna/ioc'
-import { File, Path, Module, String } from '@athenna/common'
+import { File, Path, Module, String, Json } from '@athenna/common'
 import { HttpExceptionHandler } from '#src/handlers/HttpExceptionHandler'
 
 export class HttpKernel {
@@ -83,10 +83,15 @@ export class HttpKernel {
     }
 
     if (swaggerPlugin) {
-      await Server.plugin(
-        swaggerPlugin,
-        Config.get('http.swagger.configurations')
-      )
+      const openapiConfig = Json.omit(Config.get('openapi', {}), ['paths'])
+      const pluginConfig = Json.omit(Config.get('http.swagger.configurations', {}), ['swagger'])
+      const swaggerConfig = Config.get('http.swagger.configurations.swagger', {})
+
+      await Server.plugin(swaggerPlugin, {
+        ...pluginConfig,
+        ...openapiConfig,
+        ...swaggerConfig
+      })
     } else {
       debug(
         'Not able to register swagger plugin. Install @fastify/swagger package.'
