@@ -89,8 +89,10 @@ export class HttpKernel {
 
       await Server.plugin(swaggerPlugin, {
         ...pluginConfig,
-        ...openapiConfig,
-        ...swaggerConfig
+        swagger: {
+          ...openapiConfig,
+          ...swaggerConfig
+        }
       })
     } else {
       debug(
