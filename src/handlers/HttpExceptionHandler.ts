@@ -65,7 +65,7 @@ export class HttpExceptionHandler extends ExceptionHandler {
       delete body.stack
     }
 
-    response.status(body.statusCode).send(body)
+    await response.status(body.statusCode).send(body)
 
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore

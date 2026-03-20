@@ -30,10 +30,9 @@ import type {
 } from '#src/types'
 
 import {
-  type RouteSchemaOptions,
-  normalizeRouteSchema,
   parseRequestWithZod,
-  parseResponseWithZod
+  normalizeRouteSchema,
+  type RouteSchemaOptions
 } from '#src/router/RouteSchema'
 
 import type { AddressInfo } from 'node:net'
@@ -292,7 +291,6 @@ export class ServerImpl extends Macroable {
       onSend: [],
       preValidation: [],
       preHandler: [],
-      preSerialization: [],
       onResponse: [],
       url: options.url,
       method: options.methods,
@@ -313,10 +311,6 @@ export class ServerImpl extends Macroable {
 
     if (zodSchemas) {
       route.preValidation = [async req => parseRequestWithZod(req, zodSchemas)]
-      route.preSerialization = [
-        async (_, reply, payload) =>
-          parseResponseWithZod(reply, payload, zodSchemas)
-      ]
     }
 
     if (options.data && Is.Array(route.preHandler)) {
@@ -334,10 +328,6 @@ export class ServerImpl extends Macroable {
       fastifyOptions.preValidation = [
         ...this.toRouteHooks(route.preValidation),
         ...this.toRouteHooks(fastifyOptions.preValidation)
-      ]
-      fastifyOptions.preSerialization = [
-        ...this.toRouteHooks(route.preSerialization),
-        ...this.toRouteHooks(fastifyOptions.preSerialization)
       ]
     }
 

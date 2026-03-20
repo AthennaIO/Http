@@ -13,6 +13,7 @@ import type { FastifyReply } from 'fastify'
 import type { SendOptions } from '@fastify/static'
 import type { Request } from '#src/context/Request'
 import type { FastifyHelmetOptions } from '@fastify/helmet'
+import { parseResponseWithZod } from '#src/router/RouteSchema'
 
 export class Response extends Macroable {
   /**
@@ -154,11 +155,23 @@ export class Response extends Macroable {
    * ```
    */
   public async send(data?: any): Promise<Response> {
+    const zodSchemas = this.getRouteZodSchemas()
+
+    if (zodSchemas) {
+      data = await parseResponseWithZod(this.response, data, zodSchemas)
+    }
+
     await this.response.send(data)
 
     this.response.body = data
 
     return this
+  }
+
+  private getRouteZodSchemas() {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    return this.response.request?.routeOptions?.config?.zod || null
   }
 
   /**

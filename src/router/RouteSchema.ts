@@ -11,6 +11,7 @@ import type { ZodAny } from 'zod'
 import { Is } from '@athenna/common'
 import type { FastifyReply, FastifyRequest, FastifySchema } from 'fastify'
 import { ZodValidationException } from '#src/exceptions/ZodValidationException'
+import { ResponseValidationException } from '#src/exceptions/ResponseValidationException'
 
 type ZodRequestSchema = Partial<
   Record<'body' | 'headers' | 'params' | 'querystring', ZodAny>
@@ -112,7 +113,9 @@ export async function parseResponseWithZod(
     return payload
   }
 
-  return parseSchema(schema, payload)
+  return parseSchema(schema, payload).catch(error => {
+    throw new ResponseValidationException(error)
+  })
 }
 
 function getResponseSchema(
