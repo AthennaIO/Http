@@ -11,7 +11,6 @@ import type { ZodAny } from 'zod'
 import { Is } from '@athenna/common'
 import type { FastifyReply, FastifyRequest, FastifySchema } from 'fastify'
 import { ZodValidationException } from '#src/exceptions/ZodValidationException'
-import { ResponseValidationException } from '#src/exceptions/ResponseValidationException'
 
 type ZodRequestSchema = Partial<
   Record<'body' | 'headers' | 'params' | 'querystring', ZodAny>
@@ -34,11 +33,13 @@ export type RouteZodSchemas = {
 
 export function normalizeRouteSchema(options: RouteSchemaOptions): {
   schema: FastifySchema
+  swaggerSchema: FastifySchema
   zod: RouteZodSchemas | null
 } {
   const request: ZodRequestSchema = {}
   const response: ZodResponseSchema = {}
   const schema: FastifySchema = { ...options }
+  const swaggerSchema: FastifySchema = { ...options }
 
   const requestKeys = ['body', 'headers', 'params', 'querystring'] as const
 
@@ -49,10 +50,12 @@ export function normalizeRouteSchema(options: RouteSchemaOptions): {
 
     request[key] = options[key]
     schema[key] = toJsonSchema(options[key], 'input')
+    swaggerSchema[key] = toJsonSchema(options[key], 'input')
   })
 
   if (options.response && Is.Object(options.response)) {
     schema.response = { ...options.response }
+    swaggerSchema.response = { ...options.response }
 
     Object.entries(options.response).forEach(([statusCode, value]) => {
       if (!isZodSchema(value)) {
@@ -60,8 +63,13 @@ export function normalizeRouteSchema(options: RouteSchemaOptions): {
       }
 
       response[statusCode] = value
-      schema.response[statusCode] = toJsonSchema(value, 'output')
+      swaggerSchema.response[statusCode] = toJsonSchema(value, 'output')
+      delete schema.response[statusCode]
     })
+
+    if (!Object.keys(schema.response).length) {
+      delete schema.response
+    }
   }
 
   const hasZodSchemas =
@@ -69,6 +77,7 @@ export function normalizeRouteSchema(options: RouteSchemaOptions): {
 
   return {
     schema,
+    swaggerSchema,
     zod: hasZodSchemas ? { request, response } : null
   }
 }
@@ -107,9 +116,9 @@ export async function parseResponseWithZod(
     return payload
   }
 
-  return parseSchema(schema, payload).catch(error => {
-    throw new ResponseValidationException(error)
-  })
+  const result = await schema.safeParseAsync(payload)
+
+  return result.success ? result.data : payload
 }
 
 function getResponseSchema(

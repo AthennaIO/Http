@@ -396,15 +396,28 @@ export class ServerImpl extends Macroable {
     const fastifyOptions = { ...options.fastify }
 
     if (!automaticSchema) {
+      this.configureSwaggerTransform(fastifyOptions)
+
       return fastifyOptions
     }
 
     const normalizedSchema = normalizeRouteSchema(automaticSchema)
     const currentConfig = { ...(fastifyOptions.config || {}) }
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    const currentSwaggerSchema =
+      currentConfig.swaggerSchema || fastifyOptions.schema
 
     fastifyOptions.schema = this.mergeFastifySchemas(
       normalizedSchema.schema,
       fastifyOptions.schema
+    )
+
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    currentConfig.swaggerSchema = this.mergeFastifySchemas(
+      normalizedSchema.swaggerSchema,
+      currentSwaggerSchema
     )
 
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -419,8 +432,41 @@ export class ServerImpl extends Macroable {
     }
 
     fastifyOptions.config = currentConfig
+    this.configureSwaggerTransform(fastifyOptions)
 
     return fastifyOptions
+  }
+
+  private configureSwaggerTransform(fastifyOptions: any) {
+    const config = fastifyOptions?.config
+
+    if (!config?.swaggerSchema) {
+      return
+    }
+
+    const customTransform = config.swaggerTransform
+
+    if (customTransform === false) {
+      return
+    }
+
+    config.swaggerTransform = (args: any) => {
+      const transformed = Is.Function(customTransform)
+        ? customTransform(args)
+        : args
+
+      if (transformed === false) {
+        return false
+      }
+
+      return {
+        ...transformed,
+        schema: this.mergeFastifySchemas(
+          transformed?.schema || args.schema,
+          config.swaggerSchema
+        )
+      }
+    }
   }
 
   private getOpenApiRouteSchema(options: RouteJson): RouteSchemaOptions {
