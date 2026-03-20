@@ -88,17 +88,11 @@ export async function parseRequestWithZod(
   }
 
   if (requestSchemas.params) {
-    req.params = await parseSchema(
-      requestSchemas.params,
-      coerceDataForValidation(requestSchemas.params, req.params)
-    )
+    req.params = await parseSchema(requestSchemas.params, req.params)
   }
 
   if (requestSchemas.querystring) {
-    req.query = await parseSchema(
-      requestSchemas.querystring,
-      coerceDataForValidation(requestSchemas.querystring, req.query)
-    )
+    req.query = await parseSchema(requestSchemas.querystring, req.query)
   }
 }
 
@@ -158,77 +152,6 @@ function toJsonSchema(schema: ZodAny, io: 'input' | 'output') {
   delete jsonSchema.$schema
 
   return jsonSchema
-}
-
-function coerceDataForValidation(schema: ZodAny, data: any) {
-  return coerceDataByJsonSchema(toJsonSchema(schema, 'input'), data)
-}
-
-function coerceDataByJsonSchema(schema: any, data: any): any {
-  if (Is.Undefined(data) || Is.Null(data) || !schema) {
-    return data
-  }
-
-  if (schema.anyOf) {
-    return coerceWithAlternatives(schema.anyOf, data)
-  }
-
-  if (schema.oneOf) {
-    return coerceWithAlternatives(schema.oneOf, data)
-  }
-
-  if (schema.type === 'object' && Is.Object(data)) {
-    const coerced = { ...data }
-    const properties = schema.properties || {}
-
-    Object.entries(properties).forEach(([key, childSchema]) => {
-      if (!Object.hasOwn(coerced, key)) {
-        return
-      }
-
-      coerced[key] = coerceDataByJsonSchema(childSchema, coerced[key])
-    })
-
-    return coerced
-  }
-
-  if (schema.type === 'array' && Is.Array(data) && schema.items) {
-    return data.map(item => coerceDataByJsonSchema(schema.items, item))
-  }
-
-  if (schema.type === 'number' || schema.type === 'integer') {
-    return coerceNumber(data, schema.type === 'integer')
-  }
-
-  return data
-}
-
-function coerceWithAlternatives(schemas: any[], data: any) {
-  let coerced = data
-
-  schemas.forEach(schema => {
-    coerced = coerceDataByJsonSchema(schema, coerced)
-  })
-
-  return coerced
-}
-
-function coerceNumber(value: any, integerOnly: boolean) {
-  if (!Is.String(value) || value.trim() === '') {
-    return value
-  }
-
-  const parsed = integerOnly ? Number.parseInt(value, 10) : Number(value)
-
-  if (Number.isNaN(parsed)) {
-    return value
-  }
-
-  if (integerOnly && !Number.isInteger(parsed)) {
-    return value
-  }
-
-  return parsed
 }
 
 function isZodSchema(value: any): value is ZodAny {
