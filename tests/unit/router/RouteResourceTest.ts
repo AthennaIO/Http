@@ -7,15 +7,15 @@
  * file that was distributed with this source code.
  */
 
+import { z } from 'zod'
+import { Config } from '@athenna/config'
 import { MyValidator } from '#tests/fixtures/validators/MyValidator'
 import { MyMiddleware } from '#tests/fixtures/middlewares/MyMiddleware'
 import { MyTerminator } from '#tests/fixtures/middlewares/MyTerminator'
 import { MyInterceptor } from '#tests/fixtures/middlewares/MyInterceptor'
-import { Config } from '@athenna/config'
+import { Route, Server, HttpRouteProvider, HttpServerProvider } from '#src'
 import { Test, AfterEach, BeforeEach, type Context, Cleanup } from '@athenna/test'
 import { HelloController } from '#tests/fixtures/controllers/HelloController'
-import { Route, Server, HttpKernel, HttpRouteProvider, HttpServerProvider } from '#src'
-import z from 'zod'
 
 export default class RouteResourceTest {
   @BeforeEach()
@@ -464,11 +464,7 @@ export default class RouteResourceTest {
 
   @Test()
   @Cleanup(() => Config.set('openapi.paths', {}))
-  public async shouldAutomaticallyThrowInternalServerExceptionWhenResponseSchemaIsInvalidInResources({
-    assert
-  }: Context) {
-    await new HttpKernel().registerExceptionHandler()
-
+  public async shouldIgnoreInvalidResponseSchemaInResources({ assert }: Context) {
     Config.set('openapi.paths', {
       '/test': {
         get: {
@@ -482,7 +478,6 @@ export default class RouteResourceTest {
     })
 
     Route.resource('test', new HelloController()).only(['index'])
-
     Route.register()
 
     const response = await Server.request({
@@ -490,11 +485,7 @@ export default class RouteResourceTest {
       method: 'get'
     })
 
-    assert.equal(response.statusCode, 500)
-    assert.containSubset(response.json(), {
-      code: 'E_RESPONSE_VALIDATION_ERROR',
-      statusCode: 500
-    })
-    assert.isUndefined(response.json().details)
+    assert.equal(response.statusCode, 200)
+    assert.deepEqual(response.json(), { hello: 'world' })
   }
 }

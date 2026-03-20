@@ -346,7 +346,7 @@ export class Route extends Macroable {
    * ```
    */
   public schema(options: RouteSchemaOptions): Route {
-    const { schema, zod } = normalizeRouteSchema(options)
+    const { schema, swaggerSchema, zod } = normalizeRouteSchema(options)
 
     this.route.fastify.schema = schema
 
@@ -354,10 +354,19 @@ export class Route extends Macroable {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       this.route.fastify.config.zod = zod
+
+      if (Object.keys(zod.response).length) {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        this.route.fastify.config.swaggerSchema = swaggerSchema
+      }
     } else {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       delete this.route.fastify.config.zod
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      delete this.route.fastify.config.swaggerSchema
     }
 
     return this

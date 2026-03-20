@@ -446,9 +446,7 @@ export default class HttpKernelTest {
 
   @Test()
   @Cleanup(() => Config.set('openapi.paths', {}))
-  public async shouldNotTriggerUnhandledErrorsWhenZodResponseValidationFailsWithGlobalInterceptors({
-    assert
-  }: Context) {
+  public async shouldIgnoreInvalidZodResponseSchemaWithGlobalInterceptors({ assert }: Context) {
     let unhandledRejectionHappened = false
     let uncaughtExceptionHappened = false
 
@@ -492,10 +490,10 @@ export default class HttpKernelTest {
     process.removeListener('unhandledRejection', onUnhandledRejection)
     process.removeListener('uncaughtException', onUncaughtException)
 
-    assert.equal(response.statusCode, 500)
-    assert.containSubset(response.json(), {
-      code: 'E_RESPONSE_VALIDATION_ERROR',
-      statusCode: 500
+    assert.equal(response.statusCode, 200)
+    assert.deepEqual(response.json(), {
+      hello: 'world',
+      intercepted: true
     })
     assert.isFalse(unhandledRejectionHappened)
     assert.isFalse(uncaughtExceptionHappened)
