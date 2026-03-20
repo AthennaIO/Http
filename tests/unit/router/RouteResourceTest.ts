@@ -464,7 +464,9 @@ export default class RouteResourceTest {
 
   @Test()
   @Cleanup(() => Config.set('openapi.paths', {}))
-  public async shouldAutomaticallyThrowValidationExceptionWhenSchemaIsInvalidInResources({ assert }: Context) {
+  public async shouldAutomaticallyThrowInternalServerExceptionWhenResponseSchemaIsInvalidInResources({
+    assert
+  }: Context) {
     await new HttpKernel().registerExceptionHandler()
 
     Config.set('openapi.paths', {
@@ -488,20 +490,11 @@ export default class RouteResourceTest {
       method: 'get'
     })
 
-    assert.equal(response.statusCode, 422)
+    assert.equal(response.statusCode, 500)
     assert.containSubset(response.json(), {
-      name: 'ValidationException',
-      message: 'Validation error happened.',
-      code: 'E_VALIDATION_ERROR',
-      statusCode: 422,
-      details: [
-        {
-          expected: 'number',
-          code: 'invalid_type',
-          path: ['hello'],
-          message: 'Invalid input: expected number, received string'
-        }
-      ]
+      code: 'E_RESPONSE_VALIDATION_ERROR',
+      statusCode: 500
     })
+    assert.isUndefined(response.json().details)
   }
 }

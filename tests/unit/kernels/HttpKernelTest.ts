@@ -12,6 +12,7 @@ import { Path, Module } from '@athenna/common'
 import { Log, LoggerProvider } from '@athenna/logger'
 import { HttpKernel, HttpServerProvider, HttpRouteProvider, Server, Route } from '#src'
 import { Test, Mock, AfterEach, BeforeEach, type Context, Cleanup } from '@athenna/test'
+import { z } from 'zod'
 
 export default class HttpKernelTest {
   @BeforeEach()
@@ -441,6 +442,63 @@ export default class HttpKernelTest {
     const response = await Server.request().get('hello')
 
     assert.deepEqual(response.json(), { handled: true, intercepted: true })
+  }
+
+  @Test()
+  @Cleanup(() => Config.set('openapi.paths', {}))
+  public async shouldNotTriggerUnhandledErrorsWhenZodResponseValidationFailsWithGlobalInterceptors({
+    assert
+  }: Context) {
+    let unhandledRejectionHappened = false
+    let uncaughtExceptionHappened = false
+
+    const onUnhandledRejection = () => {
+      unhandledRejectionHappened = true
+    }
+
+    const onUncaughtException = () => {
+      uncaughtExceptionHappened = true
+    }
+
+    process.on('unhandledRejection', onUnhandledRejection)
+    process.on('uncaughtException', onUncaughtException)
+
+    const kernel = new HttpKernel()
+    await kernel.registerGlobalMiddlewares()
+    await kernel.registerExceptionHandler()
+
+    Config.set('openapi.paths', {
+      '/zod-error': {
+        get: {
+          response: {
+            200: z.object({
+              hello: z.number()
+            })
+          }
+        }
+      }
+    })
+
+    Route.get('/zod-error', async ctx => {
+      await ctx.response.send({ hello: 'world' })
+    })
+
+    Route.register()
+
+    const response = await Server.request().get('zod-error')
+
+    await new Promise(resolve => setTimeout(resolve, 20))
+
+    process.removeListener('unhandledRejection', onUnhandledRejection)
+    process.removeListener('uncaughtException', onUncaughtException)
+
+    assert.equal(response.statusCode, 500)
+    assert.containSubset(response.json(), {
+      code: 'E_RESPONSE_VALIDATION_ERROR',
+      statusCode: 500
+    })
+    assert.isFalse(unhandledRejectionHappened)
+    assert.isFalse(uncaughtExceptionHappened)
   }
 
   @Test()
