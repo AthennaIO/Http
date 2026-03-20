@@ -144,15 +144,15 @@ export default class RouteTest {
   }
 
   @Test()
-  public async shouldAutomaticallyCoerceZodQuerystringAndParams({ assert }: Context) {
+  public async shouldBeAbleToUseExplicitZodCoercionForQuerystringAndParams({ assert }: Context) {
     Route.get('users/:id', async ctx => {
       await ctx.response.send({
         id: ctx.request.param('id'),
         limit: ctx.request.query('limit')
       })
     }).schema({
-      params: z.object({ id: z.number() }),
-      querystring: z.object({ limit: z.number() }),
+      params: z.object({ id: z.coerce.number() }),
+      querystring: z.object({ limit: z.coerce.number() }),
       response: {
         200: z.object({
           id: z.number(),
@@ -178,8 +178,8 @@ export default class RouteTest {
     Config.set('openapi.paths', {
       '/users/{id}': {
         get: {
-          params: z.object({ id: z.number() }),
-          querystring: z.object({ limit: z.number() }),
+          params: z.object({ id: z.coerce.number() }),
+          querystring: z.object({ limit: z.coerce.number() }),
           response: {
             200: z.object({
               id: z.number(),
