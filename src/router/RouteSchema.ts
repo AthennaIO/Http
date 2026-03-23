@@ -145,17 +145,31 @@ async function parseSchema(schema: ZodAny, data: any) {
 }
 
 function toJsonSchema(schema: ZodAny, io: 'input' | 'output') {
-  const jsonSchemaMethod =
-    (schema as any)['~standard']?.jsonSchema?.[io] ||
-    (schema as any).toJSONSchema
+  const standardJsonSchemaMethod = (schema as any)['~standard']?.jsonSchema?.[
+    io
+  ]
+
+  if (standardJsonSchemaMethod) {
+    const jsonSchema = standardJsonSchemaMethod({
+      target: 'draft-07',
+      libraryOptions: { unrepresentable: 'any' }
+    })
+
+    delete jsonSchema.$schema
+
+    return jsonSchema
+  }
+
+  const jsonSchemaMethod = (schema as any).toJSONSchema
 
   if (!jsonSchemaMethod) {
     return {}
   }
 
   const jsonSchema = jsonSchemaMethod({
+    io,
     target: 'draft-07',
-    libraryOptions: { unrepresentable: 'any' }
+    unrepresentable: 'any'
   })
 
   delete jsonSchema.$schema

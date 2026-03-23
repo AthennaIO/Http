@@ -403,7 +403,7 @@ export class ServerImpl extends Macroable {
 
     const normalizedSchema = normalizeRouteSchema(automaticSchema)
     const currentConfig = { ...(fastifyOptions.config || {}) }
-   
+
     const currentSwaggerSchema =
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore

@@ -84,8 +84,14 @@ export class HttpKernel {
 
     if (swaggerPlugin) {
       const openapiConfig = Json.omit(Config.get('openapi', {}), ['paths'])
-      const pluginConfig = Json.omit(Config.get('http.swagger.configurations', {}), ['swagger'])
-      const swaggerConfig = Config.get('http.swagger.configurations.swagger', {})
+      const pluginConfig = Json.omit(
+        Config.get('http.swagger.configurations', {}),
+        ['swagger']
+      )
+      const swaggerConfig = Config.get(
+        'http.swagger.configurations.swagger',
+        {}
+      )
 
       await Server.plugin(swaggerPlugin, {
         ...pluginConfig,
