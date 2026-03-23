@@ -144,6 +144,64 @@ export default class RouteTest {
   }
 
   @Test()
+  public async shouldBeAbleToUseZodTransformSchemasWithoutBreakingSwagger({ assert }: Context) {
+    Route.post('transform', async ctx => {
+      await ctx.response.status(201).send({
+        name: ctx.request.input('name')
+      })
+    }).schema({
+      body: z.object({
+        name: z.string().transform(value => value.toUpperCase())
+      }),
+      response: {
+        201: z.object({
+          name: z.string().transform(value => value.toUpperCase())
+        })
+      }
+    })
+
+    Route.register()
+
+    const response = await Server.request({
+      path: '/transform',
+      method: 'post',
+      payload: { name: 'lenon' }
+    })
+
+    assert.equal(response.statusCode, 201)
+    assert.deepEqual(response.json(), { name: 'LENON' })
+
+    const swagger = await Server.getSwagger()
+
+    assert.containSubset(swagger.paths['/transform'], {
+      post: {
+        responses: {
+          '201': {
+            schema: {
+              type: 'object',
+              properties: {
+                name: {}
+              }
+            }
+          }
+        },
+        parameters: [
+          {
+            in: 'body',
+            schema: {
+              type: 'object',
+              properties: {
+                name: { type: 'string' }
+              },
+              required: ['name']
+            }
+          }
+        ]
+      }
+    })
+  }
+
+  @Test()
   public async shouldBeAbleToUseExplicitZodCoercionForQuerystringAndParams({ assert }: Context) {
     Route.get('users/:id', async ctx => {
       await ctx.response.send({
