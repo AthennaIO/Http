@@ -7,15 +7,22 @@
  * file that was distributed with this source code.
  */
 
+import { Options } from '@athenna/common'
 import { ServiceProvider } from '@athenna/ioc'
 import { ServerImpl } from '#src/server/ServerImpl'
+import type { FastifyServerOptions } from 'fastify'
 
 export class HttpServerProvider extends ServiceProvider {
   public register() {
-    this.container.instance(
-      'Athenna/Core/HttpServer',
-      new ServerImpl(Config.get('http.fastify'))
-    )
+    const fastifyOptions = Options.create(Config.get<FastifyServerOptions>('http.fastify'), {
+      ajv: {
+        customOptions: {
+          coerceTypes: false
+        }
+      }
+    })
+
+    this.container.instance('Athenna/Core/HttpServer', new ServerImpl(fastifyOptions))
   }
 
   public async shutdown() {
