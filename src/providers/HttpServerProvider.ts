@@ -15,7 +15,10 @@ export class HttpServerProvider extends ServiceProvider {
   public register() {
     const fastifyOptions = Config.get<FastifyServerOptions>('http.fastify')
 
-    this.container.instance('Athenna/Core/HttpServer', new ServerImpl(fastifyOptions))
+    this.container.instance(
+      'Athenna/Core/HttpServer',
+      new ServerImpl(fastifyOptions)
+    )
   }
 
   public async shutdown() {

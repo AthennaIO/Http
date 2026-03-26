@@ -87,21 +87,38 @@ export async function parseRequestWithZod(
   schemas: RouteZodSchemas
 ) {
   const requestSchemas = schemas.request
+  const parsed = req.zodParsed || {}
 
   if (requestSchemas.body) {
-    req.body = await parseSchema(requestSchemas.body, req.body)
+    const body = await parseSchema(requestSchemas.body, req.body)
+
+    req.body = body
+    parsed.body = body
   }
 
   if (requestSchemas.headers) {
-    req.headers = await parseSchema(requestSchemas.headers, req.headers)
+    const headers = await parseSchema(requestSchemas.headers, req.headers)
+
+    req.headers = headers
+    parsed.headers = headers
   }
 
   if (requestSchemas.params) {
-    req.params = await parseSchema(requestSchemas.params, req.params)
+    const params = await parseSchema(requestSchemas.params, req.params)
+
+    req.params = params
+    parsed.params = params
   }
 
   if (requestSchemas.querystring) {
-    req.query = await parseSchema(requestSchemas.querystring, req.query)
+    const query = await parseSchema(requestSchemas.querystring, req.query)
+
+    req.query = query
+    parsed.query = query
+  }
+
+  if (Object.keys(parsed).length) {
+    req.zodParsed = parsed
   }
 }
 

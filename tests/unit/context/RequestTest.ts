@@ -126,6 +126,29 @@ export default class RequestTest {
   }
 
   @Test()
+  public async shouldPreferZodParsedRequestValuesWhenAvailable({ assert }: Context) {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    this.request.zodParsed = {
+      body: { enabled: true },
+      headers: { 'x-enabled': false },
+      params: { id: 1 },
+      query: { enabled: true }
+    }
+
+    const ctx = { request: new Request(this.request) }
+
+    assert.deepEqual(ctx.request.body, { enabled: true })
+    assert.deepEqual(ctx.request.headers, { 'x-enabled': false })
+    assert.deepEqual(ctx.request.params, { id: 1 })
+    assert.deepEqual(ctx.request.queries, { enabled: true })
+    assert.isTrue(ctx.request.input('enabled'))
+    assert.isFalse(ctx.request.header('x-enabled'))
+    assert.equal(ctx.request.param('id'), 1)
+    assert.isTrue(ctx.request.query('enabled'))
+  }
+
+  @Test()
   public async shouldBeAbleToGetTheServerPortFromRequest({ assert }: Context) {
     await this.server.listen({ port: 9999 })
     const ctx = { request: new Request(this.request) }

@@ -208,7 +208,7 @@ export class Request extends Macroable {
    * ```
    */
   public get body(): any | any[] {
-    return this.request.body || {}
+    return this.request.zodParsed?.body || this.request.body || {}
   }
 
   /**
@@ -220,7 +220,7 @@ export class Request extends Macroable {
    * ```
    */
   public get params(): any {
-    return this.request.params || {}
+    return this.request.zodParsed?.params || this.request.params || {}
   }
 
   /**
@@ -232,7 +232,7 @@ export class Request extends Macroable {
    * ```
    */
   public get queries(): any {
-    return this.request.query || {}
+    return this.request.zodParsed?.query || this.request.query || {}
   }
 
   /**
@@ -244,7 +244,7 @@ export class Request extends Macroable {
    * ```
    */
   public get headers(): any {
-    return this.request.headers || {}
+    return this.request.zodParsed?.headers || this.request.headers || {}
   }
 
   /**
