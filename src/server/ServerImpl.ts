@@ -59,6 +59,7 @@ export class ServerImpl extends Macroable {
 
     this.fastify.decorateReply('body', null)
     this.fastify.decorateRequest('data', null)
+    this.fastify.decorateRequest('zodParsed', null)
   }
 
   /**
@@ -310,7 +311,10 @@ export class ServerImpl extends Macroable {
     }
 
     if (zodSchemas) {
-      route.preValidation = [async req => parseRequestWithZod(req, zodSchemas)]
+      route.preHandler = [
+        async req => parseRequestWithZod(req, zodSchemas),
+        ...this.toRouteHooks(route.preHandler)
+      ]
     }
 
     if (options.data && Is.Array(route.preHandler)) {
@@ -325,9 +329,9 @@ export class ServerImpl extends Macroable {
     }
 
     if (zodSchemas) {
-      fastifyOptions.preValidation = [
-        ...this.toRouteHooks(route.preValidation),
-        ...this.toRouteHooks(fastifyOptions.preValidation)
+      fastifyOptions.preHandler = [
+        ...this.toRouteHooks(route.preHandler),
+        ...this.toRouteHooks(fastifyOptions.preHandler)
       ]
     }
 

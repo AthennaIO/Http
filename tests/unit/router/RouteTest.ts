@@ -231,6 +231,60 @@ export default class RouteTest {
   }
 
   @Test()
+  public async shouldExposeParsedZodValuesThroughAllRequestAccessors({ assert }: Context) {
+    Route.post('users/:published', async ctx => {
+      await ctx.response.send({
+        body: ctx.request.input('syncProfile'),
+        bodyFromGetter: ctx.request.body.syncProfile,
+        header: ctx.request.header('x-with-profile'),
+        headerFromGetter: ctx.request.headers['x-with-profile'],
+        param: ctx.request.param('published'),
+        paramFromGetter: ctx.request.params.published,
+        query: ctx.request.query('withProfile'),
+        queryFromGetter: ctx.request.queries.withProfile
+      })
+    }).schema({
+      body: z.object({ syncProfile: z.stringbool() }),
+      headers: z.object({ 'x-with-profile': z.stringbool() }),
+      params: z.object({ published: z.stringbool() }),
+      querystring: z.object({ withProfile: z.stringbool() }),
+      response: {
+        200: z.object({
+          body: z.boolean(),
+          bodyFromGetter: z.boolean(),
+          header: z.boolean(),
+          headerFromGetter: z.boolean(),
+          param: z.boolean(),
+          paramFromGetter: z.boolean(),
+          query: z.boolean(),
+          queryFromGetter: z.boolean()
+        })
+      }
+    })
+
+    Route.register()
+
+    const response = await Server.request({
+      path: '/users/true?withProfile=true',
+      method: 'post',
+      headers: { 'x-with-profile': 'false' },
+      payload: { syncProfile: 'true' }
+    })
+
+    assert.equal(response.statusCode, 200)
+    assert.deepEqual(response.json(), {
+      body: true,
+      bodyFromGetter: true,
+      header: false,
+      headerFromGetter: false,
+      param: true,
+      paramFromGetter: true,
+      query: true,
+      queryFromGetter: true
+    })
+  }
+
+  @Test()
   @Cleanup(() => Config.set('openapi.paths', {}))
   public async shouldAutomaticallyApplySchemasFromOpenApiConfig({ assert }: Context) {
     Config.set('openapi.paths', {
@@ -264,6 +318,55 @@ export default class RouteTest {
 
     assert.equal(response.statusCode, 200)
     assert.deepEqual(response.json(), { id: 10, limit: 2 })
+  }
+
+  @Test()
+  @Cleanup(() => Config.set('openapi.paths', {}))
+  public async shouldAutomaticallyExposeParsedOpenApiZodValuesInRequestAccessors({ assert }: Context) {
+    Config.set('openapi.paths', {
+      '/users/{published}': {
+        post: {
+          body: z.object({ syncProfile: z.stringbool() }),
+          headers: z.object({ 'x-with-profile': z.stringbool() }),
+          params: z.object({ published: z.stringbool() }),
+          querystring: z.object({ withProfile: z.stringbool() }),
+          response: {
+            200: z.object({
+              body: z.boolean(),
+              header: z.boolean(),
+              param: z.boolean(),
+              query: z.boolean()
+            })
+          }
+        }
+      }
+    })
+
+    Route.post('users/:published', async ctx => {
+      await ctx.response.send({
+        body: ctx.request.input('syncProfile'),
+        header: ctx.request.header('x-with-profile'),
+        param: ctx.request.param('published'),
+        query: ctx.request.query('withProfile')
+      })
+    })
+
+    Route.register()
+
+    const response = await Server.request({
+      path: '/users/true?withProfile=false',
+      method: 'post',
+      headers: { 'x-with-profile': 'true' },
+      payload: { syncProfile: 'false' }
+    })
+
+    assert.equal(response.statusCode, 200)
+    assert.deepEqual(response.json(), {
+      body: false,
+      header: true,
+      param: true,
+      query: false
+    })
   }
 
   @Test()
