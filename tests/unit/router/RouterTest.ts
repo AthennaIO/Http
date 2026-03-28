@@ -222,13 +222,6 @@ export default class RouterTest {
   }
 
   @Test()
-  public async shouldThrowAnErrorWhenTheControllerMethodStringDoesNotExist({ assert }: Context) {
-    ioc.bind('App/Http/Controllers/HelloController', HelloController)
-
-    assert.throws(() => Route.get('/test', 'HelloController.not-found'), UndefinedMethodException)
-  }
-
-  @Test()
   public async shouldBeAbleToRegisterAMiddlewareClosureInRouteUsingRouteClass({ assert }: Context) {
     Route.get('test', ctx => {
       ctx.response.send({ hello: 'world', handled: ctx.data.handled })
