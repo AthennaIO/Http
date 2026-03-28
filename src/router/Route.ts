@@ -7,6 +7,11 @@
  * file that was distributed with this source code.
  */
 
+import {
+  normalizeRouteSchema,
+  type RouteSchemaOptions
+} from '#src/router/RouteSchema'
+
 import type {
   RouteJson,
   RouteHandler,
@@ -21,10 +26,6 @@ import type { HTTPMethods, RouteOptions } from 'fastify'
 import { Is, Options, Macroable, Route as RouteHelper } from '@athenna/common'
 import { UndefinedMethodException } from '#src/exceptions/UndefinedMethodException'
 import { NotFoundValidatorException } from '#src/exceptions/NotFoundValidatorException'
-import {
-  type RouteSchemaOptions,
-  normalizeRouteSchema
-} from '#src/router/RouteSchema'
 import { NotFoundMiddlewareException } from '#src/exceptions/NotFoundMiddlewareException'
 
 export class Route extends Macroable {
@@ -68,10 +69,6 @@ export class Route extends Macroable {
       const [controller, method] = handler.split('.')
 
       const dependency = ioc.safeUse(`App/Http/Controllers/${controller}`)
-
-      if (!dependency[method]) {
-        throw new UndefinedMethodException(method, controller)
-      }
 
       this.route.handler = (...args: any[]) => {
         const service = ioc.safeUse(`App/Http/Controllers/${controller}`)
