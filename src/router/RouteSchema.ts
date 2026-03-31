@@ -49,8 +49,9 @@ export function normalizeRouteSchema(options: RouteSchemaOptions): {
     }
 
     request[key] = options[key]
-    schema[key] = toJsonSchema(options[key], 'input')
     swaggerSchema[key] = toJsonSchema(options[key], 'input')
+
+    delete schema[key]
   })
 
   if (options.response && Is.Object(options.response)) {

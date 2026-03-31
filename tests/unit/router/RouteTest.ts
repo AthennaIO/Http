@@ -11,7 +11,7 @@ import { Config } from '@athenna/config'
 import { MyMiddleware } from '#tests/fixtures/middlewares/MyMiddleware'
 import { Test, AfterEach, BeforeEach, type Context, Cleanup } from '@athenna/test'
 import { HelloController } from '#tests/fixtures/controllers/HelloController'
-import { Route, Server, HttpRouteProvider, HttpServerProvider } from '#src'
+import { Route, Server, HttpKernel, HttpRouteProvider, HttpServerProvider } from '#src'
 import { z } from 'zod'
 
 export default class RouteTest {
@@ -367,6 +367,53 @@ export default class RouteTest {
       param: true,
       query: false
     })
+  }
+
+  @Test()
+  @Cleanup(() => Config.set('openapi.paths', {}))
+  @Cleanup(() => Config.set('http.logger.ignoreStatuses', []))
+  public async shouldUseZodValidationErrorsForInvalidOpenApiRequestSchemas({ assert }: Context) {
+    Config.set('http.logger.ignoreStatuses', [422])
+
+    const kernel = new HttpKernel()
+    await kernel.registerExceptionHandler()
+
+    Config.set('openapi.paths', {
+      '/avatars': {
+        post: {
+          body: z.object({
+            name: z.string(),
+            siteId: z.string(),
+            slug: z.string()
+          })
+        }
+      }
+    })
+
+    Route.post('avatars', async ctx => {
+      await ctx.response.status(201).send({ ok: true })
+    })
+
+    Route.register()
+
+    const response = await Server.request({
+      path: '/avatars',
+      method: 'post',
+      payload: {}
+    })
+
+    const body = response.json()
+
+    assert.equal(response.statusCode, 422)
+    assert.equal(body.code, 'E_VALIDATION_ERROR')
+    assert.deepEqual(
+      body.details.map(({ expected, code, path }) => ({ expected, code, path })),
+      [
+        { expected: 'string', code: 'invalid_type', path: ['name'] },
+        { expected: 'string', code: 'invalid_type', path: ['siteId'] },
+        { expected: 'string', code: 'invalid_type', path: ['slug'] }
+      ]
+    )
   }
 
   @Test()
