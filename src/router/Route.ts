@@ -352,7 +352,7 @@ export class Route extends Macroable {
       // @ts-ignore
       this.route.fastify.config.zod = zod
 
-      if (Object.keys(zod.response).length) {
+      if (Object.keys(swaggerSchema).length) {
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
         this.route.fastify.config.swaggerSchema = swaggerSchema
