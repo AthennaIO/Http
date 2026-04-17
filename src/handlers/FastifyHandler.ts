@@ -68,7 +68,7 @@ export class FastifyHandler {
 
       payload = await handler(ctx)
 
-      req.body = payload
+      res.body = payload
 
       if (Is.Object(payload)) {
         payload = JSON.stringify(payload)
