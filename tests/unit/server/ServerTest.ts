@@ -13,6 +13,8 @@ import { context, createContextKey } from '@opentelemetry/api'
 import { Test, AfterEach, BeforeEach, type Context, Cleanup } from '@athenna/test'
 import { AsyncLocalStorageContextManager } from '@opentelemetry/context-async-hooks'
 
+const otelCurrentContextBagKey = Symbol.for('athenna.otel.currentContextBag')
+
 export default class ServerTest {
   @BeforeEach()
   public async beforeEach() {
@@ -269,6 +271,44 @@ export default class ServerTest {
   @Test()
   @Cleanup(() => Config.set('http.otel.contextEnabled', false))
   @Cleanup(() => Config.set('http.otel.contextBindings', []))
+  public async shouldCreateAndReuseTheSameRequestContextBagAcrossTheLifecycle({ assert }: Context) {
+    const exampleIdKey = 'exampleId'
+    let requestBag: Map<string | symbol, unknown> = null
+    let terminateBag: Map<string | symbol, unknown> = null
+
+    Config.set('http.otel.contextEnabled', true)
+    Config.set('http.otel.contextBindings', [{ key: exampleIdKey, resolve: () => 'example-id-from-binding' }])
+
+    Server.terminate(() => {
+      terminateBag = context.active().getValue(otelCurrentContextBagKey as any) as Map<
+        string | symbol,
+        unknown
+      >
+    }).get({
+      url: '/test',
+      handler: async ctx => {
+        requestBag = context.active().getValue(otelCurrentContextBagKey as any) as Map<
+          string | symbol,
+          unknown
+        >
+        requestBag.set(exampleIdKey, 'example-id-from-handler')
+
+        await ctx.response.send({
+          exampleId: requestBag.get(exampleIdKey)
+        })
+      }
+    })
+
+    const response = await Server.request().get('/test')
+
+    assert.deepEqual(response.json(), { exampleId: 'example-id-from-handler' })
+    assert.strictEqual(requestBag, terminateBag)
+    assert.equal(terminateBag.get(exampleIdKey), 'example-id-from-handler')
+  }
+
+  @Test()
+  @Cleanup(() => Config.set('http.otel.contextEnabled', false))
+  @Cleanup(() => Config.set('http.otel.contextBindings', []))
   public async shouldReuseConfiguredOtelContextValuesInsideErrorHandlers({ assert }: Context) {
     const routeKey = createContextKey('request.route')
 
@@ -292,5 +332,46 @@ export default class ServerTest {
 
     assert.equal(response.statusCode, 500)
     assert.deepEqual(response.json(), { route: '/boom' })
+  }
+
+  @Test()
+  @Cleanup(() => Config.set('http.otel.contextEnabled', false))
+  @Cleanup(() => Config.set('http.otel.contextBindings', []))
+  public async shouldExposeTheSameRequestContextBagInsideErrorHandlers({ assert }: Context) {
+    let requestBag: Map<string | symbol, unknown> = null
+    let errorBag: Map<string | symbol, unknown> = null
+
+    Config.set('http.otel.contextEnabled', true)
+    Config.set('http.otel.contextBindings', [{ key: 'exampleId', resolve: () => 'example-id-from-binding' }])
+
+    Server.setErrorHandler(async ctx => {
+      errorBag = context.active().getValue(otelCurrentContextBagKey as any) as Map<
+        string | symbol,
+        unknown
+      >
+
+      await ctx.response.status(500).send({
+        exampleId: errorBag.get('exampleId')
+      })
+    })
+
+    Server.get({
+      url: '/boom',
+      handler: async () => {
+        requestBag = context.active().getValue(otelCurrentContextBagKey as any) as Map<
+          string | symbol,
+          unknown
+        >
+        requestBag.set('exampleId', 'example-id-from-handler')
+
+        throw new Error('boom')
+      }
+    })
+
+    const response = await Server.request().get('/boom')
+
+    assert.equal(response.statusCode, 500)
+    assert.deepEqual(response.json(), { exampleId: 'example-id-from-handler' })
+    assert.strictEqual(requestBag, errorBag)
   }
 }
