@@ -7,14 +7,18 @@
  * file that was distributed with this source code.
  */
 
-import { Is } from '@athenna/common'
+import { Config } from '@athenna/config'
+import { Is, Module } from '@athenna/common'
 import { Request } from '#src/context/Request'
 import { Response } from '#src/context/Response'
+import type { Context as OtelContext } from '@opentelemetry/api'
 import type { RequestHandler } from '#src/types/contexts/Context'
 import type { ErrorHandler } from '#src/types/contexts/ErrorContext'
 import type { InterceptHandler, TerminateHandler } from '#src/types'
 import { NotFoundException } from '#src/exceptions/NotFoundException'
 import type { FastifyReply, FastifyRequest, RouteHandlerMethod } from 'fastify'
+
+const otelApi = await Module.safeImport('@opentelemetry/api')
 
 export class FastifyHandler {
   /**
@@ -23,17 +27,9 @@ export class FastifyHandler {
    */
   public static request(handler: RequestHandler): RouteHandlerMethod {
     return async (req: FastifyRequest, res: FastifyReply) => {
-      if (!req.data) {
-        req.data = {}
-      }
+      const ctx = this.createContext(req, res)
 
-      const ctx: any = {}
-
-      ctx.data = req.data
-      ctx.request = new Request(req)
-      ctx.response = new Response(res, ctx.request)
-
-      await handler(ctx)
+      await this.runWithOtelContext(req, ctx, () => handler(ctx))
     }
   }
 
@@ -49,24 +45,15 @@ export class FastifyHandler {
    */
   public static intercept(handler: InterceptHandler) {
     return async (req: FastifyRequest, res: FastifyReply, payload: any) => {
-      if (!req.data) {
-        req.data = {}
-      }
-
       if (Is.Json(payload)) {
         payload = JSON.parse(payload)
       }
 
       res.body = payload
 
-      const ctx: any = {}
+      const ctx = this.createContext(req, res, { status: res.statusCode })
 
-      ctx.data = req.data
-      ctx.request = new Request(req)
-      ctx.response = new Response(res, ctx.request)
-      ctx.status = ctx.response.statusCode
-
-      payload = await handler(ctx)
+      payload = await this.runWithOtelContext(req, ctx, () => handler(ctx))
 
       res.body = payload
 
@@ -83,19 +70,12 @@ export class FastifyHandler {
    */
   public static terminate(handler: TerminateHandler) {
     return async (req: FastifyRequest, res: FastifyReply) => {
-      if (!req.data) {
-        req.data = {}
-      }
+      const ctx = this.createContext(req, res, {
+        status: res.statusCode,
+        responseTime: res.elapsedTime
+      })
 
-      const ctx: any = {}
-
-      ctx.data = req.data
-      ctx.request = new Request(req)
-      ctx.response = new Response(res, ctx.request)
-      ctx.status = ctx.response.statusCode
-      ctx.responseTime = ctx.response.elapsedTime
-
-      await handler(ctx)
+      await this.runWithOtelContext(req, ctx, () => handler(ctx))
     }
   }
 
@@ -104,18 +84,9 @@ export class FastifyHandler {
    */
   public static error(handler: ErrorHandler) {
     return async (error: any, req: FastifyRequest, res: FastifyReply) => {
-      if (!req.data) {
-        req.data = {}
-      }
+      const ctx = this.createContext(req, res, { error })
 
-      const ctx: any = {}
-
-      ctx.data = req.data
-      ctx.request = new Request(req)
-      ctx.response = new Response(res, ctx.request)
-      ctx.error = error
-
-      await handler(ctx)
+      await this.runWithOtelContext(req, ctx, () => handler(ctx))
     }
   }
 
@@ -124,20 +95,68 @@ export class FastifyHandler {
    */
   public static notFoundError(handler: ErrorHandler) {
     return async (req: FastifyRequest, res: FastifyReply) => {
-      if (!req.data) {
-        req.data = {}
+      const ctx = this.createContext(req, res, {
+        error: new NotFoundException(`Route ${req.method}:${req.url} not found`)
+      })
+
+      await this.runWithOtelContext(req, ctx, () => handler(ctx))
+    }
+  }
+
+  private static createContext(
+    req: FastifyRequest,
+    res: FastifyReply,
+    extra = {}
+  ) {
+    if (!req.data) {
+      req.data = {}
+    }
+
+    const request = new Request(req)
+
+    return {
+      data: req.data,
+      request,
+      response: new Response(res, request),
+      ...extra
+    } as any
+  }
+
+  private static isOtelContextEnabled() {
+    return Config.is('http.otel.contextEnabled', true)
+  }
+
+  private static getOrCreateOtelContext(req: FastifyRequest, ctx: any) {
+    if (req.otelContext) {
+      return req.otelContext as OtelContext
+    }
+
+    let otelContext = otelApi.context.active()
+
+    for (const binding of Config.get('http.otel.contextBindings', [])) {
+      const value = binding.resolve(ctx)
+
+      if (Is.Undefined(value) && !binding.includeIfUndefined) {
+        continue
       }
 
-      const ctx: any = {}
-
-      ctx.data = req.data
-      ctx.request = new Request(req)
-      ctx.response = new Response(res, ctx.request)
-      ctx.error = new NotFoundException(
-        `Route ${req.method}:${req.url} not found`
-      )
-
-      await handler(ctx)
+      otelContext = otelContext.setValue(binding.key, value)
     }
+
+    req.otelContext = otelContext
+
+    return otelContext as OtelContext
+  }
+
+  private static runWithOtelContext(
+    req: FastifyRequest,
+    ctx: any,
+    callback: () => any
+  ) {
+    if (!this.isOtelContextEnabled() || !otelApi) {
+      return callback()
+    }
+
+    return otelApi.context.with(this.getOrCreateOtelContext(req, ctx), callback)
   }
 }

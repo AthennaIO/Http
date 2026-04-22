@@ -10,6 +10,7 @@
 declare module 'fastify' {
   interface FastifyRequest {
     data: any
+    otelContext?: import('@opentelemetry/api').Context
     zodParsed?: {
       body?: any
       headers?: any

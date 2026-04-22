@@ -7,19 +7,24 @@
  * file that was distributed with this source code.
  */
 
+import { Config } from '@athenna/config'
 import { Server, HttpServerProvider } from '#src'
-import { Test, AfterEach, BeforeEach, type Context } from '@athenna/test'
+import { context, createContextKey } from '@opentelemetry/api'
+import { Test, AfterEach, BeforeEach, type Context, Cleanup } from '@athenna/test'
+import { AsyncLocalStorageContextManager } from '@opentelemetry/context-async-hooks'
 
 export default class ServerTest {
   @BeforeEach()
   public async beforeEach() {
     ioc.reconstruct()
 
+    context.setGlobalContextManager(new AsyncLocalStorageContextManager().enable())
     new HttpServerProvider().register()
   }
 
   @AfterEach()
   public async afterEach() {
+    context.disable()
     await new HttpServerProvider().shutdown()
   }
 
@@ -192,5 +197,100 @@ export default class ServerTest {
 
     assert.isTrue(terminated)
     assert.deepEqual(response.json(), { hello: 'world' })
+  }
+
+  @Test()
+  public async shouldKeepOriginalRequestBodyAvailableAfterInterceptingTheResponse({ assert }: Context) {
+    let requestBody: any
+    let responseBody: any
+
+    Server.intercept(ctx => {
+      return { ...ctx.response.body, intercepted: true }
+    })
+      .terminate(ctx => {
+        requestBody = ctx.request.body
+        responseBody = ctx.response.body
+      })
+      .post({
+        url: '/test',
+        handler: async ctx => ctx.response.send({ hello: 'world' })
+      })
+
+    const response = await Server.request().post('/test').body({ foo: 'bar' })
+
+    assert.deepEqual(response.json(), { hello: 'world', intercepted: true })
+    assert.deepEqual(requestBody, { foo: 'bar' })
+    assert.deepEqual(responseBody, { hello: 'world', intercepted: true })
+  }
+
+  @Test()
+  @Cleanup(() => Config.set('http.otel.contextEnabled', false))
+  @Cleanup(() => Config.set('http.otel.contextBindings', []))
+  public async shouldBindConfiguredOtelContextValuesAcrossTheRequestLifecycle({ assert }: Context) {
+    const methodKey = createContextKey('http.method')
+    const stageKey = createContextKey('request.stage')
+    let terminateValues: any = {}
+
+    Config.set('http.otel.contextEnabled', true)
+    Config.set('http.otel.contextBindings', [
+      { key: methodKey, resolve: ctx => ctx.request.method },
+      { key: stageKey, resolve: ctx => ctx.data.stage }
+    ])
+
+    Server.terminate(ctx => {
+      terminateValues = {
+        method: context.active().getValue(methodKey),
+        stage: context.active().getValue(stageKey),
+        status: ctx.status
+      }
+    }).post({
+      url: '/test',
+      data: { stage: 'route-default' },
+      handler: async ctx =>
+        ctx.response.send({
+          method: context.active().getValue(methodKey),
+          stage: context.active().getValue(stageKey)
+        })
+    })
+
+    const response = await Server.request({ path: '/test', method: 'POST' })
+
+    assert.deepEqual(response.json(), {
+      method: 'POST',
+      stage: 'route-default'
+    })
+    assert.deepEqual(terminateValues, {
+      method: 'POST',
+      stage: 'route-default',
+      status: 200
+    })
+  }
+
+  @Test()
+  @Cleanup(() => Config.set('http.otel.contextEnabled', false))
+  @Cleanup(() => Config.set('http.otel.contextBindings', []))
+  public async shouldReuseConfiguredOtelContextValuesInsideErrorHandlers({ assert }: Context) {
+    const routeKey = createContextKey('request.route')
+
+    Config.set('http.otel.contextEnabled', true)
+    Config.set('http.otel.contextBindings', [{ key: routeKey, resolve: ctx => ctx.request.baseUrl }])
+
+    Server.setErrorHandler(async ctx => {
+      await ctx.response.status(500).send({
+        route: context.active().getValue(routeKey)
+      })
+    })
+
+    Server.get({
+      url: '/boom',
+      handler: async () => {
+        throw new Error('boom')
+      }
+    })
+
+    const response = await Server.request().get('/boom')
+
+    assert.equal(response.statusCode, 500)
+    assert.deepEqual(response.json(), { route: '/boom' })
   }
 }
