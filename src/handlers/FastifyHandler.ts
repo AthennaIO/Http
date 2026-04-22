@@ -19,6 +19,7 @@ import { NotFoundException } from '#src/exceptions/NotFoundException'
 import type { FastifyReply, FastifyRequest, RouteHandlerMethod } from 'fastify'
 
 const otelApi = await Module.safeImport('@opentelemetry/api')
+const otelCurrentContextBagKey = Symbol.for('athenna.otel.currentContextBag')
 
 export class FastifyHandler {
   /**
@@ -132,6 +133,7 @@ export class FastifyHandler {
     }
 
     let otelContext = otelApi.context.active()
+    const bag = new Map<string | symbol, unknown>()
 
     for (const binding of Config.get('http.otel.contextBindings', [])) {
       const value = binding.resolve(ctx)
@@ -140,9 +142,12 @@ export class FastifyHandler {
         continue
       }
 
+      bag.set(binding.key, value)
       otelContext = otelContext.setValue(binding.key, value)
     }
 
+    req.data.otelCurrentContextBag = bag
+    otelContext = otelContext.setValue(otelCurrentContextBagKey as any, bag)
     req.otelContext = otelContext
 
     return otelContext as OtelContext
