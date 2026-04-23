@@ -11,14 +11,14 @@ import { Config } from '@athenna/config'
 import { Is, Module } from '@athenna/common'
 import { Request } from '#src/context/Request'
 import { Response } from '#src/context/Response'
-import type { Context as OtelContext } from '@opentelemetry/api'
+import type { Context as OtelContext } from '@athenna/otel'
 import type { RequestHandler } from '#src/types/contexts/Context'
 import type { ErrorHandler } from '#src/types/contexts/ErrorContext'
 import type { InterceptHandler, TerminateHandler } from '#src/types'
 import { NotFoundException } from '#src/exceptions/NotFoundException'
 import type { FastifyReply, FastifyRequest, RouteHandlerMethod } from 'fastify'
 
-const otelApi = await Module.safeImport('@opentelemetry/api')
+const otelModule = await Module.safeImport('@athenna/otel')
 const otelCurrentContextBagKey = Symbol.for('athenna.otel.currentContextBag')
 
 export class FastifyHandler {
@@ -132,22 +132,18 @@ export class FastifyHandler {
       return req.otelContext as OtelContext
     }
 
-    let otelContext = otelApi.context.active()
-    const bag = new Map<string | symbol, unknown>()
-
-    for (const binding of Config.get('http.otel.contextBindings', [])) {
-      const value = binding.resolve(ctx)
-
-      if (Is.Undefined(value) && !binding.includeIfUndefined) {
-        continue
-      }
-
-      bag.set(binding.key, value)
-      otelContext = otelContext.setValue(binding.key, value)
+    if (!otelModule) {
+      throw new Error('The package @athenna/otel is not installed')
     }
 
+    const otelContext = otelModule.Otel.createContext({
+      bindings: Config.get('http.otel.contextBindings', []),
+      resolveBinding: binding => binding.resolve(ctx)
+    })
+
+    const bag = otelContext.getValue(otelCurrentContextBagKey)
+
     req.data.otelCurrentContextBag = bag
-    otelContext = otelContext.setValue(otelCurrentContextBagKey as any, bag)
     req.otelContext = otelContext
 
     return otelContext as OtelContext
@@ -158,10 +154,12 @@ export class FastifyHandler {
     ctx: any,
     callback: () => any
   ) {
-    if (!this.isOtelContextEnabled() || !otelApi) {
+    if (!this.isOtelContextEnabled() || !otelModule) {
       return callback()
     }
 
-    return otelApi.context.with(this.getOrCreateOtelContext(req, ctx), callback)
+    return otelModule.Otel.withContext(callback, {
+      ctx: this.getOrCreateOtelContext(req, ctx)
+    })
   }
 }
