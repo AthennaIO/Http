@@ -1,6 +1,6 @@
 {
   "name": "@athenna/http",
-  "version": "5.61.0",
+  "version": "5.62.0",
   "description": "The Athenna Http server. Built on top of fastify.",
   "license": "MIT",
   "author": "João Lenon <lenon@athenna.io>",
@@ -80,6 +80,7 @@
     "@athenna/config": "^5.6.0",
     "@athenna/ioc": "^5.2.0",
     "@athenna/logger": "^5.14.0",
+    "@athenna/otel": "file:../Otel",
     "@athenna/test": "^5.6.0",
     "@athenna/tsconfig": "^5.0.0",
     "@athenna/view": "^5.4.0",
