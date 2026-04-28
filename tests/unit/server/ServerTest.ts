@@ -8,6 +8,7 @@
  */
 
 import { Config } from '@athenna/config'
+import { OtelProvider } from '@athenna/otel'
 import { Server, HttpServerProvider } from '#src'
 import { context, createContextKey } from '@opentelemetry/api'
 import { Test, AfterEach, BeforeEach, type Context, Cleanup } from '@athenna/test'
@@ -21,12 +22,14 @@ export default class ServerTest {
     ioc.reconstruct()
 
     context.setGlobalContextManager(new AsyncLocalStorageContextManager().enable())
+    new OtelProvider().register()
     new HttpServerProvider().register()
   }
 
   @AfterEach()
   public async afterEach() {
     context.disable()
+    await new OtelProvider().shutdown()
     await new HttpServerProvider().shutdown()
   }
 
@@ -280,17 +283,11 @@ export default class ServerTest {
     Config.set('http.otel.contextBindings', [{ key: exampleIdKey, resolve: () => 'example-id-from-binding' }])
 
     Server.terminate(() => {
-      terminateBag = context.active().getValue(otelCurrentContextBagKey as any) as Map<
-        string | symbol,
-        unknown
-      >
+      terminateBag = context.active().getValue(otelCurrentContextBagKey as any) as Map<string | symbol, unknown>
     }).get({
       url: '/test',
       handler: async ctx => {
-        requestBag = context.active().getValue(otelCurrentContextBagKey as any) as Map<
-          string | symbol,
-          unknown
-        >
+        requestBag = context.active().getValue(otelCurrentContextBagKey as any) as Map<string | symbol, unknown>
         requestBag.set(exampleIdKey, 'example-id-from-handler')
 
         await ctx.response.send({
@@ -345,10 +342,7 @@ export default class ServerTest {
     Config.set('http.otel.contextBindings', [{ key: 'exampleId', resolve: () => 'example-id-from-binding' }])
 
     Server.setErrorHandler(async ctx => {
-      errorBag = context.active().getValue(otelCurrentContextBagKey as any) as Map<
-        string | symbol,
-        unknown
-      >
+      errorBag = context.active().getValue(otelCurrentContextBagKey as any) as Map<string | symbol, unknown>
 
       await ctx.response.status(500).send({
         exampleId: errorBag.get('exampleId')
@@ -358,10 +352,7 @@ export default class ServerTest {
     Server.get({
       url: '/boom',
       handler: async () => {
-        requestBag = context.active().getValue(otelCurrentContextBagKey as any) as Map<
-          string | symbol,
-          unknown
-        >
+        requestBag = context.active().getValue(otelCurrentContextBagKey as any) as Map<string | symbol, unknown>
         requestBag.set('exampleId', 'example-id-from-handler')
 
         throw new Error('boom')

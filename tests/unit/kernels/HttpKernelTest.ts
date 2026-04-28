@@ -109,18 +109,6 @@ export default class HttpKernelTest {
   }
 
   @Test()
-  public async shouldBeAbleToRegisterTheFastifyRTTracerPluginInTheHttpServer({ assert }: Context) {
-    const kernel = new HttpKernel()
-    await kernel.registerRTracer()
-    Server.get({ url: '/hello', handler: ctx => ctx.response.send({ traceId: ctx.data.traceId }) })
-
-    const response = await Server.request().get('hello')
-
-    assert.isDefined(response.json().traceId)
-    assert.isTrue(Server.fastify.hasPlugin('cls-rtracer'))
-  }
-
-  @Test()
   public async shouldBeAbleToRegisterTheFastifyVitePluginInTheHttpServer({ assert }: Context) {
     const kernel = new HttpKernel()
     await kernel.registerVite()
@@ -286,29 +274,6 @@ export default class HttpKernelTest {
     await kernel.registerStatic()
 
     assert.isFalse(Server.fastify.hasPlugin('@fastify/static'))
-  }
-
-  @Test()
-  public async shouldNotRegisterTheFastifyRTracerPluginIfThePackageIsNotInstalled({ assert }: Context) {
-    Mock.when(Module, 'safeImport').resolve(null)
-
-    const { HttpKernel } = await import(`../../../src/kernels/HttpKernel.js?v=${Math.random()}`)
-    const kernel = new HttpKernel()
-    await kernel.registerRTracer()
-
-    assert.isFalse(Server.fastify.hasPlugin('cls-rtracer'))
-  }
-
-  @Test()
-  @Cleanup(() => Config.set('http.rTracer.enabled', true))
-  public async shouldNotRegisterTheFastifyRTracerPluginIfTheConfigurationIsDisabled({ assert }: Context) {
-    Config.set('http.rTracer.enabled', false)
-
-    const { HttpKernel } = await import(`../../../src/kernels/HttpKernel.js?v=${Math.random()}`)
-    const kernel = new HttpKernel()
-    await kernel.registerRTracer()
-
-    assert.isFalse(Server.fastify.hasPlugin('cls-rtracer'))
   }
 
   @Test()

@@ -187,34 +187,6 @@ export class HttpKernel {
   }
 
   /**
-   * Register the cls-rtracer plugin in the Http server.
-   */
-  public async registerRTracer(): Promise<void> {
-    const rTracerPlugin = await Module.safeImport('cls-rtracer')
-
-    if (Config.is('http.rTracer.enabled', false)) {
-      debug(
-        'Not able to register rTracer plugin. Set the http.rTracer.enabled configuration as true.'
-      )
-
-      return
-    }
-
-    if (!rTracerPlugin) {
-      debug('Not able to register tracer plugin. Install cls-rtracer package.')
-
-      return
-    }
-
-    Server.middleware(async ctx => (ctx.data.traceId = rTracerPlugin.id()))
-
-    await Server.plugin(
-      rTracerPlugin.fastifyPlugin,
-      this.getConfig('http.rTracer')
-    )
-  }
-
-  /**
    * Register the @athenna/vite plugin in the Http server.
    */
   public async registerVite(): Promise<void> {

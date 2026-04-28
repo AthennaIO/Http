@@ -19,7 +19,6 @@ import { NotFoundException } from '#src/exceptions/NotFoundException'
 import type { FastifyReply, FastifyRequest, RouteHandlerMethod } from 'fastify'
 
 const otelModule = await Module.safeImport('@athenna/otel')
-const otelCurrentContextBagKey = Symbol.for('athenna.otel.currentContextBag')
 
 export class FastifyHandler {
   /**
@@ -141,7 +140,7 @@ export class FastifyHandler {
       resolveBinding: binding => binding.resolve(ctx)
     })
 
-    const bag = otelContext.getValue(otelCurrentContextBagKey)
+    const bag = otelContext.getValue(this.getContextBagSymbol())
 
     req.data.otelCurrentContextBag = bag
     req.otelContext = otelContext
@@ -161,5 +160,12 @@ export class FastifyHandler {
     return otelModule.Otel.withContext(callback, {
       ctx: this.getOrCreateOtelContext(req, ctx)
     })
+  }
+
+  private static getContextBagSymbol() {
+    return (
+      otelModule?.Otel?.contextBagSymbol ||
+      Symbol.for('athenna.otel.currentContextBag')
+    )
   }
 }
