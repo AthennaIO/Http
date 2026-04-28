@@ -57,11 +57,5 @@ export default {
     enabled: true,
     root: Path.fixtures('config'),
     prefix: '/static'
-  },
-  rTracer: {
-    echoHeader: false,
-    useHeader: false,
-    headerName: 'X-Request-Id',
-    useFastifyRequestId: false
   }
 }
