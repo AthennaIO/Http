@@ -37,7 +37,7 @@ import {
 
 import type { AddressInfo } from 'node:net'
 import type { FastifyVite } from '@athenna/vite'
-import { Options, Macroable, Is } from '@athenna/common'
+import { Json, Options, Macroable, Is } from '@athenna/common'
 import { FastifyHandler } from '#src/handlers/FastifyHandler'
 
 export class ServerImpl extends Macroable {
@@ -474,8 +474,14 @@ export class ServerImpl extends Macroable {
     }
   }
 
+  /**
+   * The openapi paths hold zod schema instances, so they need to be read
+   * by reference. `Config.get()` deep copies the value and a copied zod
+   * schema loses its internals, breaking both validation and the JSON
+   * schema generation.
+   */
   private getOpenApiRouteSchema(options: RouteJson): RouteSchemaOptions {
-    const paths = Config.get('openapi.paths', {})
+    const paths = Json.get(Config.configs.object, 'openapi.paths', {})
     const methods = options.methods || []
 
     if (!Is.Object(paths) || !options.url || !methods.length) {

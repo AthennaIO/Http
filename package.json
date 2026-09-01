@@ -1,6 +1,6 @@
 {
   "name": "@athenna/http",
-  "version": "5.63.0",
+  "version": "5.64.0",
   "description": "The Athenna Http server. Built on top of fastify.",
   "license": "MIT",
   "author": "João Lenon <lenon@athenna.io>",
@@ -114,7 +114,7 @@
     "prettier": "^2.8.8",
     "vite": "^6.4.1",
     "vite-plugin-restart": "^0.4.2",
-    "zod": "^4.3.6"
+    "zod": "^4.5.4"
   },
   "c8": {
     "all": true,

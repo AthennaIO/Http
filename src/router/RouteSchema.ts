@@ -163,6 +163,10 @@ async function parseSchema(schema: ZodAny, data: any) {
 }
 
 function toJsonSchema(schema: ZodAny, io: 'input' | 'output') {
+  if (!(schema as any)._zod) {
+    return {}
+  }
+
   const standardJsonSchemaMethod = (schema as any)['~standard']?.jsonSchema?.[
     io
   ]
