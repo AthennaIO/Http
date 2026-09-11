@@ -16,6 +16,9 @@ import type { AddressInfo } from 'node:net'
 import type { FastifyRequest } from 'fastify'
 import { Is, Json, Macroable } from '@athenna/common'
 import type { BusboyConfig } from '@fastify/busboy'
+import type { FilterOptions } from '@athenna/common/types'
+import { FiltersParser } from '#src/helpers/FiltersParser'
+import type { RequestFiltersOptions } from '#src/types/request/RequestFiltersOptions'
 
 export class Request extends Macroable {
   /**
@@ -271,6 +274,43 @@ export class Request extends Macroable {
    */
   public query(query: string, defaultValue?: any): any {
     return Json.get(this.queries, query, defaultValue)
+  }
+
+  /**
+   * Parse the list filters sent in the query string (`page`,
+   * `limit`, `search`, `select`, `includes`, `where` and `orderby`)
+   * into a `FilterOptions` object, ready to be given to
+   * `query.filter()` and `query.search()` of `@athenna/database`.
+   *
+   * The `where` parameter is a comma separated list of
+   * `field:op:value` tokens, where `op` is one of `=`, `!=`, `>`,
+   * `>=`, `<`, `<=`, `in`, `not_in`, `contains`, `not_contains`,
+   * `between` and `not_between`. Values are parsed as `null`,
+   * number, boolean, inline JSON (`[..]`/`{..}`), `a__b` arrays or
+   * string, and may be quoted to include commas. The `orderby`
+   * parameter is a comma separated list of fields, prefixed with
+   * `-` for `DESC`. `select` and `includes` are comma separated.
+   *
+   * Every list in `options` restricts what the client may send.
+   * Without options nothing is restricted. Something not allowed
+   * throws an `InvalidFilterException` (422) by default, or is
+   * dropped with `onDenied: 'ignore'`.
+   *
+   * @example
+   * ```ts
+   * // GET /users?page=1&limit=20&search=lenon&where=status:=:active,createdAt:>:2026-01-01&orderby=-createdAt
+   * const filters = request.filters({
+   *   select: ['id', 'name', 'status'],
+   *   includes: ['profile'],
+   *   where: ['status', 'createdAt', 'profile.bio', 'metadata->mode'],
+   *   orderBy: ['createdAt', 'name'],
+   *   maxLimit: 50,
+   *   defaults: { orderBy: [{ field: 'createdAt', direction: 'DESC' }] }
+   * })
+   * ```
+   */
+  public filters(options?: RequestFiltersOptions): FilterOptions {
+    return FiltersParser.parse(this.queries, options)
   }
 
   /**

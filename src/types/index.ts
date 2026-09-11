@@ -29,6 +29,7 @@ export * from '#src/types/middlewares/MiddlewareRouteType'
 export * from '#src/types/middlewares/TerminatorRouteType'
 
 export * from '#src/types/router/RouteHandler'
+export * from '#src/types/request/RequestFiltersOptions'
 export * from '#src/types/router/RouteJson'
 export * from '#src/types/router/RouteResourceTypes'
 

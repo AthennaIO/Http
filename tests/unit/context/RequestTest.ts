@@ -8,6 +8,7 @@
  */
 
 import { Request } from '#src/context/Request'
+import { InvalidFilterException } from '#src/exceptions/InvalidFilterException'
 import { Test, BeforeEach, type Context } from '@athenna/test'
 import { fastify, type FastifyInstance, type FastifyRequest } from 'fastify'
 
@@ -208,5 +209,48 @@ export default class RequestTest {
     const ctx = { request: new Request(this.request) }
 
     assert.deepEqual(ctx.request.except(['name', 'email']), { other: 'other' })
+  }
+
+  /**
+   * Inject a GET request in a fresh server and wrap it in a context.
+   */
+  private async requestFor(url: string) {
+    let request: FastifyRequest = null
+    const server = fastify()
+
+    // eslint-disable-next-line
+    // @ts-ignore
+    server.get('/filters', { config: { name: 'filters' } }, req => (request = req))
+    await server.inject().get(url)
+
+    return { request: new Request(request) }
+  }
+
+  @Test()
+  public async shouldBeAbleToParseTheListFiltersFromTheQueryString({ assert }: Context) {
+    const ctx = await this.requestFor(
+      '/filters?page=1&limit=5&search=lenon&select=id,name&includes=profile&where=status:=:active,age:>:18&orderby=-createdAt'
+    )
+
+    assert.deepEqual(ctx.request.filters(), {
+      page: 1,
+      limit: 5,
+      search: 'lenon',
+      select: ['id', 'name'],
+      includes: ['profile'],
+      where: [
+        { field: 'status', op: '=', value: 'active' },
+        { field: 'age', op: '>', value: 18 }
+      ],
+      orderBy: [{ field: 'createdAt', direction: 'DESC' }]
+    })
+  }
+
+  @Test()
+  public async shouldThrowInvalidFilterExceptionWhenAFilterIsNotAllowed({ assert }: Context) {
+    const ctx = await this.requestFor('/filters?where=password:=:x')
+
+    assert.throws(() => ctx.request.filters({ where: ['name'] }), InvalidFilterException)
+    assert.deepEqual(ctx.request.filters({ where: ['name'], onDenied: 'ignore' }).where, [])
   }
 }
